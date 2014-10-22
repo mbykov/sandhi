@@ -23,7 +23,7 @@ utils.prototype.test = function(tests) {
         //ok =  'रुन्द्';
         var trnForm = slp.sk2slp(form);
         var trnOk = slp.sk2slp(ok);
-        var descr = [trnForm, trnOk].join('->');
+        var descr = [trnOk, suff, trnForm].join(' -> ');
         var results = sandhi.del(form, flex, suff);
         it(descr, function(done) {
             //true.should.equal(true);

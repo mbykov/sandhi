@@ -6,7 +6,8 @@ var _ = require('underscore');
 var util = require('util');
 var slp = require('../utils/slp');
 var shiva = require('../utils/shivasutra');
-var Const = require('lib/Const');
+var Const = require('./lib/const');
+var u = require('./lib/utils');
 
 
 var voiced_asp = shiva('झष्').result;
@@ -52,15 +53,26 @@ function removeSuffix(form, flex, suff) {
 
 function aspirated(stems) {
     var res = [];
+    var virama = true;
     _.each(stems, function(stem) {
-        var last = stem.slice(-1);
-        var newStem = stem.replace(reEnd(last), 'A');
+        var clean = stem.replace(/्$/, '');
+        if (clean == stem) virama = false;
+        var last = clean.slice(-1);
+        var asp = u.unasp2asp(last);
+        var tail = (virama) ? [last, Const.virama].join('') : last;
+        if (virama) {
+            last = [last, Const.virama].join('');
+            asp = [asp, Const.virama].join('');
+        }
+        var newStem = stem.replace(reEnd(tail), asp);
         res.push(stem);
         res.push(newStem);
     });
     log('STEMS ASP========', res);
     return res;
 }
+
+
 
 sandhi.prototype.join = function(first, last) {
     // склеивание
@@ -69,8 +81,6 @@ sandhi.prototype.join = function(first, last) {
 sandhi.prototype.splitAll = function(samasa) {
     // разбиение на все возможные пары
 }
-
-function log() { console.log.apply(console, arguments) }
 
 function ulog (obj) {
     console.log(util.inspect(obj, showHidden=false, depth=null, colorize=true));
@@ -83,3 +93,5 @@ function isIN(arr, item) {
 function reEnd(str) {
     return new RegExp(str + '$');
 }
+
+function log() { console.log.apply(console, arguments) }
