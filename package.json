@@ -11,6 +11,17 @@
     "sandhi",
     "node.js"
   ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/mbykov/morpheus.node.git"
+    },
+    "dependencies": {
+        "underscore": "*"
+    },
+    "devDependencies": {
+        "mocha": "*",
+        "should": "*"
+    },
   "author": "m.bykov",
   "license": "GNU GPL"
 }
