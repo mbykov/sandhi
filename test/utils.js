@@ -12,17 +12,19 @@ function utils(str) {
     return this;
 }
 
+// suff - исходная форма флексии, -ti (а не -dhi, -di, etc)
 utils.prototype.test = function(tests) {
     _.each(tests, function(test) {
-        log('-----', test)
+        //log('----- test', test);
         var form = test[0];
         var flex = test[1];
-        var ok = test[2];
+        var suff = test[2];
+        var ok = test[3];
         //ok =  'रुन्द्';
         var trnForm = slp.sk2slp(form);
         var trnOk = slp.sk2slp(ok);
         var descr = [trnForm, trnOk].join('->');
-        var results = sandhi.del(form, flex);
+        var results = sandhi.del(form, flex, suff);
         it(descr, function(done) {
             //true.should.equal(true);
             isIN(results, ok).should.equal(true);
