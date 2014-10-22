@@ -7,18 +7,18 @@ var util = require('util');
 var slp = require('../utils/slp');
 var shiva = require('../utils/shivasutra');
 
-var lat = process.argv.slice(2)[0] || false;
-if (!lat) return log('?');
+// var lat = process.argv.slice(2)[0] || false;
+// if (!lat) return log('?');
 
-var form;
-if (/[a-zA-Z]/.test(lat[0])) {
-    form = slp.slp2sk(lat);
-} else {
-    form = lat;
-    lat = slp.sk2slp(form);
-}
+// var form;
+// if (/[a-zA-Z]/.test(lat[0])) {
+//     form = slp.slp2sk(lat);
+// } else {
+//     form = lat;
+//     lat = slp.sk2slp(form);
+// }
 
-log('sandhi', lat, form);
+//log('sandhi', lat, form);
 
 module.exports = sandhi();
 
@@ -27,9 +27,18 @@ function sandhi() {
     return this;
 }
 
-sandhi.prototype.del = function(form, flex, preffix) {
+sandhi.prototype.del = function(form, flex, prefix) {
     if (prefix) return removePrefix(form, flex);
     return removeSuffix(form, flex);
+}
+
+function removeSuffix(form, flex) {
+    var stems = [];
+    var re = new RegExp(flex + '$');
+    var stem = form.replace(re, '');
+    if (stem) stems.push(stem);
+    return stems;
+
 }
 
 sandhi.prototype.join = function(first, last) {

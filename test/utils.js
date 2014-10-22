@@ -1,7 +1,38 @@
 //
 
 var _ = require('underscore');
-var Morph = require('../morpheus');
-//var ganas = require('../gana');
 var slp = require('../../utils/slp');
+var sandhi = require('../sandhi');
 var debug = (process.env.debug == 'true') ? true : false;
+
+module.exports = utils();
+
+function utils(str) {
+    if (!(this instanceof utils)) return new utils(str);
+    return this;
+}
+
+utils.prototype.test = function(tests) {
+    _.each(tests, function(test) {
+        log('-----', test)
+        var form = test[0];
+        var flex = test[1];
+        var ok = test[2];
+        //ok =  'रुन्द्';
+        var trnForm = slp.sk2slp(form);
+        var trnOk = slp.sk2slp(ok);
+        var descr = [trnForm, trnOk].join('->');
+        var results = sandhi.del(form, flex);
+        it(descr, function(done) {
+            //true.should.equal(true);
+            isIN(results, ok).should.equal(true);
+            done();
+        });
+    });
+}
+
+function isIN(arr, item) {
+    return (arr.indexOf(item) > -1) ? true : false;
+}
+
+function log() { console.log.apply(console, arguments) }
