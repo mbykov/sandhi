@@ -10,8 +10,8 @@ var test1 = [
 // Moving the aspirate forward
 var test2 = [
     ['बुद्ध', 'ध', 'त', 'बुध्'],
-    // ['रुन्द्धः', 'धः', 'थः', 'रुन्ध्'],
-    // ['दुग्ध', 'ध', 'त', 'दुह्'],
+    ['रुन्द्धः', 'धः', 'थः', 'रुन्ध्'],
+    ['दुग्ध', 'ध', 'त', 'दुह्'],
 ];
 
 describe('Internal consonants sandhi', function() {

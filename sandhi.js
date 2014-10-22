@@ -21,37 +21,66 @@ function sandhi() {
     return this;
 }
 
-sandhi.prototype.del = function(form, flex, suff, prefix) {
-    if (prefix) return removePrefix(form, flex, suff);
-    return removeSuffix(form, flex, suff);
+sandhi.prototype.del = function(form, flex, cflex, prefix) {
+    if (prefix) return removePrefix(form, flex, cflex);
+    return removeSuffix(form, flex, cflex);
 }
 
-/* ну пусть флексия в исходной форме, -ti. Тогда в сандхи передаются две формы, -ti и -Dhi
-
+/* 1. нужно добавлять -cflex, т.е. исходную форму во все флексии. Может и неплохо, кстати. Как раз резерв ограничения кол-ва результатов.
+   2. Неясный код. Ладно.
+   3. Последовательность? Как уложить все кейсы?
 */
 
-// suff: -ti, flex: -dhi, etc, i.e. variant
-function removeSuffix(form, flex, suff) {
+
+var t_th = ['त', 'थ'];
+var t_th_dh = ['त', 'थ', 'ध'];
+
+// cflex: -ti, flex: -dhi, etc, i.e. variant
+function removeSuffix(form, flex, cflex) {
     var stems = [];
     var re = new RegExp(flex + '$');
     var stem = form.replace(re, '');
-    log('---------', form, flex, suff, stem)
+    //log('---------', form, flex, cflex, stem)
     if (stem == form) return [];
+    /* здесь тоже - не просто вызов набора функций _t_th_etc_, а вызов в цикле
+       постоянные - hash.prima, hash.second,
+       вычисляются - hash.ultima == hash.first
+     */
+
     stems.push(stem); // default stem
-    var first = suff[0];
+    var first = cflex[0];
+    //var start = stem[0];
     var clean = stem.replace(/्$/, '');
     var last = clean.slice(-1);
-    log('LAST', last);
-    // теперь - придыхания тут еще нет. bud-dha.
-    // если suff = -ti,-th, и flex на -dh, то
+
+    var hash = {};
+    hash.stems = [stem];
+    //hash.stem = stem;
+    hash.prima = stem[0];
+    hash.ultima = u.ultima(stem);
+    hash.second = cflex[0];
+
     // Aspirated Letters:
-    // t- and th-, when they are the second letter, become dh- ==> when suff
-    var tiSuff = ['त', 'थ'];
-    if (isIN(tiSuff, first)) stems = aspirated(stems, flex, suff);
+    if (isIN(t_th, first)) stems = aspirated_t_th(stems);
+    if (isIN(t_th_dh, first) && true)  h_2_t_th_dh(hash);
+
+    log('STEMS ASP========', stems);
     return stems;
 }
 
-function aspirated(stems) {
+// The h both ends a root that starts with d and is in front of t, th, or dh
+function h_2_t_th_dh(hash) {
+    var res = [];
+    log('==== HHHH', hash.first)
+    /* NOW: ==================================================================
+       вместо многих переменных - один hash,
+       и главное - stems обрабатываются в цикле. И нужно каждый раз вычислять first-second для условий вызова обработчика
+     */
+    return res;
+}
+
+// t- and th-, when they are the second letter, become dh-
+function aspirated_t_th(stems) {
     var res = [];
     var virama = true;
     _.each(stems, function(stem) {
@@ -68,7 +97,6 @@ function aspirated(stems) {
         res.push(stem);
         res.push(newStem);
     });
-    log('STEMS ASP========', res);
     return res;
 }
 
