@@ -1,0 +1,16 @@
+{
+  "name": "sandhi",
+  "version": "0.0.0",
+  "description": "node sanskrit sandhi module",
+  "main": "index.js",
+  "scripts": {
+    "test": "make"
+  },
+  "keywords": [
+    "sanskrit",
+    "sandhi",
+    "node.js"
+  ],
+  "author": "m.bykov",
+  "license": "GNU GPL"
+}
