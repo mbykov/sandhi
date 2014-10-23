@@ -14,6 +14,8 @@ var voiced_asp = shiva('झष्').result;
 var unvoiced_asp = shiva('खव्').del('चव्').result;
 var asps = voiced_asp.concat(unvoiced_asp);
 
+var debug = (process.env.debug == 'true') ? true : false;
+
 module.exports = sandhi();
 
 function sandhi() {
@@ -77,32 +79,40 @@ function removeSuffix(form, flex, cflex) {
     var cflex_starts_with_s = (cflex[0] == 'स');
     var cflex_in_tTD = (isIN(t_th_dh, cflex[0]));
     var stem_starts_with_d = (stem[0] == 'द');
+    var flex_starts_with_Q = (flex[0] == 'ढ');
     if (cflex_starts_with_s || (cflex_in_tTD && stem_starts_with_d)) {
         h_like_gh_t_or_s(hash);
-    } else if (cflex_in_tTD && !flex_starts_with_D) { // второе условие, чтобы не попадал случай stem_aspirating
-        log('----- three things')
-        h_three_thing(hash);
+    } else if (cflex_in_tTD && flex_starts_with_Q) {
+        h_like_gh_other(hash);
     }
     if (isIN(Const.asps, first)) removeAspEnd(hash);
 
-    log('HASH STEMS', hash.stems);
+    if (debug) log('stems', hash.stems);
     return hash.stems;
 }
 
 // h is treated like gh: The h both ends a root that starts with d and is in front of t, th, or dh;
 // если стем начинается на d, а флексия на t_th_dh, то gh -> h
 function h_like_gh_t_or_s(hash) {
-    //ulog('--------',hash)
     // поскольку здесь речь только про _gh, случаи _k, (_c, _j) -> можно преобразовать _к -> _g
     // _g получается из _gh по общему правилу
     var stem = hash.stem.replace(/क्$/, 'ग्');
-    var stems = [stem];
+    var stems = [stem]; // FIXME: это пока нет hash.stems, иначе цикл не нужен
     hash.stems = _.map(stems, function(stem) { return stem.replace(/ग्/, 'ह्') });
     //ulog('-after',hash)
 }
 
-function h_three_thing(hash) {
-    //
+// three things: 1) changes t, th, and dh — if they follow the h — into ḍh, 2) lengthens the vowel in front of it, if possible, 3) disappears
+// укорачиваем гласную перед Q - два варианта, и добавляем h
+function h_like_gh_other(hash) {
+    var vowel_before_Q = hash.stem.slice(-1);
+    var short_vowel = Const.longshort[vowel_before_Q];
+    var re = new RegExp(vowel_before_Q + '$');
+    var short_stem = hash.stem.replace(re, short_vowel);
+    short_stem = [short_stem, 'ह्'].join('');
+    var stem = [hash.stem, 'ह्'].join('');
+    hash.stems.push(stem);
+    hash.stems.push(short_stem);
 }
 
 // t- and th-, when they are the second letter, become dh-

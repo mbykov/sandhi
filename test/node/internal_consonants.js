@@ -21,6 +21,14 @@ var test3 = [
     ['दिग्ध्वे', 'ध्वे', 'ध्वे', 'दिह्'],
 ];
 
+// h_like_gh_other
+var test4 = [
+    ['मूढ', 'ढ', 'त', 'मुह्'], // FIXME: si->zi ?
+    ['लीढ', 'ढ', 'त', 'लिह्'],
+    ['ऊढ', 'ढ', 'त', 'ऊह्'],
+];
+
+
 
 describe('Internal consonants sandhi', function() {
     describe('Aspirated letters become unaspirated', function() {
@@ -31,6 +39,9 @@ describe('Internal consonants sandhi', function() {
     });
     describe('h_like_gh_t_or_s', function() {
         utils.test(test3);
+    });
+    describe('h_like_gh_other', function() {
+        utils.test(test4);
     });
 });
 
