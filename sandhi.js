@@ -66,10 +66,11 @@ function removeSuffix(form, flex, cflex) {
     // Aspirated Letters:
 
     // h is treated like gh: The h both ends a root that starts with d and is in front of t, th, or dh;
-    // если стем начинается на d, а флексия на t_th_dh, то gh -> h
     if (isIN(t_th, cflex[0]) && flex[0] == 'ध') asp_tth2dh(hash);
 
-    if (hash.second == 'स' || isIN(t_th_dh, first) && stem[0] == 'द') {
+    // если стем начинается на d, а флексия на t_th_dh или _s, то gh -> h
+    else if (flex[0] == 'स' || (isIN(t_th_dh, first) && stem[0] == 'द')) {
+        log('-----------------------------------', hash.stem, flex, cflex, hash.stems)
         dh2h_ts(hash);
     } else {
         h_three_thing(hash);
