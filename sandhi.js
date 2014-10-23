@@ -38,7 +38,6 @@ var t_th_dh = ['त', 'थ', 'ध'];
 // cflex: -ti, flex: -dhi, etc, i.e. variant
 function removeSuffix(form, flex, cflex) {
     var stems = [];
-
     // условие - наружу
     var re = new RegExp(flex + '$');
     var stem = form.replace(re, '');
@@ -46,9 +45,10 @@ function removeSuffix(form, flex, cflex) {
     if (stem == form) return [];
 
 
-    /* здесь тоже - не просто вызов набора функций _t_th_etc_, а вызов в цикле ?
-       постоянные - hash.prima, hash.second,
+    /* здесь тоже - не просто вызов набора функций _t_th_etc_, а вызов в цикле ? Принцип неясен, вот что
+       постоянная величина - hash.second, начало флексии, sign
        вычисляются - hash.ultima == hash.first
+       == после каждого преобразования запускается весь список фильтров == ?
      */
 
     stems.push(stem); // default stem
@@ -64,17 +64,17 @@ function removeSuffix(form, flex, cflex) {
 
     // Aspirated Letters:
     if (isIN(t_th, first)) aspirated_t_th(stems, hash);
-    if (isIN(t_th_dh, first) && stem[0] == 'द')  h_2_t_th_dh(hash);
+    if (isIN(t_th_dh, first) && stem[0] == 'द')  dh2h_t(hash);
+    if (isIN(Const.asps, first)) removeAspEnd(hash);
 
     log('HASH STEMS', hash.stems);
     return hash.stems;
 }
 
 // h is treated like gh: The h both ends a root that starts with d and is in front of t, th, or dh;
-function h_2_t_th_dh(hash) {
-    ulog(hash);
-
-    return;
+// если стем начинается на d, а флексия на t_th_dh, то gh -> h
+function dh2h_t(hash) {
+    hash.stems = _.map(hash.stems, function(stem) { return stem.replace(/घ्/, 'ह्') });
 }
 
 // t- and th-, when they are the second letter, become dh-
@@ -92,6 +92,17 @@ function aspirated_t_th(stems, hash) {
     return;
 }
 
+// Aspirated letters become unaspirated
+// наоборот, окончание стема без придыхания получает придыхание, кроме gh?
+function removeAspEnd(hash) {
+    for (var stem in hash.stems) {
+        //s
+    }
+    //ulog(hash);
+    return;
+}
+
+
 
 
 sandhi.prototype.join = function(first, last) {
@@ -102,7 +113,12 @@ sandhi.prototype.splitAll = function(samasa) {
     // разбиение на все возможные пары
 }
 
-function ulog (obj) {
+function ulog () {
+    var obj = arguments[0];
+    if (arguments.length > 1) {
+        console.log('==', arguments[0], '==');
+        var obj = arguments[1];
+    }
     console.log(util.inspect(obj, showHidden=false, depth=null, colorize=true));
 }
 
