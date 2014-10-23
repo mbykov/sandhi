@@ -57,15 +57,17 @@ function removeSuffix(form, flex, cflex) {
     var last = clean.slice(-1);
 
     var hash = {};
-    hash.stems = [stem];
+    hash.stems = [];
     hash.stem = stem;
     hash.first = u.ultima(stem);
     hash.virama = u.virama(stem);
     hash.second = cflex[0];
 
     // Aspirated Letters:
-    //if (isIN(t_th, first)) aspirated_t_th(stems, hash);
-    if (isIN(t_th, hash.second) && flex[0] == 'ध') asp_tth2dh(hash);
+
+    // h is treated like gh: The h both ends a root that starts with d and is in front of t, th, or dh;
+    // если стем начинается на d, а флексия на t_th_dh, то gh -> h
+    if (isIN(t_th, cflex[0]) && flex[0] == 'ध') asp_tth2dh(hash);
 
     if (hash.second == 'स' || isIN(t_th_dh, first) && stem[0] == 'द') {
         dh2h_ts(hash);
@@ -91,25 +93,12 @@ function h_three_thing(hash) {
 // если флексия t_th стала dh-, то окончание стема аспирируется
 function asp_tth2dh(hash) {
     var asp = u.unasp2asp(hash.first);
+    if (!asp) return;
     var stem = u.replaceEnd(hash.stem, hash.first, asp);
     if (!stem) return;
     hash.stems.push(stem);
 }
 
-// t- and th-, when they are the second letter, become dh-
-function aspirated_t_th(stems, hash) {
-    _.each(hash.stems, function(stem) {
-        var first = hash.first;
-        var asp = u.unasp2asp(first);
-        if (hash.virama) {
-            first = [first, Const.virama].join('');
-            asp = [asp, Const.virama].join('');
-        }
-        var newStem = stem.replace(reEnd(first), asp);
-        hash.stems.push(newStem);
-    });
-    return;
-}
 
 // Aspirated letters become unaspirated
 // наоборот, окончание стема без придыхания получает придыхание, кроме gh?
@@ -145,8 +134,8 @@ function isIN(arr, item) {
     return (arr.indexOf(item) > -1) ? true : false;
 }
 
-function reEnd(str) {
-    return new RegExp(str + '$');
-}
+// function reEnd(str) {
+//     return new RegExp(str + '$');
+// }
 
 function log() { console.log.apply(console, arguments) }
