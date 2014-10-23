@@ -16,9 +16,9 @@ var test2 = [
 
 // h is treated like gh
 var test3 = [
-    ['लेक्षि', 'सि', 'xx', 'लेह्'],
+    ['लेक्षि', 'षि', 'सि', 'लेह्'], // FIXME: si->zi ?
     ['दग्ध', 'ध', 'त', 'दह्'],
-    ['दिग्ध्वे', 'ध्वे', 'xxx', 'दिह्'],
+    ['दिग्ध्वे', 'ध्वे', 'ध्वे', 'दिह्'],
 ];
 
 
@@ -29,7 +29,7 @@ describe('Internal consonants sandhi', function() {
     describe('t- and th-, when they are the second letter, become_dh', function() {
         utils.test(test2);
     });
-    describe('h_is_treated_like_gh', function() {
+    describe('h_like_gh_t_or_s', function() {
         utils.test(test3);
     });
 });

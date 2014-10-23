@@ -12,22 +12,21 @@ function utils(str) {
     return this;
 }
 
-// suff - исходная форма флексии, -ti (а не -dhi, -di, etc)
+// cflex - canon-flex, исходная форма флексии, -ti (а не -dhi, -di, etc)
 utils.prototype.test = function(tests) {
     _.each(tests, function(test) {
         //log('----- test', test);
         var form = test[0];
         if (!form) return;
         var flex = test[1];
-        var suff = test[2];
+        var cflex = test[2];
         var ok = test[3];
         //ok =  'रुन्द्';
         var trnForm = slp.sk2slp(form);
         var trnOk = slp.sk2slp(ok);
-        var descr = [trnOk, suff, trnForm].join(' -> ');
-        var results = sandhi.del(form, flex, suff);
+        var descr = [trnOk, flex, cflex, trnForm].join(' -> ');
         it(descr, function(done) {
-            //true.should.equal(true);
+            var results = sandhi.del(form, flex, cflex);
             isIN(results, ok).should.equal(true);
             done();
         });

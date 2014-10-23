@@ -41,7 +41,7 @@ function removeSuffix(form, flex, cflex) {
     // условие - наружу
     var re = new RegExp(flex + '$');
     var stem = form.replace(re, '');
-    //log('---------', form, flex, cflex, stem)
+    //log('---------', form, flex, cflex, stem, (stem == form))
     if (stem == form) return [];
 
 
@@ -56,22 +56,26 @@ function removeSuffix(form, flex, cflex) {
     var clean = stem.replace(/्$/, '');
     var last = clean.slice(-1);
 
-    var hash = {};
+    var hash = {form: form, stem: stem, flex: flex, cflex: cflex};
     hash.stems = [];
-    hash.stem = stem;
+
     hash.first = u.ultima(stem);
-    hash.virama = u.virama(stem);
-    hash.second = cflex[0];
+    // hash.virama = u.virama(stem);
+    // hash.second = cflex[0];
 
     // Aspirated Letters:
 
-    // h is treated like gh: The h both ends a root that starts with d and is in front of t, th, or dh;
-    if (isIN(t_th, cflex[0]) && flex[0] == 'ध') asp_tth2dh(hash);
+    // t- and th-, when they are the second letter, become dh-
+    // если флексия t_th стала dh-, то окончание стема аспирируется
+    //if (isIN(t_th, cflex[0]) && flex[0] == 'ध') asp_tth2dh(hash);
 
+    // h is treated like gh: The h both ends a root that starts with d and is in front of t, th, or dh;
     // если стем начинается на d, а флексия на t_th_dh или _s, то gh -> h
-    else if (flex[0] == 'स' || (isIN(t_th_dh, first) && stem[0] == 'द')) {
-        log('-----------------------------------', hash.stem, flex, cflex, hash.stems)
-        dh2h_ts(hash);
+    var cflex_starts_with_s = (cflex[0] == 'स');
+    var cflex_in_tTD = (isIN(t_th_dh, cflex[0]));
+    var stem_starts_with_d = (stem[0] == 'द');
+    if (cflex_starts_with_s || (cflex_in_tTD && stem_starts_with_d)) {
+        h_like_gh_t_or_s(hash);
     } else {
         h_three_thing(hash);
     }
@@ -83,15 +87,22 @@ function removeSuffix(form, flex, cflex) {
 
 // h is treated like gh: The h both ends a root that starts with d and is in front of t, th, or dh;
 // если стем начинается на d, а флексия на t_th_dh, то gh -> h
-function dh2h_ts(hash) {
-    hash.stems = _.map(hash.stems, function(stem) { return stem.replace(/घ्/, 'ह्') });
+function h_like_gh_t_or_s(hash) {
+    //ulog('--------',hash)
+    // поскольку здесь речь только про _gh, случаи _k, (_c, _j) -> можно преобразовать _к -> _g
+    // _g получается из _gh по общему правилу
+    var stem = hash.stem.replace(/क्$/, 'ग्');
+    var stems = [stem];
+    hash.stems = _.map(stems, function(stem) { return stem.replace(/ग्/, 'ह्') });
+    //ulog('-after',hash)
 }
 
 function h_three_thing(hash) {
     //
 }
+
 // t- and th-, when they are the second letter, become dh-
-// если флексия t_th стала dh-, то окончание стема аспирируется
+// если флексия t_th стала dh-, то окончание стема аспирируется, d-dh
 function asp_tth2dh(hash) {
     var asp = u.unasp2asp(hash.first);
     if (!asp) return;
