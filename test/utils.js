@@ -17,6 +17,7 @@ utils.prototype.test = function(tests) {
     _.each(tests, function(test) {
         //log('----- test', test);
         var form = test[0];
+        if (!form) return;
         var flex = test[1];
         var suff = test[2];
         var ok = test[3];
