@@ -66,8 +66,11 @@ function removeSuffix(form, flex, cflex) {
     // Aspirated Letters:
 
     // t- and th-, when they are the second letter, become dh-
-    // если флексия t_th стала dh-, то окончание стема аспирируется
-    //if (isIN(t_th, cflex[0]) && flex[0] == 'ध') asp_tth2dh(hash);
+    // если флексия из t_th стала dh-, то окончание стема аспирируется
+    var cflex_in_tT = (isIN(t_th, cflex[0]));
+    var flex_starts_with_D = (flex[0] == 'ध');
+    //if (isIN(t_th, cflex[0]) && flex[0] == 'ध') stem_aspirating(hash);
+    if (cflex_in_tT && flex_starts_with_D) stem_aspirating(hash);
 
     // h is treated like gh: The h both ends a root that starts with d and is in front of t, th, or dh;
     // если стем начинается на d, а флексия на t_th_dh или _s, то gh -> h
@@ -76,7 +79,8 @@ function removeSuffix(form, flex, cflex) {
     var stem_starts_with_d = (stem[0] == 'द');
     if (cflex_starts_with_s || (cflex_in_tTD && stem_starts_with_d)) {
         h_like_gh_t_or_s(hash);
-    } else {
+    } else if (cflex_in_tTD && !flex_starts_with_D) { // второе условие, чтобы не попадал случай stem_aspirating
+        log('----- three things')
         h_three_thing(hash);
     }
     if (isIN(Const.asps, first)) removeAspEnd(hash);
@@ -103,7 +107,7 @@ function h_three_thing(hash) {
 
 // t- and th-, when they are the second letter, become dh-
 // если флексия t_th стала dh-, то окончание стема аспирируется, d-dh
-function asp_tth2dh(hash) {
+function stem_aspirating(hash) {
     var asp = u.unasp2asp(hash.first);
     if (!asp) return;
     var stem = u.replaceEnd(hash.stem, hash.first, asp);
