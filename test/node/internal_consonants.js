@@ -34,11 +34,20 @@ var final_s = [
     ['शाधि', 'धि', 'xxx', 'शास्'],
 ];
 
+var move_aspirate_backward = [
+    ['भुद्ध्वम्', 'ध्वम्', 'xxx', 'बुध्'], // अभुद्ध्वम् - w/o affix
+    ['', '', '', ''],
+    ['', '', '', ''],
+];
+
 
 
 describe('Internal consonants sandhi', function() {
     describe('Aspirated letters become unaspirated', function() {
         //utils.test(test1);
+    });
+    describe('move_aspirate_backward', function() {
+        utils.test(move_aspirate_backward);
     });
     describe('move_aspirate_forward', function() {
         utils.test(move_aspirate_forward);

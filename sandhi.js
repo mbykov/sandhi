@@ -72,6 +72,13 @@ function removeSuffix(form, flex, cflex, krit) {
     var flex_starts_with_D = (flex[0] == 'ध');
     if (cflex_in_tT && flex_starts_with_D) move_aspirate_forward(hash);
 
+    // move_aspirate_backward
+    //var stem_starts_with_GDB = (isIN(Const.GDB, stem[0]));
+    var stem_ends_with_VunAC = (isIN(Const.voiced_unasp, hash.stemUlt));
+    var flex_starts_with_BsDv = (isIN(Const.BsDv, flex[0]) || /^ध्व/.test(flex) );
+    //log('move_aspirate_backward', stem[0], stem_ends_with_VunAC, flex[0], flex_starts_with_BsDv);
+    if (stem_ends_with_VunAC && flex_starts_with_BsDv) move_aspirate_backward(hash);
+
     // h is treated like gh: The h both ends a root that starts with d and is in front of t, th, or dh;
     // если стем начинается на d, а флексия на t_th_dh или _s, то gh -> h
     var cflex_starts_with_s = (cflex[0] == 'स');
@@ -153,6 +160,19 @@ function move_aspirate_forward(hash) {
     var stem = u.replaceEnd(hash.stem, hash.first, asp);
     if (stem == hash.stem) return;
     if (!stem) return;
+    hash.stems.push(stem);
+    //ulog(hash);
+}
+
+function move_aspirate_backward(hash) {
+    var asp = u.unasp2asp(hash.first);
+    if (!asp) return;
+    var stem = u.replaceEnd(hash.stem, hash.first, asp);
+    var stem0 = hash.stem[0];
+    var stem0idx = Const.GDB.indexOf(stem0);
+    var stem0new = Const.gdb[stem0idx];
+    stem = stem.replace(stem0, stem0new)
+    if (stem == hash.stem) return;
     hash.stems.push(stem);
     //ulog(hash);
 }
