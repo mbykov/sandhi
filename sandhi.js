@@ -66,41 +66,54 @@ function removeSuffix(form, flex, cflex, krit) {
     // hash.second = cflex[0];
 
     // Aspirated Letters:
-
+    // Moving the aspirate forward
     // t- and th-, when they are the second letter, become dh-
     // если флексия из t_th стала dh-, то окончание стема аспирируется
     var cflex_in_tT = (isIN(t_th, cflex[0]));
     var flex_starts_with_D = (flex[0] == 'ध');
-    //if (isIN(t_th, cflex[0]) && flex[0] == 'ध') stem_aspirating(hash);
     if (cflex_in_tT && flex_starts_with_D) stem_aspirating(hash);
 
-    // h is treated like gh: The h both ends a root that starts with d and is in front of t, th, or dh;
-    // если стем начинается на d, а флексия на t_th_dh или _s, то gh -> h
-    var cflex_starts_with_s = (cflex[0] == 'स');
-    var cflex_in_tTD = (isIN(t_th_dh, cflex[0]));
-    var stem_starts_with_d = (stem[0] == 'द');
-    var flex_starts_with_Q = (flex[0] == 'ढ');
-    if (cflex_starts_with_s || (cflex_in_tTD && stem_starts_with_d)) {
-        h_like_gh_t_or_s(hash);
-    } else if (cflex_in_tTD && flex_starts_with_Q) {
-        h_like_gh_other(hash);
-    }
-    if (isIN(Const.asps, first)) removeAspEnd(hash);
+    // // h is treated like gh: The h both ends a root that starts with d and is in front of t, th, or dh;
+    // // если стем начинается на d, а флексия на t_th_dh или _s, то gh -> h
+    // var cflex_starts_with_s = (cflex[0] == 'स');
+    // var cflex_in_tTD = (isIN(t_th_dh, cflex[0]));
+    // var stem_starts_with_d = (stem[0] == 'द');
+    // var flex_starts_with_Q = (flex[0] == 'ढ');
+    // if (cflex_starts_with_s || (cflex_in_tTD && stem_starts_with_d)) {
+    //     h_like_gh_t_or_s(hash);
+    // } else if (cflex_in_tTD && flex_starts_with_Q) {
+    //     h_like_gh_other(hash);
+    // }
 
-    // final s - s changes to t
-    var stem_ends_with_t = (hash.stemUlt == 'त');
-    var flex_starts_with_s = (flex[0] == 'स');
-    if (!krit) krit = true;
-    if (stem_ends_with_t && flex_starts_with_s && krit) final_s_t(hash);
+    // // final_s - s changes to t
+    // var stem_ends_with_t = (hash.stemUlt == 'त');
+    // var flex_starts_with_s = (flex[0] == 'स');
+    // if (!krit) krit = true;
+    // // TODO: s also becomes t in some parts of the reduplicated perfect.
+    // if (stem_ends_with_t && flex_starts_with_s && krit) final_s_t(hash);
+    // // final_s_zero FIXME: исключения? s disappears when in front of _d or _dh - не во всех же случаях добавлять s перед _d и _dh?
+    // var dD = ['द', 'ध'];
+    // var flex_starts_with_dD = (isIN(dD, flex[0]));
+    // if (flex_starts_with_dD) final_s_zero(hash);
 
-    if (debug) log('stems', hash.stems);
+    // //if (debug) log('stems', hash.stems);
+    // if (isIN(Const.asps, first)) removeAspEnd(hash);
+
     return hash.stems;
 }
 
-// finas_s -> s changes to t
 function final_s_t(hash) {
     var stem = hash.stem.replace(/त्$/, 'स्');
+    if (stem == hash.stem) return;
+    log(stem, hash.stem, (stem == hash.stem))
     hash.stems = [stem];
+}
+
+function final_s_zero(hash) {
+    var stem = [hash.stem, 'स्'].join('');
+    if (stem == hash.stem) return;
+    //ulog(hash.stems);
+    //hash.stems = hash.stems.push(stem);
 }
 
 
@@ -110,6 +123,7 @@ function h_like_gh_t_or_s(hash) {
     // поскольку здесь речь только про _gh, случаи _k, (_c, _j) -> можно преобразовать _к -> _g
     // _g получается из _gh по общему правилу
     var stem = hash.stem.replace(/क्$/, 'ग्');
+    if (stem == hash.stem) return;
     var stems = [stem]; // FIXME: это пока нет hash.stems, иначе цикл не нужен
     hash.stems = _.map(stems, function(stem) { return stem.replace(/ग्/, 'ह्') });
     //ulog('-after',hash)
@@ -125,6 +139,7 @@ function h_like_gh_other(hash) {
     var short_stem = hash.stem.replace(re, short_vowel);
     short_stem = [short_stem, 'ह्'].join('');
     var stem = [hash.stem, 'ह्'].join('');
+    if (stem == hash.stem) return;
     hash.stems.push(stem);
     hash.stems.push(short_stem);
 }
@@ -135,6 +150,7 @@ function stem_aspirating(hash) {
     var asp = u.unasp2asp(hash.first);
     if (!asp) return;
     var stem = u.replaceEnd(hash.stem, hash.first, asp);
+    //if (stem == hash.stem) return;
     if (!stem) return;
     hash.stems.push(stem);
 }
