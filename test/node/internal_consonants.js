@@ -41,9 +41,9 @@ var move_aspirate_backward = [
 ];
 
 var no_sandhi_change_of_any_kind = [
-    ['', '', '', ''],
-    ['', '', '', ''],
-    ['', '', '', ''],
+    ['वचन्ति', 'न्ति', 'xxx', 'वच'], // अन्ति, stem=वच्
+    ['वच्मि', 'मि', '', 'वच्'],
+    ['वाच्य', 'य', '', 'वाच्'],
     ['', '', '', ''],
 ];
 
@@ -66,6 +66,9 @@ describe('Internal consonants sandhi', function() {
     });
     describe('final_s', function() {
         utils.test(final_s);
+    });
+    describe('no_sandhi_change_of_any_kind', function() {
+        utils.test(no_sandhi_change_of_any_kind);
     });
 });
 

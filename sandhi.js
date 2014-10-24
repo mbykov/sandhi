@@ -66,8 +66,9 @@ function removeSuffix(form, flex, cflex, krit) {
 
     // When the second letter letter is a vowel, a nasal, or a semivowel, no sandhi change of any kind will occur
     var flexStart = flex[0];
-    var stops = Const.vowels.concat(Const.semivowels);
-    if (isIN(stops, flexStart)) return;
+    var stops = Const.nasals.concat(Const.semivowels).concat(['म', Const.virama]);
+    //log('NO sandhi', flexStart, stops, isIN(stops, flexStart), stem);
+    if (isIN(stops, flexStart)) return [stem];
 
 
 
