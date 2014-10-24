@@ -71,15 +71,15 @@ function removeSuffix(form, flex, cflex, krit) {
     if (isIN(stops, flexStart)) return [stem];
 
     // cavarga - c always reduces to k. But j is more irregular. It usually becomes k, but it can also become ṭ or ṣ
-    var stem_ends_with_kwQ = (isIN(Const.kwQ, hash.stemUlt));
-
+    var stem_ends_with_kzq = (isIN(Const.kzq, hash.stemUlt));
+    var cflex_in_tT = (isIN(Const.t_th, cflex[0]));
+    if (stem_ends_with_kzq && cflex_in_tT) cavarga(hash);
 
 
     // Aspirated Letters:
     // move_aspirate_forward
     // t- and th-, when they are the second letter, become dh-
     // если флексия из t_th стала dh-, то окончание стема аспирируется
-    var cflex_in_tT = (isIN(Const.t_th, cflex[0]));
     var flex_starts_with_D = (flex[0] == 'ध');
     if (cflex_in_tT && flex_starts_with_D) move_aspirate_forward(hash);
 
@@ -180,12 +180,23 @@ function move_aspirate_backward(hash) {
     var stem0 = hash.stem[0];
     var stem0idx = Const.GDB.indexOf(stem0);
     var stem0new = Const.gdb[stem0idx];
-    stem = stem.replace(stem0, stem0new)
+    stem = stem.replace(stem0, stem0new);
     if (stem == hash.stem) return;
     hash.stems.push(stem);
     //ulog(hash);
 }
 
+function cavarga(hash) {
+    // надо ли тут добавить простой стем, типа vak-> vac ?
+    var stem_c = hash.stem.replace(/क्$/,'च्');
+    var stem_j = hash.stem.replace(/क्$/,'ज्');
+    var stem_z = hash.stem.replace(/ष्$/,'ज्');
+    var stem_q = hash.stem.replace(/ष्$/,'ज्');
+    var stems = [stem_c, stem_j, stem_z, stem_q];
+    stems = _.uniq(_.compact(stems));
+    hash.stems = _.without(stems, hash.stem);
+    //log(hash.stems);
+}
 
 // Aspirated letters become unaspirated
 // наоборот, окончание стема без придыхания получает придыхание, кроме gh?
