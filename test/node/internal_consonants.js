@@ -37,7 +37,6 @@ var final_s = [
 var move_aspirate_backward = [
     ['भुद्ध्वम्', 'ध्वम्', 'xxx', 'बुध्'], // अभुद्ध्वम् - w/o affix
     ['', '', '', ''],
-    ['', '', '', ''],
 ];
 
 var no_sandhi_change_of_any_kind = [
@@ -47,6 +46,11 @@ var no_sandhi_change_of_any_kind = [
     ['', '', '', ''],
 ];
 
+var cavarga = [
+    ['वक्ति', 'ति', 'ति', 'वच्'],
+    ['', '', '', ''],
+    ['', '', '', ''],
+];
 
 describe('Internal consonants sandhi', function() {
     describe('Aspirated letters become unaspirated', function() {
@@ -69,6 +73,9 @@ describe('Internal consonants sandhi', function() {
     });
     describe('no_sandhi_change_of_any_kind', function() {
         utils.test(no_sandhi_change_of_any_kind);
+    });
+    describe('cavarga', function() {
+        utils.test(cavarga);
     });
 });
 

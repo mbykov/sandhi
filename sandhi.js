@@ -33,8 +33,8 @@ sandhi.prototype.del = function(form, flex, cflex, prefix, krit) {
    3. Последовательность? Как уложить все кейсы?
 */
 
-var t_th = ['त', 'थ'];
-var t_th_dh = ['त', 'थ', 'ध'];
+// var t_th = ['त', 'थ'];
+// var t_th_dh = ['त', 'थ', 'ध'];
 
 // cflex: -ti, flex: -dhi, etc, i.e. variant
 function removeSuffix(form, flex, cflex, krit) {
@@ -70,13 +70,16 @@ function removeSuffix(form, flex, cflex, krit) {
     //log('NO sandhi', flexStart, stops, isIN(stops, flexStart), stem);
     if (isIN(stops, flexStart)) return [stem];
 
+    // cavarga - c always reduces to k. But j is more irregular. It usually becomes k, but it can also become ṭ or ṣ
+    var stem_ends_with_kwQ = (isIN(Const.kwQ, hash.stemUlt));
+
 
 
     // Aspirated Letters:
     // move_aspirate_forward
     // t- and th-, when they are the second letter, become dh-
     // если флексия из t_th стала dh-, то окончание стема аспирируется
-    var cflex_in_tT = (isIN(t_th, cflex[0]));
+    var cflex_in_tT = (isIN(Const.t_th, cflex[0]));
     var flex_starts_with_D = (flex[0] == 'ध');
     if (cflex_in_tT && flex_starts_with_D) move_aspirate_forward(hash);
 
@@ -88,7 +91,7 @@ function removeSuffix(form, flex, cflex, krit) {
     // h is treated like gh: The h both ends a root that starts with d and is in front of t, th, or dh;
     // если стем начинается на d, а флексия на t_th_dh или _s, то gh -> h
     var cflex_starts_with_s = (cflex[0] == 'स');
-    var cflex_in_tTD = (isIN(t_th_dh, cflex[0]));
+    var cflex_in_tTD = (isIN(Const.t_th_dh, cflex[0]));
     var stem_starts_with_d = (stem[0] == 'द');
     var flex_starts_with_Q = (flex[0] == 'ढ');
     if (cflex_starts_with_s || (cflex_in_tTD && stem_starts_with_d)) {
