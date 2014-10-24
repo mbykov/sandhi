@@ -7,7 +7,7 @@ var test1 = [
     ['रुन्द्ध्वे', 'ध्वे', 'रुन्ध्'],
 ];
 
-var moving_the_aspirate_forward = [
+var move_aspirate_forward = [
     ['बुद्ध', 'ध', 'त', 'बुध्'],
     ['रुन्द्धः', 'धः', 'थः', 'रुन्ध्'],
     ['दुग्ध', 'ध', 'त', 'दुह्'],
@@ -40,8 +40,8 @@ describe('Internal consonants sandhi', function() {
     describe('Aspirated letters become unaspirated', function() {
         //utils.test(test1);
     });
-    describe('moving_the_aspirate_forward', function() {
-        utils.test(moving_the_aspirate_forward);
+    describe('move_aspirate_forward', function() {
+        utils.test(move_aspirate_forward);
     });
     describe('h_like_gh_t_or_s', function() {
         utils.test(test3);
