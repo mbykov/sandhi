@@ -23,9 +23,16 @@ var test3 = [
 
 // h_like_gh_other
 var test4 = [
-    ['मूढ', 'ढ', 'त', 'मुह्'], // FIXME: si->zi ?
+    ['मूढ', 'ढ', 'त', 'मुह्'],
     ['लीढ', 'ढ', 'त', 'लिह्'],
     ['ऊढ', 'ढ', 'त', 'ऊह्'],
+];
+
+// final_s
+var final_s = [
+    ['वत्स्यति', 'स्यति', 'xxx', 'वस्'],
+    ['जिघत्सति', 'सति', 'xxx', 'जिघस्'],
+    ['', '', '', ''],
 ];
 
 
@@ -42,6 +49,9 @@ describe('Internal consonants sandhi', function() {
     });
     describe('h_like_gh_other', function() {
         utils.test(test4);
+    });
+    describe('final_s', function() {
+        utils.test(final_s);
     });
 });
 

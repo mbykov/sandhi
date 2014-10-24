@@ -23,8 +23,8 @@ function sandhi() {
     return this;
 }
 
-sandhi.prototype.del = function(form, flex, cflex, prefix) {
-    if (prefix) return removePrefix(form, flex, cflex);
+sandhi.prototype.del = function(form, flex, cflex, prefix, krit) {
+    if (prefix) return removePrefix(form, flex, cflex, krit);
     return removeSuffix(form, flex, cflex);
 }
 
@@ -33,12 +33,11 @@ sandhi.prototype.del = function(form, flex, cflex, prefix) {
    3. Последовательность? Как уложить все кейсы?
 */
 
-
 var t_th = ['त', 'थ'];
 var t_th_dh = ['त', 'थ', 'ध'];
 
 // cflex: -ti, flex: -dhi, etc, i.e. variant
-function removeSuffix(form, flex, cflex) {
+function removeSuffix(form, flex, cflex, krit) {
     var stems = [];
     // условие - наружу
     var re = new RegExp(flex + '$');
@@ -61,7 +60,8 @@ function removeSuffix(form, flex, cflex) {
     var hash = {form: form, stem: stem, flex: flex, cflex: cflex};
     hash.stems = [];
 
-    hash.first = u.ultima(stem);
+    hash.first = u.ultima(stem); // stemUlt
+    hash.stemUlt = u.ultima(stem);
     // hash.virama = u.virama(stem);
     // hash.second = cflex[0];
 
@@ -87,9 +87,22 @@ function removeSuffix(form, flex, cflex) {
     }
     if (isIN(Const.asps, first)) removeAspEnd(hash);
 
+    // final s - s changes to t
+    var stem_ends_with_t = (hash.stemUlt == 'त');
+    var flex_starts_with_s = (flex[0] == 'स');
+    if (!krit) krit = true;
+    if (stem_ends_with_t && flex_starts_with_s && krit) final_s_t(hash);
+
     if (debug) log('stems', hash.stems);
     return hash.stems;
 }
+
+// finas_s -> s changes to t
+function final_s_t(hash) {
+    var stem = hash.stem.replace(/त्$/, 'स्');
+    hash.stems = [stem];
+}
+
 
 // h is treated like gh: The h both ends a root that starts with d and is in front of t, th, or dh;
 // если стем начинается на d, а флексия на t_th_dh, то gh -> h
@@ -105,6 +118,7 @@ function h_like_gh_t_or_s(hash) {
 // three things: 1) changes t, th, and dh — if they follow the h — into ḍh, 2) lengthens the vowel in front of it, if possible, 3) disappears
 // укорачиваем гласную перед Q - два варианта, и добавляем h
 function h_like_gh_other(hash) {
+    // TODO: four exceptions are snih, muh, nah and dṛh
     var vowel_before_Q = hash.stem.slice(-1);
     var short_vowel = Const.longshort[vowel_before_Q];
     var re = new RegExp(vowel_before_Q + '$');
