@@ -64,6 +64,13 @@ function removeSuffix(form, flex, cflex, krit) {
     // hash.virama = u.virama(stem);
     // hash.second = cflex[0];
 
+    // When the second letter letter is a vowel, a nasal, or a semivowel, no sandhi change of any kind will occur
+    var flexStart = flex[0];
+    var stops = Const.vowels.concat(Const.semivowels);
+    if (isIN(stops, flexStart)) return;
+
+
+
     // Aspirated Letters:
     // move_aspirate_forward
     // t- and th-, when they are the second letter, become dh-
@@ -73,10 +80,8 @@ function removeSuffix(form, flex, cflex, krit) {
     if (cflex_in_tT && flex_starts_with_D) move_aspirate_forward(hash);
 
     // move_aspirate_backward
-    //var stem_starts_with_GDB = (isIN(Const.GDB, stem[0]));
     var stem_ends_with_VunAC = (isIN(Const.voiced_unasp, hash.stemUlt));
     var flex_starts_with_BsDv = (isIN(Const.BsDv, flex[0]) || /^ध्व/.test(flex) );
-    //log('move_aspirate_backward', stem[0], stem_ends_with_VunAC, flex[0], flex_starts_with_BsDv);
     if (stem_ends_with_VunAC && flex_starts_with_BsDv) move_aspirate_backward(hash);
 
     // h is treated like gh: The h both ends a root that starts with d and is in front of t, th, or dh;
@@ -92,12 +97,11 @@ function removeSuffix(form, flex, cflex, krit) {
     }
 
     // final_s - s changes to t
+    // TODO: s also becomes t in some parts of the reduplicated perfect
+    if (!krit) krit = true;
     var stem_ends_with_t = (hash.stemUlt == 'त');
     var flex_starts_with_s = (flex[0] == 'स');
-    if (!krit) krit = true;
-    // TODO: s also becomes t in some parts of the reduplicated perfect.
     if (stem_ends_with_t && flex_starts_with_s && krit) final_s_t(hash);
-    // final_s_zero FIXME: исключения? s disappears when in front of _d or _dh - не во всех же случаях добавлять s перед _d и _dh?
     var dD = ['द', 'ध'];
     var flex_starts_with_dD = (isIN(dD, flex[0]));
     if (flex_starts_with_dD) final_s_zero(hash);
@@ -115,6 +119,7 @@ function final_s_t(hash) {
 }
 
 // depends on move_aspirate_forward
+// final_s_zero FIXME: исключения? s disappears when in front of _d or _dh - не во всех же случаях добавлять s перед _d и _dh?
 function final_s_zero(hash) {
     if (hash.stems.length > 0) return; // move_aspirate_forward stems should not be changed
     var stem = [hash.stem, 'स्'].join('');

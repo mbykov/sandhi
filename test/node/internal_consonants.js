@@ -40,6 +40,12 @@ var move_aspirate_backward = [
     ['', '', '', ''],
 ];
 
+var no_sandhi_change_of_any_kind = [
+    ['', '', '', ''],
+    ['', '', '', ''],
+    ['', '', '', ''],
+    ['', '', '', ''],
+];
 
 
 describe('Internal consonants sandhi', function() {
