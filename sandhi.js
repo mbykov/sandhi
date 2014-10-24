@@ -73,6 +73,7 @@ function removeSuffix(form, flex, cflex, krit) {
     // cavarga - c always reduces to k. But j is more irregular. It usually becomes k, but it can also become ṭ or ṣ
     var stem_ends_with_kzq = (isIN(Const.kzq, hash.stemUlt));
     var cflex_in_tT = (isIN(Const.t_th, cflex[0]));
+    // FIXME: возможна более точная схема для j NB: !!!
     if (stem_ends_with_kzq && cflex_in_tT) cavarga(hash);
 
 
@@ -187,7 +188,6 @@ function move_aspirate_backward(hash) {
 }
 
 function cavarga(hash) {
-    // надо ли тут добавить простой стем, типа vak-> vac ?
     var stem_c = hash.stem.replace(/क्$/,'च्');
     var stem_j = hash.stem.replace(/क्$/,'ज्');
     var stem_z = hash.stem.replace(/ष्$/,'ज्');

@@ -48,8 +48,8 @@ var no_sandhi_change_of_any_kind = [
 
 var cavarga = [
     ['वक्ति', 'ति', 'ति', 'वच्'],
-    ['', '', '', ''],
-    ['', '', '', ''],
+    ['युक्त', 'त', 'त', 'युज्'],
+    ['राष्ट्र', 'ट्र', 'त्र', 'राज्'],
 ];
 
 describe('Internal consonants sandhi', function() {
