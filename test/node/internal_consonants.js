@@ -46,10 +46,18 @@ var no_sandhi_change_of_any_kind = [
     ['', '', '', ''],
 ];
 
-var cavarga = [
+var cavarga_c = [
     ['वक्ति', 'ति', 'ति', 'वच्'],
+];
+
+var cavarga_j = [
     ['युक्त', 'त', 'त', 'युज्'],
     ['राष्ट्र', 'ट्र', 'त्र', 'राज्'],
+];
+
+var cavarga_S = [
+    ['', '', '', ''],
+    ['', '', '', ''],
 ];
 
 describe('Internal consonants sandhi', function() {
@@ -74,8 +82,11 @@ describe('Internal consonants sandhi', function() {
     describe('no_sandhi_change_of_any_kind', function() {
         utils.test(no_sandhi_change_of_any_kind);
     });
-    describe('cavarga', function() {
-        utils.test(cavarga);
+    describe('cavarga_c', function() {
+        utils.test(cavarga_c);
+    });
+    describe('cavarga_j', function() {
+        utils.test(cavarga_j);
     });
 });
 

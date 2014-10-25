@@ -71,10 +71,13 @@ function removeSuffix(form, flex, cflex, krit) {
     if (isIN(stops, flexStart)) return [stem];
 
     // cavarga - c always reduces to k. But j is more irregular. It usually becomes k, but it can also become ṭ or ṣ
+    var stem_ends_with_k = (hash.stemUlt == 'क');
     var stem_ends_with_kzq = (isIN(Const.kzq, hash.stemUlt));
     var cflex_in_tT = (isIN(Const.t_th, cflex[0]));
-    // FIXME: возможна более точная схема для j NB: !!!
-    if (stem_ends_with_kzq && cflex_in_tT) cavarga(hash);
+    var flex_in_tT = (isIN(Const.t_th, flex[0]));
+    var cflex_starts_with_t_h = (isIN(Const.t_th, cflex[0])); // возможно, есть еще значения, кроме _t, _h, наверняка
+    if (stem_ends_with_k && cflex_in_tT && flex_in_tT) cavarga_c(hash);
+    if (stem_ends_with_kzq && cflex_starts_with_t_h) cavarga_j(hash);
 
 
     // Aspirated Letters:
@@ -187,14 +190,20 @@ function move_aspirate_backward(hash) {
     //ulog(hash);
 }
 
-function cavarga(hash) {
-    var stem_c = hash.stem.replace(/क्$/,'च्');
+function cavarga_c(hash) {
+    var stem = hash.stem.replace(/क्$/,'च्');
+    if (stem == hash.stem) return;
+    hash.stems = [stem];
+}
+
+function cavarga_j(hash) {
     var stem_j = hash.stem.replace(/क्$/,'ज्');
     var stem_z = hash.stem.replace(/ष्$/,'ज्');
     var stem_q = hash.stem.replace(/ष्$/,'ज्');
-    var stems = [stem_c, stem_j, stem_z, stem_q];
+    var stems = [stem_j, stem_z, stem_q];
     stems = _.uniq(_.compact(stems));
-    hash.stems = _.without(stems, hash.stem);
+    stems = _.without(stems, hash.stem);
+    hash.stems = hash.stems.concat(stems);
     //log(hash.stems);
 }
 
