@@ -57,7 +57,7 @@ var cavarga_j = [
 
 var cavarga_S = [
     ['', '', '', ''],
-    ['', '', '', ''],
+    ['द्रक्ष्यसि', 'ष्यसि', 'xxx', 'द्रश्'],
 ];
 
 describe('Internal consonants sandhi', function() {
@@ -87,6 +87,9 @@ describe('Internal consonants sandhi', function() {
     });
     describe('cavarga_j', function() {
         utils.test(cavarga_j);
+    });
+    describe('cavarga_S', function() {
+        utils.test(cavarga_S);
     });
 });
 
