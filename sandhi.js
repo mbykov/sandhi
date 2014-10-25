@@ -80,7 +80,9 @@ function removeSuffix(form, flex, cflex, krit) {
     if (stem_ends_with_kzq && cflex_starts_with_t_h) cavarga_j(hash);
     if (!krit) krit = true;
     var flex_starts_with_z = (flex[0] == 'ष');
+    // In front of the s of a verb suffix, it becomes k.
     if (krit && flex_starts_with_z && stem_ends_with_k) cavarga_S(hash);
+    // TODO: In front of t or th, it becomes ṣ and shifts the letter that follows it to ṭavarga - нет примера
 
     // Aspirated Letters:
     // move_aspirate_forward
@@ -218,6 +220,7 @@ function cavarga_S(hash) {
 // Aspirated letters become unaspirated
 // наоборот, окончание стема без придыхания получает придыхание, кроме gh?
 function removeAspEnd(hash) {
+    if (hash.stems.length > 0) return;
     for (var stem in hash.stems) {
         //s
     }
