@@ -27,6 +27,7 @@ utils.prototype.test = function(tests) {
         var descr = [trnOk, flex, cflex, trnForm].join(' -> ');
         it(descr, function(done) {
             var results = sandhi.del(form, flex, cflex);
+            //log('======== results', results, ok)
             isIN(results, ok).should.equal(true);
             done();
         });

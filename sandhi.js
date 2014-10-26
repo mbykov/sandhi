@@ -92,7 +92,6 @@ function removeSuffix(form, flex, cflex, krit) {
     // retroflex letter, if followed by a tavarga letter, shifts it to ṭavarga    - the same stem
     // ṣ becomes k when followed by s
     var cflex_starts_with_s = (cflex[0] == 'स');
-    log(flex_starts_with_z, cflex_starts_with_s, stem_ends_with_k);
     if (flex_starts_with_z && cflex_starts_with_s && stem_ends_with_k) retroflex_k(hash);
 
     // Aspirated Letters:
@@ -158,8 +157,9 @@ function h_like_gh_t_or_s(hash) {
     // поскольку здесь речь только про _gh, случаи _k, (_c, _j) -> можно преобразовать _к -> _g
     // _g получается из _gh по общему правилу
     var stem = hash.stem.replace(/क्$/, 'ग्');
-    var stems = [stem]; // FIXME: это пока нет hash.stems, иначе цикл не нужен
-    hash.stems = _.map(stems, function(stem) { return stem.replace(/ग्/, 'ह्') });
+    hash.stems.push(stem);
+    //var stems = [stem]; // FIXME: это пока нет hash.stems, иначе цикл не нужен
+    hash.stems = _.map(hash.stems, function(stem) { return stem.replace(/ग्/, 'ह्') });
     //ulog('-after',hash)
 }
 
@@ -239,7 +239,7 @@ function retroflex_k(hash) {
     if (stem == hash.stem) return;
     //hash.stems.push(stem);
     hash.stems = [stem];
-    log(hash.stems);
+    //log(hash.stems);
 }
 
 
