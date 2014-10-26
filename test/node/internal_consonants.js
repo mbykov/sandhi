@@ -60,6 +60,15 @@ var cavarga_S = [
     ['द्रक्ष्यसि', 'ष्यसि', 'xxx', 'द्रश्'],
 ];
 
+var cavarga_s = [
+    ['विष्ट', 'ट', 'त', 'विश्'],
+    ['', '', '', ''],
+];
+
+var retroflex_k = [
+    ['द्वेक्षि', 'षि', 'सि', 'द्वेष्'],
+];
+
 describe('Internal consonants sandhi', function() {
     describe('Aspirated letters become unaspirated', function() {
         //utils.test(test1);
@@ -90,6 +99,12 @@ describe('Internal consonants sandhi', function() {
     });
     describe('cavarga_S', function() {
         utils.test(cavarga_S);
+    });
+    describe('cavarga_s', function() {
+        utils.test(cavarga_s);
+    });
+    describe('retroflex_k', function() {
+        utils.test(retroflex_k);
     });
 });
 

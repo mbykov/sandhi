@@ -82,7 +82,18 @@ function removeSuffix(form, flex, cflex, krit) {
     var flex_starts_with_z = (flex[0] == 'ष');
     // In front of the s of a verb suffix, it becomes k.
     if (krit && flex_starts_with_z && stem_ends_with_k) cavarga_S(hash);
-    // TODO: In front of t or th, it becomes ṣ and shifts the letter that follows it to ṭavarga - нет примера
+    // TODO: In front of t or th, S becomes s and shifts the letter that follows it to ṭavarga
+    var stem_ends_with_s = (hash.stemUlt == 'ष');    // есть еще признак - после ш - tavarga
+    var flex_starts_with_wW = (isIN(Const.wW, flex[0]));
+    if (stem_ends_with_s && cflex_in_tT && flex_starts_with_wW) cavarga_s(hash);
+    // Changing flex _n to _Y (ñ) - the same stem
+
+    //Retroflex letters
+    // retroflex letter, if followed by a tavarga letter, shifts it to ṭavarga    - the same stem
+    // ṣ becomes k when followed by s
+    var cflex_starts_with_s = (cflex[0] == 'स');
+    log(flex_starts_with_z, cflex_starts_with_s, stem_ends_with_k);
+    if (flex_starts_with_z && cflex_starts_with_s && stem_ends_with_k) retroflex_k(hash);
 
     // Aspirated Letters:
     // move_aspirate_forward
@@ -98,7 +109,6 @@ function removeSuffix(form, flex, cflex, krit) {
 
     // h is treated like gh: The h both ends a root that starts with d and is in front of t, th, or dh;
     // если стем начинается на d, а флексия на t_th_dh или _s, то gh -> h
-    var cflex_starts_with_s = (cflex[0] == 'स');
     var cflex_in_tTD = (isIN(Const.t_th_dh, cflex[0]));
     var stem_starts_with_d = (stem[0] == 'द');
     var flex_starts_with_Q = (flex[0] == 'ढ');
@@ -216,6 +226,22 @@ function cavarga_S(hash) {
     if (stem == hash.stem) return;
     hash.stems = [stem];
 }
+
+function cavarga_s(hash) {
+    // overlapped with cavarga_j
+    var stem = hash.stem.replace(/ष्$/,'श्');
+    if (stem == hash.stem) return;
+    hash.stems.push(stem);
+}
+
+function retroflex_k(hash) {
+    var stem = hash.stem.replace(/क्$/,'ष्');
+    if (stem == hash.stem) return;
+    //hash.stems.push(stem);
+    hash.stems = [stem];
+    log(hash.stems);
+}
+
 
 // Aspirated letters become unaspirated
 // наоборот, окончание стема без придыхания получает придыхание, кроме gh?
