@@ -64,9 +64,12 @@ function removeSuffix(form, flex, cflex, krit) {
     // hash.virama = u.virama(stem);
     // hash.second = cflex[0];
 
+    // FIXME: v ? final_m
     // When the second letter letter is a vowel, a nasal, or a semivowel, no sandhi change of any kind will occur
     var flexStart = flex[0];
     var stops = Const.nasals.concat(Const.semivowels).concat(['म', Const.virama]);
+    //log('sem', Const.semivowels)
+    //var stops = Const.nasals.concat(['म', Const.virama]);
     //log('NO sandhi', flexStart, stops, isIN(stops, flexStart), stem);
     if (isIN(stops, flexStart)) return [stem];
 
@@ -93,6 +96,17 @@ function removeSuffix(form, flex, cflex, krit) {
     // ṣ becomes k when followed by s
     var cflex_starts_with_s = (cflex[0] == 'स');
     if (flex_starts_with_z && cflex_starts_with_s && stem_ends_with_k) retroflex_k(hash);
+
+    // final n
+    // n becomes the anusvāra root ends with n && flex starts with s
+    var stem_ends_with_anusvara = (hash.stemUlt == 'ं');
+    var flex_starts_with_s = (flex[0] == 'स');
+    if (stem_ends_with_anusvara && flex_starts_with_s) final_n(hash);
+    // final_m - final m becomes n in front of v
+    var flex_starts_with_v = (flex[0] == 'व');
+    var stem_ends_with_n = (hash.stemUlt == 'न');
+    //log('--', flex_starts_with_v, stem_ends_with_n);
+    if (stem_ends_with_n && flex_starts_with_v) final_m(hash);
 
     // Aspirated Letters:
     // move_aspirate_forward
@@ -147,6 +161,21 @@ function final_s_zero(hash) {
     if (stem == hash.stem) return;
     //ulog(hash);
     hash.stems = [stem];
+}
+
+function final_n(hash) {
+    var stem = hash.stem.replace(/ं$/, 'न्');
+    if (stem == hash.stems) return;
+    hash.stems = [stem];
+    //hash.stems.push(stem);
+}
+
+function final_m(hash) {
+    var stem = hash.stem.replace(/न्$/, 'म्');
+    if (stem == hash.stems) return;
+    hash.stems = [stem];
+    //log(hash.stems)
+    //hash.stems.push(stem);
 }
 
 

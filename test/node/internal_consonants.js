@@ -69,6 +69,17 @@ var retroflex_k = [
     ['द्वेक्षि', 'षि', 'सि', 'द्वेष्'],
 ];
 
+var final_n = [
+    ['जिघांसति', 'सति', 'xxx', 'जिघान्'],
+    ['मीमांसति', 'सति', 'xxx', 'मीमान्'],
+    ['', '', '', ''],
+];
+
+var final_m = [
+    ['जगन्वत्', 'वत्', 'xxx', 'जगम्'],
+    ['', '', '', ''],
+];
+
 describe('Internal consonants sandhi', function() {
     describe('Aspirated letters become unaspirated', function() {
         //utils.test(test1);
@@ -105,6 +116,12 @@ describe('Internal consonants sandhi', function() {
     });
     describe('retroflex_k', function() {
         utils.test(retroflex_k);
+    });
+    describe('final_n', function() {
+        utils.test(final_n);
+    });
+    describe('final_m', function() {
+        utils.test(final_m);
     });
 });
 
