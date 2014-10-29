@@ -160,7 +160,6 @@ function final_s_zero(hash) {
     if (hash.stems.length > 0) return; // move_aspirate_forward stems should not be changed
     var stem = [hash.stem, 'स्'].join('');
     if (stem == hash.stem) return;
-    //ulog(hash);
     hash.stems = [stem];
 }
 
@@ -174,8 +173,8 @@ function final_n(hash) {
 function final_m(hash) {
     var stem = hash.stem.replace(/न्$/, 'म्');
     if (stem == hash.stems) return;
-    hash.stems = [stem];
-    //log(hash.stems)
+    hash.stems = [stem, hash.stem];
+    //ulog(hash.stems);
     //hash.stems.push(stem);
 }
 
