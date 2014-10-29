@@ -141,8 +141,11 @@ function removeSuffix(form, flex, cflex, krit) {
     var stops = Const.unvoiced_unasp;
     if (isIN(stops, hash.stemUlt)) unvoiced2voiced(hash);
 
+    // временная затычка для гласных сандхи, и вообще необходимо дефолтное значение
+    if (hash.stems.length == 0) hash.stems.push(stem);
 
     return hash.stems;
+
 }
 
 function final_s_t(hash) {
