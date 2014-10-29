@@ -23,18 +23,12 @@ function sandhi() {
     return this;
 }
 
+// FIXME: krit вынести наружу
 sandhi.prototype.del = function(form, flex, cflex, prefix, krit) {
     if (prefix) return removePrefix(form, flex, cflex, krit);
     return removeSuffix(form, flex, cflex);
 }
 
-/* 1. нужно добавлять -cflex, т.е. исходную форму во все флексии. Может и неплохо, кстати. Как раз резерв ограничения кол-ва результатов.
-   2. Неясный код. Ладно.
-   3. Последовательность? Как уложить все кейсы?
-*/
-
-// var t_th = ['त', 'थ'];
-// var t_th_dh = ['त', 'थ', 'ध'];
 
 // cflex: -ti, flex: -dhi, etc, i.e. variant
 function removeSuffix(form, flex, cflex, krit) {
@@ -51,10 +45,11 @@ function removeSuffix(form, flex, cflex, krit) {
        == после каждого преобразования запускается весь список фильтров == ?
      */
 
-    stems.push(stem); // default stem
+    //stems.push(stem); // default stem
     var first = cflex[0];
     var clean = stem.replace(/्$/, '');
     var last = clean.slice(-1);
+    var flexStart = flex[0];
 
     var hash = {form: form, stem: stem, flex: flex, cflex: cflex};
     hash.stems = [];
@@ -63,15 +58,6 @@ function removeSuffix(form, flex, cflex, krit) {
     hash.stemUlt = u.ultima(stem);
     // hash.virama = u.virama(stem);
     // hash.second = cflex[0];
-
-    // FIXME: v ? final_m
-    // When the second letter letter is a vowel, a nasal, or a semivowel, no sandhi change of any kind will occur
-    var flexStart = flex[0];
-    var stops = Const.nasals.concat(Const.semivowels).concat(['म', Const.virama]);
-    //log('sem', Const.semivowels)
-    //var stops = Const.nasals.concat(['म', Const.virama]);
-    //log('NO sandhi', flexStart, stops, isIN(stops, flexStart), stem);
-    if (isIN(stops, flexStart)) return [stem];
 
     // cavarga - c always reduces to k. But j is more irregular. It usually becomes k, but it can also become ṭ or ṣ
     var stem_ends_with_k = (hash.stemUlt == 'क');
@@ -141,8 +127,20 @@ function removeSuffix(form, flex, cflex, krit) {
     var flex_starts_with_dD = (isIN(dD, flex[0]));
     if (flex_starts_with_dD) final_s_zero(hash);
 
+    // When the second letter letter is a vowel, a nasal, or a semivowel, no sandhi change of any kind will occur
+    var nosandhicons = Const.nasals.concat(Const.semivowels).concat(['म', Const.virama]);
+    //log('sem', Const.semivowels);
+    var no_results = (hash.stems.length == 0);
+    if (isIN(nosandhicons, flex[0]) && no_results) return [stem];
+
     //if (debug) log('stems', hash.stems);
     if (isIN(Const.asps, first)) removeAspEnd(hash);
+
+    // EXTERNAL SANDHI THAT MATTER
+    // Stops become unvoiced and unaspirated =>
+    var stops = Const.unvoiced_unasp;
+    if (isIN(stops, hash.stemUlt)) unvoiced2voiced(hash);
+
 
     return hash.stems;
 }
@@ -283,7 +281,15 @@ function removeAspEnd(hash) {
     return;
 }
 
-
+function unvoiced2voiced(hash) {
+    var voiced = u.unvoiced2voiced_unasp(hash.stemUlt);
+    if (!voiced) return;
+    var stem = u.replaceEnd(hash.stem, hash.stemUlt, voiced);
+    if (!stem || stem == hash.stem) return;
+    // FIXME: нужно ли добавить неизмененный стем?
+    hash.stems.push(stem);
+    //ulog(hash);
+}
 
 
 sandhi.prototype.join = function(first, last) {
