@@ -23,12 +23,11 @@ function sandhi() {
     return this;
 }
 
-// FIXME: krit вынести наружу
+// TODO: krit вынести наружу
 sandhi.prototype.del = function(form, flex, cflex, prefix, krit) {
     if (prefix) return removePrefix(form, flex, cflex, krit);
     return removeSuffix(form, flex, cflex);
 }
-
 
 // cflex: -ti, flex: -dhi, etc, i.e. variant
 function removeSuffix(form, flex, cflex, krit) {
@@ -39,11 +38,6 @@ function removeSuffix(form, flex, cflex, krit) {
     //log('---------', form, flex, cflex, stem, (stem == form))
     if (stem == form) return [];
 
-    /* здесь тоже - не просто вызов набора функций _t_th_etc_, а вызов в цикле ? Принцип неясен, вот что
-       постоянная величина - hash.second, начало флексии, sign
-       вычисляются - hash.ultima == hash.first
-       == после каждого преобразования запускается весь список фильтров == ?
-     */
 
     //stems.push(stem); // default stem
     var first = cflex[0];
@@ -121,7 +115,7 @@ function removeSuffix(form, flex, cflex, krit) {
     // TODO: s also becomes t in some parts of the reduplicated perfect
     if (!krit) krit = true;
     var stem_ends_with_t = (hash.stemUlt == 'त');
-    var flex_starts_with_s = (flex[0] == 'स');
+    //var flex_starts_with_s = (flex[0] == 'स');
     if (stem_ends_with_t && flex_starts_with_s && krit) final_s_t(hash);
     var dD = ['द', 'ध'];
     var flex_starts_with_dD = (isIN(dD, flex[0]));
@@ -140,12 +134,11 @@ function removeSuffix(form, flex, cflex, krit) {
     // Stops become unvoiced and unaspirated =>
     var stops = Const.unvoiced_unasp;
     if (isIN(stops, hash.stemUlt)) unvoiced2voiced(hash);
-
     // временная затычка для гласных сандхи, и вообще необходимо дефолтное значение
     if (hash.stems.length == 0) hash.stems.push(stem);
 
+    //log('hashstems', hash.stems);
     return hash.stems;
-
 }
 
 function final_s_t(hash) {
@@ -207,15 +200,13 @@ function h_like_gh_other(hash) {
     hash.stems.push(short_stem);
 }
 
-// move_aspirate_forward
 // t- and th-, when they are the second letter, become dh-
 // если флексия t_th стала dh-, то окончание стема аспирируется, d-dh
 function move_aspirate_forward(hash) {
-    var asp = u.unasp2asp(hash.first);
+    var asp = u.unasp2asp(hash.stemUlt);
     if (!asp) return;
-    var stem = u.replaceEnd(hash.stem, hash.first, asp);
-    if (stem == hash.stem) return;
-    if (!stem) return;
+    var stem = u.replaceEnd(hash.stem, hash.stemUlt, asp);
+    if (!stem || stem == hash.stem) return;
     hash.stems.push(stem);
     //ulog(hash);
 }
