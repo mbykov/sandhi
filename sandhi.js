@@ -4,8 +4,9 @@
 
 var _ = require('underscore');
 var util = require('util');
-var slp = require('../utils/slp');
-var shiva = require('../utils/shivasutra');
+//var slp = require('../utils/slp');
+//var shiva = require('../utils/shivasutra');
+var shiva = require('shiva');
 var Const = require('./lib/const');
 var u = require('./lib/utils');
 
@@ -35,9 +36,8 @@ function removeSuffix(form, flex, cflex, krit) {
     // условие - наружу
     var re = new RegExp(flex + '$');
     var stem = form.replace(re, '');
-    //log('---------', form, flex, cflex, stem, (stem == form))
+    //log('---------', form, flex, cflex, stem, (stem == form));
     if (stem == form) return [];
-
 
     //stems.push(stem); // default stem
     var first = cflex[0];
@@ -46,9 +46,9 @@ function removeSuffix(form, flex, cflex, krit) {
     var flexStart = flex[0];
 
     var hash = {form: form, stem: stem, flex: flex, cflex: cflex};
-    hash.stems = [];
+    hash.stems = [stem];
 
-    hash.first = u.ultima(stem); // stemUlt
+    //hash.first = u.ultima(stem); // stemUlt
     hash.stemUlt = u.ultima(stem);
     // hash.virama = u.virama(stem);
     // hash.second = cflex[0];
@@ -137,14 +137,14 @@ function removeSuffix(form, flex, cflex, krit) {
     // временная затычка для гласных сандхи, и вообще необходимо дефолтное значение
     if (hash.stems.length == 0) hash.stems.push(stem);
 
-    //log('hashstems', hash.stems);
+    //log('hash.stems', hash.stems);
     return hash.stems;
 }
 
 function final_s_t(hash) {
     var stem = hash.stem.replace(/त्$/, 'स्');
     if (stem == hash.stem) return;
-    hash.stems = [stem];
+    hash.stems.push(stem);
 }
 
 // depends on move_aspirate_forward
@@ -153,20 +153,21 @@ function final_s_zero(hash) {
     if (hash.stems.length > 0) return; // move_aspirate_forward stems should not be changed
     var stem = [hash.stem, 'स्'].join('');
     if (stem == hash.stem) return;
-    hash.stems = [stem];
+    hash.stems.push(stem);
 }
 
 function final_n(hash) {
     var stem = hash.stem.replace(/ं$/, 'न्');
     if (stem == hash.stems) return;
-    hash.stems = [stem];
+    hash.stems.push(stem);
     //hash.stems.push(stem);
 }
 
 function final_m(hash) {
     var stem = hash.stem.replace(/न्$/, 'म्');
     if (stem == hash.stems) return;
-    hash.stems = [stem, hash.stem];
+    hash.stems.push(stem);
+    //hash.stems = [stem, hash.stem];
     //ulog(hash.stems);
     //hash.stems.push(stem);
 }
@@ -180,8 +181,8 @@ function h_like_gh_t_or_s(hash) {
     // _g получается из _gh по общему правилу
     var stem = hash.stem.replace(/क्$/, 'ग्');
     hash.stems.push(stem);
-    //var stems = [stem]; // FIXME: это пока нет hash.stems, иначе цикл не нужен
-    hash.stems = _.map(hash.stems, function(stem) { return stem.replace(/ग्/, 'ह्') });
+    var stems = _.map(hash.stems, function(stem) { return stem.replace(/ग्/, 'ह्') });
+    hash.stems = hash.stems.concat(stems);
     //ulog('-after',hash)
 }
 
@@ -212,9 +213,9 @@ function move_aspirate_forward(hash) {
 }
 
 function move_aspirate_backward(hash) {
-    var asp = u.unasp2asp(hash.first);
+    var asp = u.unasp2asp(hash.stemUlt);
     if (!asp) return;
-    var stem = u.replaceEnd(hash.stem, hash.first, asp);
+    var stem = u.replaceEnd(hash.stem, hash.stemUlt, asp);
     var stem0 = hash.stem[0];
     var stem0idx = Const.GDB.indexOf(stem0);
     var stem0new = Const.gdb[stem0idx];
@@ -227,7 +228,8 @@ function move_aspirate_backward(hash) {
 function cavarga_c(hash) {
     var stem = hash.stem.replace(/क्$/,'च्');
     if (stem == hash.stem) return;
-    hash.stems = [stem];
+    hash.stems.push(stem);
+    //hash.stems = [stem];
 }
 
 function cavarga_j(hash) {
@@ -244,7 +246,8 @@ function cavarga_j(hash) {
 function cavarga_S(hash) {
     var stem = hash.stem.replace(/क्$/,'श्');
     if (stem == hash.stem) return;
-    hash.stems = [stem];
+    hash.stems.push(stem);
+    //hash.stems = [stem];
 }
 
 function cavarga_s(hash) {
@@ -257,8 +260,8 @@ function cavarga_s(hash) {
 function retroflex_k(hash) {
     var stem = hash.stem.replace(/क्$/,'ष्');
     if (stem == hash.stem) return;
-    //hash.stems.push(stem);
-    hash.stems = [stem];
+    hash.stems.push(stem);
+    //hash.stems = [stem];
     //log(hash.stems);
 }
 

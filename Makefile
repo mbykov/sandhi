@@ -3,7 +3,7 @@ TESTS = test/node/*.js
 REPORTER = spec
 g = _
 
-# build: components morpheus.js
+# build: components #morpheus.js
 # @component build --dev
 
 # components: component.json

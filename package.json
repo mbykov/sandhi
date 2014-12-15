@@ -1,8 +1,8 @@
 {
   "name": "sandhi",
-  "version": "0.0.0",
+  "version": "1.0.1",
   "description": "node sanskrit sandhi module",
-  "main": "index.js",
+  "main": "sandhi.js",
   "scripts": {
     "test": "make"
   },
@@ -13,7 +13,7 @@
   ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/mbykov/morpheus.node.git"
+        "url": "https://github.com/mbykov/sandhi.git"
     },
     "dependencies": {
         "underscore": "*"
