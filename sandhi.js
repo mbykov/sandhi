@@ -6,7 +6,7 @@ var _ = require('underscore');
 var util = require('util');
 //var slp = require('../utils/slp');
 //var shiva = require('../utils/shivasutra');
-var shiva = require('shiva');
+var shiva = require('../shiva');
 var Const = require('./lib/const');
 var u = require('./lib/utils');
 

@@ -1,7 +1,7 @@
 //
 
 var _ = require('underscore');
-var slp = require('../../utils/slp');
+var salita = require('../../salit');
 var sandhi = require('../sandhi');
 var debug = (process.env.debug == 'true') ? true : false;
 
@@ -22,8 +22,8 @@ utils.prototype.test = function(tests) {
         var cflex = test[2];
         var ok = test[3];
         //ok =  'रुन्द्';
-        var trnForm = slp.sk2slp(form);
-        var trnOk = slp.sk2slp(ok);
+        var trnForm = salita.sk2slp(form);
+        var trnOk = salita.sk2slp(ok);
         var descr = [trnOk, flex, cflex, trnForm].join(' -> ');
         it(descr, function(done) {
             var results = sandhi.del(form, flex, cflex);
