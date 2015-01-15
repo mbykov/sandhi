@@ -107,7 +107,7 @@ describe('Internal consonants sandhi', function() {
     describe('final_s OK', function() {
         utils.test(final_s);
     });
-    describe('no_sandhi_change_of_any_kind', function() {
+    describe('no_sandhi_change_of_any_kind OK', function() {
         utils.test(no_sandhi_change_of_any_kind);
     });
     describe('cavarga_c', function() {
@@ -125,10 +125,10 @@ describe('Internal consonants sandhi', function() {
     describe('retroflex_k', function() {
         utils.test(retroflex_k);
     });
-    describe('final_n', function() {
+    describe('final_n OK', function() {
         utils.test(final_n);
     });
-    describe('final_m', function() {
+    describe('final_m OK', function() {
         utils.test(final_m);
     });
 });

@@ -49,7 +49,7 @@ function removeSuffix(form, flex, cflex, krit) {
     var flex0 = flex[0];
 
     var hash = {form: form, stem: stem, flex: flex, cflex: cflex};
-    hash.stems = [stem];
+    // hash.stems = [stem];
 
     //hash.first = u.ultima(stem); // stemUlt
     hash.stemUlt = u.ultima(stem);
@@ -100,34 +100,43 @@ function removeSuffix(form, flex, cflex, krit) {
     var cflex_starts_s = (cflex[0] == 'स');
     // if (flex_starts_z && cflex_starts_s && stem_ends_k) retroflex_k(hash);
 
-    // final n
-    // n becomes the anusvāra root ends with n && flex starts with s
-    var stem_ends_anusvara = (hash.stemUlt == 'ं');
-    var flex_starts_s = (flex[0] == 'स');
-    // if (stem_ends_anusvara && flex_starts_s) final_n(hash);
-    // final_m - final m becomes n in front of v
-    var flex_starts_v = (flex[0] == 'व');
-    var stem_ends_n = (hash.stemUlt == 'न');
-    //log('--', flex_starts_v, stem_ends_n);
-    // if (stem_ends_n && flex_starts_v) final_m(hash);
 
-    // Aspirated Letters:
-    // Aspirated letters become unaspirated
+    // ========================= START =================
+
+    // When the second letter letter is a vowel, a nasal, or a semivowel, no sandhi change of any kind will occur
+    var nosandhi = Const.nasals.concat(Const.semivowels).concat(['म', Const.virama]);
+    //log('sem', Const.semivowels);
+    // var no_results = (hash.stems.length == 0);
+    if (isIN(nosandhi, flex[0])) hash.stems = [stem];
+
+    // EXTERNAL SANDHI THAT MATTER
+    // Stops become unvoiced and unaspirated =>
+    var stops = Const.unvoiced_unasp;
+    // if (isIN(stops, hash.stemUlt)) unvoiced2voiced(hash);
+    // противоречит nosandhi
+
+    // c, ś, and h are converted to k. If the c was a j before this reduction started, it might become ṭ instead.
+    var ultimaK = (hash.stemUlt == 'क');
+    // if (ultimaK) k2cSh(hash);
+    // также противоречит - чему точно?
+
+    // === Aspirated Letters ===:
+    // === Aspirated letters become unaspirated
     if (isIN(Const.asps, first)) aspiratedBecomeUnaspirated(hash);
     // log('aspirated ==================', isIN(Const.asps, first), hash.stem, hash.stemUlt);
 
-    // move_aspirate_forward
+    // === move_aspirate_forward
     // t- and th-, when they are the second letter, become dh-
     // если флексия из tT стала dh-, то окончание стема аспирируется
     var flex_starts_D = (flex[0] == 'ध');
     if (cflex_in_tT && flex_starts_D) move_aspirate_forward(hash);
 
-    // move_aspirate_backward
+    // === move_aspirate_backward
     var stem_ends_VunAC = (isIN(Const.voiced_unasp, hash.stemUlt));
     var flex_starts_BsDv = (isIN(Const.BsDv, flex[0]) || /^ध्व/.test(flex) );
     if (stem_ends_VunAC && flex_starts_BsDv) move_aspirate_backward(hash);
 
-    // h is treated like gh:
+    // === h is treated like gh:
     // если стем начинается на d, а флексия на tTD или _s, то gh -> h
     var cflex_in_tTD = (isIN(Const.tTD, cflex[0]));
     var stem_starts_d = (stem[0] == 'द');
@@ -145,38 +154,36 @@ function removeSuffix(form, flex, cflex, krit) {
         h_like_gh_other(hash);
     }
 
-    // final_s - A final s changes in one of two ways: 1 - s changes to t
+    // === final letters ===
+    // === final_s - A final s changes in one of two ways: 1 - s changes to t
     if (!krit) krit = true;
     var stem_ends_t = (hash.stemUlt == 'त');
+    var flex_starts_s = (flex[0] == 'स');
     if (stem_ends_t && flex_starts_s && krit) final_s_t(hash);
     // s disappears when in front of d or dh.
     var dD = ['द', 'ध'];
     var flex_starts_dD = (isIN(dD, flex[0]));
-    // log('==============', flex_starts_dD, flex[0]);
     if (flex_starts_dD) final_s_zero(hash); // второго признака нет, śās + dhi → śādhi
-
     // TODO: s also becomes t in some parts of the reduplicated perfect
 
-    // When the second letter letter is a vowel, a nasal, or a semivowel, no sandhi change of any kind will occur
-    var nosandhicons = Const.nasals.concat(Const.semivowels).concat(['म', Const.virama]);
-    //log('sem', Const.semivowels);
-    // var no_results = (hash.stems.length == 0);
-    // if (isIN(nosandhicons, flex[0]) && no_results) return [stem];
+    // === final n
+    // n becomes the anusvāra root ends with n && flex starts with s
+    var stem_ends_anusvara = (hash.stemUlt == 'ं');
+    if (stem_ends_anusvara && flex_starts_s) final_n(hash);
 
-    // EXTERNAL SANDHI THAT MATTER
-    // Stops become unvoiced and unaspirated =>
-    var stops = Const.unvoiced_unasp;
-    // if (isIN(stops, hash.stemUlt)) unvoiced2voiced(hash);
-    // log('stops ==================', isIN(stops, hash.stemUlt), hash.stem, hash.stemUlt);
+    // === final_m - final m becomes n in front of v
+    var flex_starts_v = (flex[0] == 'व');
+    var stem_ends_n = (hash.stemUlt == 'न');
+    if (stem_ends_n && flex_starts_v) final_m(hash);
 
-    // c, ś, and h are converted to k. If the c was a j before this reduction started, it might become ṭ instead.
-    var ultimaK = (hash.stemUlt == 'क');
-    // if (ultimaK) k2cSh(hash);
 
+
+
+
+    // =============================== END ============
     // временная затычка для гласных сандхи, и вообще необходимо дефолтное значение
     // if (hash.stems.length == 0) hash.stems.push(stem);
 
-    //log('hash.stems', hash.stems);
     return _.uniq(hash.stems);
 }
 
@@ -187,26 +194,26 @@ function final_s_t(hash) {
     if (debug) log('mod: final_s_t', stem);
 }
 
-// final_s_zero FIXME: that are exceptions?
+// final_s_zero - that are exceptions?
 function final_s_zero(hash) {
     var stem = [hash.stem, 'स्'].join('');
     if (stem == hash.stem) return;
-    hash.stems.push(stem);
+    if (!hash.stems) hash.stems = [];
+    hash.stems.push(stem); // <============= PUSH, or exceptions ?
     if (debug) log('mod: final_s_zero', stem);
 }
 
 function final_n(hash) {
     var stem = hash.stem.replace(/ं$/, 'न्');
     if (stem == hash.stems) return;
-    hash.stems.push(stem);
+    hash.stems = [stem];
     if (debug) log('mod: final_n', stem);
 }
 
 function final_m(hash) {
     var stem = hash.stem.replace(/न्$/, 'म्');
     if (stem == hash.stems) return;
-    hash.stems.push(stem);
-    //hash.stems = [stem, hash.stem];
+    hash.stems = [stem];
     if (debug) log('mod: final_m', stem);
 }
 
@@ -347,9 +354,7 @@ function unvoiced2voiced(hash) {
     if (!voiced) return;
     var stem = u.replaceEnd(hash.stem, hash.stemUlt, voiced);
     if (!stem || stem == hash.stem) return;
-    // FIXME: нужно ли добавить неизмененный стем?
-    hash.stems.push(stem);
-    //ulog(hash);
+    hash.stems = [stem];
 }
 
 function k2cSh(hash) {
