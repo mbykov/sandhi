@@ -20,15 +20,15 @@ utils.prototype.test = function(tests) {
         if (!form) return;
         var flex = test[1];
         var cflex = test[2];
-        var ok = test[3];
-        //ok =  'रुन्द्';
-        var trnForm = salita.sk2slp(form);
-        var trnOk = salita.sk2slp(ok);
-        var descr = [trnOk, flex, cflex, trnForm].join(' -> ');
+        var stem = test[3];
+        //stem =  'रुन्द्';
+        var trnForm = salita.sa2slp(form);
+        var trnStem = salita.sa2slp(stem);
+        var descr = [trnStem, flex, cflex, trnForm].join(' -> ');
         it(descr, function(done) {
             var results = sandhi.del(form, flex, cflex);
-            //log('======== results', results, ok)
-            isIN(results, ok).should.equal(true);
+            if (debug) log('results', results, stem)
+            isIN(results, stem).should.equal(true);
             done();
         });
     });
