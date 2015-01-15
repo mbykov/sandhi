@@ -15,7 +15,6 @@ function utils(str) {
 // cflex - canon-flex, исходная форма флексии, -ti (а не -dhi, -di, etc)
 utils.prototype.test = function(tests) {
     _.each(tests, function(test) {
-        //log('----- test', test);
         var form = test[0];
         if (!form) return;
         var flex = test[1];
@@ -26,6 +25,7 @@ utils.prototype.test = function(tests) {
         var trnStem = salita.sa2slp(stem);
         var descr = [trnStem, flex, cflex, trnForm].join(' -> ');
         it(descr, function(done) {
+            // log('----- test', form, flex, cflex);
             var results = sandhi.del(form, flex, cflex);
             if (debug) log('results', results, stem)
             isIN(results, stem).should.equal(true);

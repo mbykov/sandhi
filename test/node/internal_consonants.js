@@ -3,8 +3,8 @@
 var utils = require('../utils');
 
 // form, flex, canon.flex, stem = result
-var test1 = [
-    ['रुन्द्ध्वे', 'ध्वे', 'रुन्ध्'],
+var aspirated_become_unaspirated = [
+    ['रुन्द्ध्वे', 'ध्वे', 'ध्वे', 'रुन्ध्'],
 ];
 
 var move_aspirate_forward = [
@@ -13,8 +13,13 @@ var move_aspirate_forward = [
     ['दुग्ध', 'ध', 'त', 'दुह्'],
 ];
 
+// h is treated like gh cflex=s
+var h_like_gh_s_z = [
+    ['लेक्षि', 'षि', 'सि', 'लेह्'],
+];
+
 // h is treated like gh
-var test3 = [
+var h_like_gh_t_or_s = [
     ['लेक्षि', 'षि', 'सि', 'लेह्'], // FIXME: si->zi ?
     ['दग्ध', 'ध', 'त', 'दह्'],
     ['दिग्ध्वे', 'ध्वे', 'ध्वे', 'दिह्'],
@@ -82,8 +87,8 @@ var final_m = [
 ];
 
 describe('Internal consonants sandhi', function() {
-    describe('Aspirated letters become unaspirated', function() {
-        //utils.test(test1);
+    describe('aspirated_become_unaspirated OK', function() {
+        utils.test(aspirated_become_unaspirated);
     });
     describe('move_aspirate_backward', function() {
         utils.test(move_aspirate_backward);
@@ -91,8 +96,8 @@ describe('Internal consonants sandhi', function() {
     describe('move_aspirate_forward', function() {
         utils.test(move_aspirate_forward);
     });
-    describe('h_like_gh_t_or_s', function() {
-        utils.test(test3);
+    describe('h_like_gh_s_z OK', function() {
+        utils.test(h_like_gh_s_z);
     });
     describe('h_like_gh_other', function() {
         utils.test(test4);
