@@ -40,13 +40,11 @@ function removeSuffix(form, flex, cflex, krit) {
     // log('---------', form, flex, cflex, stem, (stem == form));
     if (stem == form) return [];
 
-    // if (flex == cflex) return [stem]; // FIXME: это не так, убрать
-
     //stems.push(stem); // default stem
     var first = cflex[0];
     var clean = stem.replace(/्$/, '');
     // log('---------', form, flex, cflex, stem, (stem == clean));
-    if (stem == clean && flex != 'ढ') return [stem]; // нельзя из-за _other - mUQa, lIQa, UQa, т.е можно попробовать все, кроме flex=Qa
+    // if (stem == clean && flex != 'ढ') return [stem]; // нельзя из-за _other - mUQa, lIQa, UQa, т.е можно попробовать все, кроме flex=Qa
     var last = clean.slice(-1);
     var flex0 = flex[0];
 
@@ -114,6 +112,10 @@ function removeSuffix(form, flex, cflex, krit) {
     // if (stem_ends_n && flex_starts_v) final_m(hash);
 
     // Aspirated Letters:
+    // Aspirated letters become unaspirated
+    if (isIN(Const.asps, first)) aspiratedBecomeUnaspirated(hash);
+    // log('aspirated ==================', isIN(Const.asps, first), hash.stem, hash.stemUlt);
+
     // move_aspirate_forward
     // t- and th-, when they are the second letter, become dh-
     // если флексия из tT стала dh-, то окончание стема аспирируется
@@ -123,7 +125,7 @@ function removeSuffix(form, flex, cflex, krit) {
     // move_aspirate_backward
     var stem_ends_VunAC = (isIN(Const.voiced_unasp, hash.stemUlt));
     var flex_starts_BsDv = (isIN(Const.BsDv, flex[0]) || /^ध्व/.test(flex) );
-    // if (stem_ends_VunAC && flex_starts_BsDv) move_aspirate_backward(hash);
+    if (stem_ends_VunAC && flex_starts_BsDv) move_aspirate_backward(hash);
 
     // h is treated like gh:
     // если стем начинается на d, а флексия на tTD или _s, то gh -> h
@@ -135,7 +137,7 @@ function removeSuffix(form, flex, cflex, krit) {
         h_like_gh_s_z(hash);
     }
     // The h both ends a root that starts with d and is in front of t, th, or dh;
-    if (cflex_in_tTD && stem_starts_d && flex_starts_dD) {
+    if (cflex_in_tTD && stem_starts_d && flex_starts_D) {
         h_like_gh_t_D(hash);
     }
     // h_ other, i.e. Q
@@ -143,25 +145,23 @@ function removeSuffix(form, flex, cflex, krit) {
         h_like_gh_other(hash);
     }
 
-    // final_s - s changes to t
-    // TODO: s also becomes t in some parts of the reduplicated perfect
+    // final_s - A final s changes in one of two ways: 1 - s changes to t
     if (!krit) krit = true;
     var stem_ends_t = (hash.stemUlt == 'त');
-    //var flex_starts_s = (flex[0] == 'स');
-    // if (stem_ends_t && flex_starts_s && krit) final_s_t(hash);
+    if (stem_ends_t && flex_starts_s && krit) final_s_t(hash);
+    // s disappears when in front of d or dh.
     var dD = ['द', 'ध'];
     var flex_starts_dD = (isIN(dD, flex[0]));
-    // if (flex_starts_dD) final_s_zero(hash);
+    // log('==============', flex_starts_dD, flex[0]);
+    if (flex_starts_dD) final_s_zero(hash); // второго признака нет, śās + dhi → śādhi
+
+    // TODO: s also becomes t in some parts of the reduplicated perfect
 
     // When the second letter letter is a vowel, a nasal, or a semivowel, no sandhi change of any kind will occur
     var nosandhicons = Const.nasals.concat(Const.semivowels).concat(['म', Const.virama]);
     //log('sem', Const.semivowels);
     // var no_results = (hash.stems.length == 0);
     // if (isIN(nosandhicons, flex[0]) && no_results) return [stem];
-
-    // Aspirated letters become unaspirated
-    if (isIN(Const.asps, first)) aspiratedBecomeUnaspirated(hash);
-    // log('aspirated ==================', isIN(Const.asps, first), hash.stem, hash.stemUlt);
 
     // EXTERNAL SANDHI THAT MATTER
     // Stops become unvoiced and unaspirated =>
@@ -183,13 +183,12 @@ function removeSuffix(form, flex, cflex, krit) {
 function final_s_t(hash) {
     var stem = hash.stem.replace(/त्$/, 'स्');
     if (stem == hash.stem) return;
-    hash.stems.push(stem);
+    hash.stems = [stem];
+    if (debug) log('mod: final_s_t', stem);
 }
 
-// depends on move_aspirate_forward
-// final_s_zero FIXME: исключения? s disappears when in front of _d or _D - не во всех же случаях добавлять s перед _d и _D?
+// final_s_zero FIXME: that are exceptions?
 function final_s_zero(hash) {
-    if (hash.stems.length > 0) return; // move_aspirate_forward stems should not be changed
     var stem = [hash.stem, 'स्'].join('');
     if (stem == hash.stem) return;
     hash.stems.push(stem);
@@ -228,16 +227,6 @@ function h_like_gh_t_D(hash) {
     if (debug) log('mod: h_like_gh_s_z', stem);
 }
 
-// function h_like_gh_t_or_s(hash) {
-//     // поскольку здесь речь только про _gh, случаи _k, (_c, _j) -> можно преобразовать _к -> _g
-//     // _g получается из _gh по общему правилу
-//     var stem = hash.stem.replace(/क्$/, 'ग्');
-//     hash.stems.push(stem);
-//     var stems = _.map(hash.stems, function(stem) { return stem.replace(/ग्/, 'ह्') });
-//     // hash.stems = hash.stems.concat(stems);
-//     if (debug) log('mod: h_like_gh_t_or_s', stem);
-// }
-
 // three things: 1) changes t, th, and dh — if they follow the h — into ḍh, 2) lengthens the vowel in front of it, if possible, 3) disappears
 // укорачиваем гласную перед Q - два варианта, и добавляем h
 function h_like_gh_other(hash) {
@@ -273,7 +262,7 @@ function move_aspirate_backward(hash) {
     var stem0new = Const.gdb[stem0idx];
     stem = stem.replace(stem0, stem0new);
     if (stem == hash.stem) return;
-    hash.stems.push(stem);
+    hash.stems = [stem];
     if (debug) log('mod: move_aspirate_backward', stem);
 }
 

@@ -31,16 +31,16 @@ var h_like_gh_other = [
     ['ऊढ', 'ढ', 'त', 'ऊह्'],
 ];
 
+var move_aspirate_backward = [
+    ['भुद्ध्वम्', 'ध्वम्', 'xxx', 'बुध्'], // अभुद्ध्वम् - w/o affix
+    ['', '', '', ''],
+];
+
 // final_s
 var final_s = [
     ['वत्स्यति', 'स्यति', 'xxx', 'वस्'],
     ['जिघत्सति', 'सति', 'xxx', 'जिघस्'],
     ['शाधि', 'धि', 'xxx', 'शास्'],
-];
-
-var move_aspirate_backward = [
-    ['भुद्ध्वम्', 'ध्वम्', 'xxx', 'बुध्'], // अभुद्ध्वम् - w/o affix
-    ['', '', '', ''],
 ];
 
 var no_sandhi_change_of_any_kind = [
@@ -89,22 +89,22 @@ describe('Internal consonants sandhi', function() {
     describe('aspirated_become_unaspirated OK', function() {
         utils.test(aspirated_become_unaspirated);
     });
-    describe('move_aspirate_backward', function() {
+    describe('move_aspirate_backward OK', function() {
         utils.test(move_aspirate_backward);
     });
-    describe('move_aspirate_forward', function() {
+    describe('move_aspirate_forward OK', function() {
         utils.test(move_aspirate_forward);
     });
     describe('h_like_gh_s_z OK', function() {
         utils.test(h_like_gh_s_z);
     });
     describe('h_like_gh_t_D OK', function() {
-        utils.test(h_like_gh_s_z);
+        utils.test(h_like_gh_t_D);
     });
     describe('h_like_gh_other OK', function() {
         utils.test(h_like_gh_other);
     });
-    describe('final_s', function() {
+    describe('final_s OK', function() {
         utils.test(final_s);
     });
     describe('no_sandhi_change_of_any_kind', function() {
