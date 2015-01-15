@@ -37,7 +37,7 @@ function removeSuffix(form, flex, cflex, krit) {
     // условие - наружу
     var re = new RegExp(flex + '$');
     var stem = form.replace(re, '');
-    //log('---------', form, flex, cflex, stem, (stem == form));
+    // log('---------', form, flex, cflex, stem, (stem == form));
     if (stem == form) return [];
 
     // if (flex == cflex) return [stem]; // FIXME: это не так, убрать
@@ -45,7 +45,8 @@ function removeSuffix(form, flex, cflex, krit) {
     //stems.push(stem); // default stem
     var first = cflex[0];
     var clean = stem.replace(/्$/, '');
-    if (stem == clean) return [stem];
+    // log('---------', form, flex, cflex, stem, (stem == clean));
+    if (stem == clean && flex != 'ढ') return [stem]; // нельзя из-за _other - mUQa, lIQa, UQa, т.е можно попробовать все, кроме flex=Qa
     var last = clean.slice(-1);
     var flex0 = flex[0];
 
@@ -117,27 +118,30 @@ function removeSuffix(form, flex, cflex, krit) {
     // t- and th-, when they are the second letter, become dh-
     // если флексия из tT стала dh-, то окончание стема аспирируется
     var flex_starts_D = (flex[0] == 'ध');
-    // if (cflex_in_tT && flex_starts_D) move_aspirate_forward(hash);
+    if (cflex_in_tT && flex_starts_D) move_aspirate_forward(hash);
 
     // move_aspirate_backward
     var stem_ends_VunAC = (isIN(Const.voiced_unasp, hash.stemUlt));
     var flex_starts_BsDv = (isIN(Const.BsDv, flex[0]) || /^ध्व/.test(flex) );
     // if (stem_ends_VunAC && flex_starts_BsDv) move_aspirate_backward(hash);
 
-    // h is treated like gh: The h both ends a root that starts with d and is in front of t, th, or dh;
+    // h is treated like gh:
     // если стем начинается на d, а флексия на tTD или _s, то gh -> h
     var cflex_in_tTD = (isIN(Const.tTD, cflex[0]));
     var stem_starts_d = (stem[0] == 'द');
     var flex_starts_Q = (flex[0] == 'ढ');
+    // The second letter is s
     if (cflex_starts_s && flex_starts_z && stem_ends_k) {
         h_like_gh_s_z(hash);
     }
-
-    // if (cflex_starts_s || (cflex_in_tTD && stem_starts_d)) {
-    //     h_like_gh_t_or_s(hash);
-    // } else if (cflex_in_tTD && flex_starts_Q) {
-    //     h_like_gh_other(hash);
-    // }
+    // The h both ends a root that starts with d and is in front of t, th, or dh;
+    if (cflex_in_tTD && stem_starts_d && flex_starts_dD) {
+        h_like_gh_t_D(hash);
+    }
+    // h_ other, i.e. Q
+    if (cflex_in_tTD && flex_starts_Q) {
+        h_like_gh_other(hash);
+    }
 
     // final_s - s changes to t
     // TODO: s also becomes t in some parts of the reduplicated perfect
@@ -209,22 +213,30 @@ function final_m(hash) {
 
 // h is treated like gh: The h both ends a root that starts with d and is in front of t, th, or dh;
 // если стем начинается на d, а флексия на tTD, то gh -> h
-// depends_on aspirate_forward
+// after aspirate_forward
 function h_like_gh_s_z(hash) {
     var stem = hash.stem.replace(/क्$/, 'ह्');
+    if (stem == hash.stems) return;
     hash.stems = [stem];
     if (debug) log('mod: h_like_gh_s_z', stem);
 }
 
-function h_like_gh_t_or_s(hash) {
-    // поскольку здесь речь только про _gh, случаи _k, (_c, _j) -> можно преобразовать _к -> _g
-    // _g получается из _gh по общему правилу
-    var stem = hash.stem.replace(/क्$/, 'ग्');
-    hash.stems.push(stem);
-    var stems = _.map(hash.stems, function(stem) { return stem.replace(/ग्/, 'ह्') });
-    // hash.stems = hash.stems.concat(stems);
-    if (debug) log('mod: h_like_gh_t_or_s', stem);
+function h_like_gh_t_D(hash) {
+    var stem = hash.stem.replace(/ग्$/, 'ह्');
+    if (stem == hash.stems) return;
+    hash.stems = [stem];
+    if (debug) log('mod: h_like_gh_s_z', stem);
 }
+
+// function h_like_gh_t_or_s(hash) {
+//     // поскольку здесь речь только про _gh, случаи _k, (_c, _j) -> можно преобразовать _к -> _g
+//     // _g получается из _gh по общему правилу
+//     var stem = hash.stem.replace(/क्$/, 'ग्');
+//     hash.stems.push(stem);
+//     var stems = _.map(hash.stems, function(stem) { return stem.replace(/ग्/, 'ह्') });
+//     // hash.stems = hash.stems.concat(stems);
+//     if (debug) log('mod: h_like_gh_t_or_s', stem);
+// }
 
 // three things: 1) changes t, th, and dh — if they follow the h — into ḍh, 2) lengthens the vowel in front of it, if possible, 3) disappears
 // укорачиваем гласную перед Q - два варианта, и добавляем h
@@ -236,9 +248,8 @@ function h_like_gh_other(hash) {
     var short_stem = hash.stem.replace(re, short_vowel);
     short_stem = [short_stem, 'ह्'].join('');
     var stem = [hash.stem, 'ह्'].join('');
-    if (stem == hash.stem) return;
-    hash.stems.push(stem);
-    hash.stems.push(short_stem);
+    if (stem == hash.stem && short_stem == hash.stem) return;
+    hash.stems = _.uniq([stem, short_stem]);
     if (debug) log('mod: h_like_gh_other', stem);
 }
 

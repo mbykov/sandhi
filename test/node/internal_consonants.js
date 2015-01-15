@@ -19,14 +19,13 @@ var h_like_gh_s_z = [
 ];
 
 // h is treated like gh
-var h_like_gh_t_or_s = [
-    ['लेक्षि', 'षि', 'सि', 'लेह्'], // FIXME: si->zi ?
+var h_like_gh_t_D = [
     ['दग्ध', 'ध', 'त', 'दह्'],
     ['दिग्ध्वे', 'ध्वे', 'ध्वे', 'दिह्'],
 ];
 
 // h_like_gh_other
-var test4 = [
+var h_like_gh_other = [
     ['मूढ', 'ढ', 'त', 'मुह्'],
     ['लीढ', 'ढ', 'त', 'लिह्'],
     ['ऊढ', 'ढ', 'त', 'ऊह्'],
@@ -99,8 +98,11 @@ describe('Internal consonants sandhi', function() {
     describe('h_like_gh_s_z OK', function() {
         utils.test(h_like_gh_s_z);
     });
-    describe('h_like_gh_other', function() {
-        utils.test(test4);
+    describe('h_like_gh_t_D OK', function() {
+        utils.test(h_like_gh_s_z);
+    });
+    describe('h_like_gh_other OK', function() {
+        utils.test(h_like_gh_other);
     });
     describe('final_s', function() {
         utils.test(final_s);
