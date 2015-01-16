@@ -71,15 +71,9 @@ function removeSuffix(form, flex, cflex, krit) {
     // if (isIN(stops, hash.stemUlt)) unvoiced2voiced(hash);
     // противоречит nosandhi
 
-    // c, ś, and h are converted to k. If the c was a j before this reduction started, it might become ṭ instead.
-    var ultimaK = (hash.stemUlt == 'क');
-    // if (ultimaK) k2cSh(hash);
-    // также противоречит - чему точно?
-
     // === Aspirated Letters ===:
     // === Aspirated letters become unaspirated
     if (isIN(Const.asps, first)) aspiratedBecomeUnaspirated(hash);
-    // log('aspirated ==================', isIN(Const.asps, first), hash.stem, hash.stemUlt);
 
     // === move_aspirate_forward
     // t- and th-, when they are the second letter, become dh-
@@ -89,9 +83,10 @@ function removeSuffix(form, flex, cflex, krit) {
     if (cflex_in_tT && flex_starts_D) move_aspirate_forward(hash);
 
     // === move_aspirate_backward
-    var stem_ends_VunAC = (isIN(Const.voiced_unasp, hash.stemUlt));
+    var stem_ends_voiced_unasp = (isIN(Const.voiced_unasp, hash.stemUlt));
+    var stem_starts_asp = (isIN(Const.asps, hash.stem[0]));
     var flex_starts_BsDv = (isIN(Const.BsDv, flex[0]) || /^ध्व/.test(flex) );
-    if (stem_ends_VunAC && flex_starts_BsDv) move_aspirate_backward(hash);
+    if (stem_starts_asp && stem_ends_voiced_unasp && flex_starts_BsDv) move_aspirate_backward(hash);
 
     // === h is treated like gh:
     // если стем начинается на d, а флексия на tTD или _s, то gh -> h
@@ -103,9 +98,9 @@ function removeSuffix(form, flex, cflex, krit) {
     var cflex_starts_s = (cflex[0] == 'स');
     var flex_starts_z = (flex[0] == 'ष');
     var stem_ends_k = (hash.stemUlt == 'क');
-    if (cflex_starts_s && flex_starts_z && stem_ends_k) {
-        h_like_gh_s_z(hash);
-    }
+    // retroflex_k
+    // if (cflex_starts_s && flex_starts_z && stem_ends_k) h_like_gh_s_z(hash);
+
     // The h both ends a root that starts with d and is in front of t, th, or dh;
     if (cflex_in_tTD && stem_starts_d && flex_starts_D) {
         h_like_gh_t_D(hash);
@@ -139,7 +134,9 @@ function removeSuffix(form, flex, cflex, krit) {
 
     // === cavarga ===
     //  c always reduces to k. But j is more irregular. It usually becomes k, but it can also become ṭ or ṣ
+    // c, ś, and h are converted to k. If the c was a j before this reduction started, it might become ṭ instead. // TODO:
     var flex_in_tT = (isIN(Const.tT, flex[0]));
+    // log(stem_ends_k, cflex_in_tT, flex_in_tT);
     if (stem_ends_k && cflex_in_tT && flex_in_tT) cavarga_c(hash);
     // cavarga_c addendum vazwe
     var stem_ends_z = (hash.stemUlt == 'ष');
@@ -160,20 +157,15 @@ function removeSuffix(form, flex, cflex, krit) {
     var flex_starts_y = (flex[0] == 'य');
     if (stem_ends_z && flex_starts_y) cavarga_z_y(hash);
 
-    var stem_ends_kzq = (isIN(Const.kzq, hash.stemUlt));
-    var cflex_starts_tT = (isIN(Const.tT, cflex[0])); // возможно, есть еще значения, кроме _t, _h, наверняка
+    // WTF?
+    // var stem_ends_zq = (isIN(Const.zq, hash.stemUlt)); // == no tests
+    // var cflex_starts_tT = (isIN(Const.tT, cflex[0]));
     // if (stem_ends_kzq && cflex_starts_t_h) cavarga_j(hash);
-
-
 
     // FIXME: krit
     if (!krit) krit = true;
     // In front of the s of a verb suffix, it becomes k
     // if (krit && flex_starts_z && stem_ends_k) cavarga_SW(hash);
-
-    // повторяет cavarga_cw
-    // var stem_ends_s = (hash.stemUlt == 'ष XXX');
-    // if (stem_ends_z && cflex_in_tT && flex_starts_wW) cavarga_shash);
 
     // Changing flex _n to _Y (ñ) - the same stem
 
@@ -181,7 +173,7 @@ function removeSuffix(form, flex, cflex, krit) {
     // retroflex letter, if followed by a tavarga letter, shifts it to ṭavarga - the same stem
 
     // ṣ becomes k when followed by s
-    // if (flex_starts_z && cflex_starts_s && stem_ends_k) retroflex_k(hash);
+    if (flex_starts_z && cflex_starts_s && stem_ends_k) retroflex_k(hash);
 
 
     // =============================== END ============
@@ -222,14 +214,22 @@ function final_m(hash) {
 }
 
 // h is treated like gh: The h both ends a root that starts with d and is in front of t, th, or dh;
-// если стем начинается на d, а флексия на tTD, то gh -> h
-// after aspirate_forward
-function h_like_gh_s_z(hash) {
+// = retroflex_k
+function h_like_gh_s_z__(hash) {
     var stem = hash.stem.replace(/क्$/, 'ह्');
     if (stem == hash.stems) return;
     hash.stems = [stem];
     if (debug) log('mod: h_like_gh_s_z', stem);
 }
+
+function retroflex_k(hash) {
+    var stemh = hash.stem.replace(/क्$/, 'ह्');
+    var stemz = hash.stem.replace(/क्$/,'ष्');
+    if (stemh == hash.stem && stemz == hash.stem) return;
+    hash.stems = [stemh, stemz];
+    if (debug) log('mod: retroflex_k', hash.stems);
+}
+
 
 function h_like_gh_t_D(hash) {
     var stem = hash.stem.replace(/ग्$/, 'ह्');
@@ -278,10 +278,11 @@ function move_aspirate_backward(hash) {
 }
 
 function cavarga_c(hash) {
-    var stem = hash.stem.replace(/क्$/,'च्');
-    if (stem == hash.stem) return;
-    hash.stems = [stem];
-    if (debug) log('mod: cavarga_c', stem);
+    var stemc = hash.stem.replace(/क्$/,'च्');
+    var stemj = hash.stem.replace(/क्$/,'ज्');
+    // if (stemc == hash.stem && stemj == hash.stem ) return;
+    hash.stems = [stemc, stemj];
+    if (debug) log('mod: cavarga_c', hash.stems);
 }
 
 function cavarga_cw(hash) {
@@ -299,13 +300,12 @@ function cavarga_cS(hash) {
 }
 
 function cavarga_j(hash) {
-    var stem_j = hash.stem.replace(/क्$/,'ज्');
     var stem_z = hash.stem.replace(/ष्$/,'ज्');
     var stem_q = hash.stem.replace(/ष्$/,'ज्');
-    var stems = [stem_j, stem_z, stem_q];
+    var stems = [stem_z, stem_q];
     stems = _.uniq(_.compact(stems));
-    stems = _.without(stems, hash.stem);
-    hash.stems = hash.stems.concat(stems);
+    if (stems.length == 0) return;
+    hash.stems = stems;
     if (debug) log('mod: cavarga_j', stems);
 }
 
@@ -326,19 +326,13 @@ function cavarga_z_y(hash) {
 function cavarga_z_t_w(hash) {
     var stemS = hash.stem.replace(/ष्$/,'श्');
     var stemc = hash.stem.replace(/ष्$/,'च्');
+    var stemj = hash.stem.replace(/ष्$/,'ज्');
     // log('STEM', stemS, hash.stem);
     if (stemS == hash.stem) return;
-    hash.stems = [stemS, stemc];
+    hash.stems = [stemS, stemc, stemj];
     if (debug) log('mod: cavarga_z_t_w', hash.stems);
 }
 
-
-function retroflex_k(hash) {
-    var stem = hash.stem.replace(/क्$/,'ष्');
-    if (stem == hash.stem) return;
-    hash.stems = [stem];
-    if (debug) log('mod: retroflex_k', stem);
-}
 
 
 // Aspirated letters become unaspirated
