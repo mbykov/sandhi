@@ -52,7 +52,7 @@ var no_sandhi_change_of_any_kind = [
 
 var cavarga_c = [
     ['वक्ति', 'ति', 'ति', 'वच्'],
-    ['वष्टे', 'टे', 'ते', 'वच्'],
+    ['', '', '', ''],
 ];
 
 var cavarga_j = [
@@ -60,13 +60,14 @@ var cavarga_j = [
     ['राष्ट्र', 'ट्र', 'त्र', 'राज्'],
 ];
 
-var cavarga_S = [
+var cavarga_z_y = [
+    ['द्रक्ष्यसि', 'यसि', 'xxx', 'द्रश्'],
     ['', '', '', ''],
-    ['द्रक्ष्यसि', 'ष्यसि', 'xxx', 'द्रश्'],
 ];
 
-var cavarga_stem_S_cflex_t_flex_w = [
+var cavarga_z_t_w = [
     ['विष्ट', 'ट', 'त', 'विश्'],
+    ['वष्टे', 'टे', 'ते', 'वच्'],
     ['', '', '', ''],
 ];
 
@@ -110,17 +111,17 @@ describe('Internal consonants sandhi', function() {
     describe('no_sandhi_change_of_any_kind OK', function() {
         utils.test(no_sandhi_change_of_any_kind);
     });
-    describe('cavarga_c', function() {
+    describe('cavarga_c OK', function() {
         utils.test(cavarga_c);
     });
     describe('cavarga_j', function() {
         utils.test(cavarga_j);
     });
-    describe('cavarga_S', function() {
-        utils.test(cavarga_S);
+    describe('cavarga_z_y OK', function() {
+        utils.test(cavarga_z_y);
     });
-    describe('cavarga_stem_S_cflex_t_flex_w', function() {
-        utils.test(cavarga_stem_S_cflex_t_flex_w);
+    describe('cavarga_z_t_w OK', function() {
+        utils.test(cavarga_z_t_w);
     });
     describe('retroflex_k', function() {
         utils.test(retroflex_k);

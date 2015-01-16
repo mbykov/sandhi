@@ -23,7 +23,7 @@ utils.prototype.test = function(tests) {
         //stem =  'रुन्द्';
         var trnForm = salita.sa2slp(form);
         var trnStem = salita.sa2slp(stem);
-        var descr = [trnStem, flex, cflex, trnForm].join(' -> ');
+        var descr = [form, trnForm, flex, cflex, trnStem, stem].join(' -> ');
         it(descr, function(done) {
             // log('----- test', form, flex, cflex);
             var results = sandhi.del(form, flex, cflex);

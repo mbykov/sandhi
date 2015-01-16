@@ -56,50 +56,6 @@ function removeSuffix(form, flex, cflex, krit) {
     // hash.virama = u.virama(stem);
     // hash.second = cflex[0];
 
-    // cavarga - c always reduces to k. But j is more irregular. It usually becomes k, but it can also become ṭ or ṣ
-    var stem_ends_k = (hash.stemUlt == 'क');
-    var cflex_in_tT = (isIN(Const.tT, cflex[0]));
-    var flex_in_tT = (isIN(Const.tT, flex[0]));
-    if (stem_ends_k && cflex_in_tT && flex_in_tT) cavarga_c(hash);
-    // cavarga_c addendum vazwe
-    var stem_ends_z = (hash.stemUlt == 'ष');
-    var flex_starts_wW = (isIN(Const.wW, flex[0]));
-    if (stem_ends_z && cflex_in_tT && flex_starts_wW) cavarga_cw(hash);
-
-
-    // A final ś changes in these ways - In front of t or th, it becomes ṣ and shifts the letter that follows it to ṭavarga.
-    // log('M', stem_ends_z, cflex_in_tT, flex_starts_wW, stem, hash.stemUlt);
-    if (stem_ends_z && cflex_in_tT && flex_starts_wW) cavarga_stem_S_cflex_t_flex_w(hash);
-
-    // cavarga_c addendum two_lat_atm_vac - vaSe, vaSvahe, etc
-    var stem_ends_S = (hash.stemUlt == 'श');
-    if (stem_ends_S) cavarga_cS(hash);
-
-    var stem_ends_kzq = (isIN(Const.kzq, hash.stemUlt));
-    var cflex_starts_tT = (isIN(Const.tT, cflex[0])); // возможно, есть еще значения, кроме _t, _h, наверняка
-    // if (stem_ends_kzq && cflex_starts_t_h) cavarga_j(hash);
-
-
-
-    // FIXME: krit
-    if (!krit) krit = true;
-    var flex_starts_z = (flex[0] == 'ष');
-    // In front of the s of a verb suffix, it becomes k
-    // if (krit && flex_starts_z && stem_ends_k) cavarga_SW(hash);
-
-    // повторяет cavarga_cw
-    // var stem_ends_s = (hash.stemUlt == 'ष XXX');
-    // if (stem_ends_z && cflex_in_tT && flex_starts_wW) cavarga_s(hash);
-
-    // Changing flex _n to _Y (ñ) - the same stem
-
-    //Retroflex letters
-    // retroflex letter, if followed by a tavarga letter, shifts it to ṭavarga - the same stem
-
-    // ṣ becomes k when followed by s
-    var cflex_starts_s = (cflex[0] == 'स');
-    // if (flex_starts_z && cflex_starts_s && stem_ends_k) retroflex_k(hash);
-
 
     // ========================= START =================
 
@@ -129,6 +85,7 @@ function removeSuffix(form, flex, cflex, krit) {
     // t- and th-, when they are the second letter, become dh-
     // если флексия из tT стала dh-, то окончание стема аспирируется
     var flex_starts_D = (flex[0] == 'ध');
+    var cflex_in_tT = (isIN(Const.tT, cflex[0]));
     if (cflex_in_tT && flex_starts_D) move_aspirate_forward(hash);
 
     // === move_aspirate_backward
@@ -142,6 +99,10 @@ function removeSuffix(form, flex, cflex, krit) {
     var stem_starts_d = (stem[0] == 'द');
     var flex_starts_Q = (flex[0] == 'ढ');
     // The second letter is s
+
+    var cflex_starts_s = (cflex[0] == 'स');
+    var flex_starts_z = (flex[0] == 'ष');
+    var stem_ends_k = (hash.stemUlt == 'क');
     if (cflex_starts_s && flex_starts_z && stem_ends_k) {
         h_like_gh_s_z(hash);
     }
@@ -176,8 +137,51 @@ function removeSuffix(form, flex, cflex, krit) {
     var stem_ends_n = (hash.stemUlt == 'न');
     if (stem_ends_n && flex_starts_v) final_m(hash);
 
+    // === cavarga ===
+    //  c always reduces to k. But j is more irregular. It usually becomes k, but it can also become ṭ or ṣ
+    var flex_in_tT = (isIN(Const.tT, flex[0]));
+    if (stem_ends_k && cflex_in_tT && flex_in_tT) cavarga_c(hash);
+    // cavarga_c addendum vazwe
+    var stem_ends_z = (hash.stemUlt == 'ष');
+    var flex_starts_wW = (isIN(Const.wW, flex[0]));
+    // if (stem_ends_z && cflex_in_tT && flex_starts_wW) cavarga_cw(hash); // == no tests
+
+    // A final ś changes in these ways - In front of t or th, it becomes ṣ and shifts the letter that follows it to ṭavarga.
+    // log('M', stem_ends_z, cflex_in_tT, flex_starts_wW, stem, hash.stemUlt);
+    if (stem_ends_z && cflex_in_tT && flex_starts_wW) cavarga_z_t_w(hash);
+
+    // cavarga_c addendum two_lat_atm_vac - vaSe, vaSvahe, etc
+    var stem_ends_S = (hash.stemUlt == 'श');
+    // if (stem_ends_S && cflex_in_tT && flex_starts_wW) cavarga_cS(hash); // == no tests
+
+    // cavarga_c addendum two_lat_atm_vac - vaSe, vaSvahe, etc
+
+    // cavarga_c addendum draS - drakzyasi
+    var flex_starts_y = (flex[0] == 'य');
+    if (stem_ends_z && flex_starts_y) cavarga_z_y(hash);
+
+    var stem_ends_kzq = (isIN(Const.kzq, hash.stemUlt));
+    var cflex_starts_tT = (isIN(Const.tT, cflex[0])); // возможно, есть еще значения, кроме _t, _h, наверняка
+    // if (stem_ends_kzq && cflex_starts_t_h) cavarga_j(hash);
 
 
+
+    // FIXME: krit
+    if (!krit) krit = true;
+    // In front of the s of a verb suffix, it becomes k
+    // if (krit && flex_starts_z && stem_ends_k) cavarga_SW(hash);
+
+    // повторяет cavarga_cw
+    // var stem_ends_s = (hash.stemUlt == 'ष XXX');
+    // if (stem_ends_z && cflex_in_tT && flex_starts_wW) cavarga_shash);
+
+    // Changing flex _n to _Y (ñ) - the same stem
+
+    //Retroflex letters
+    // retroflex letter, if followed by a tavarga letter, shifts it to ṭavarga - the same stem
+
+    // ṣ becomes k when followed by s
+    // if (flex_starts_z && cflex_starts_s && stem_ends_k) retroflex_k(hash);
 
 
     // =============================== END ============
@@ -276,22 +280,21 @@ function move_aspirate_backward(hash) {
 function cavarga_c(hash) {
     var stem = hash.stem.replace(/क्$/,'च्');
     if (stem == hash.stem) return;
-    hash.stems.push(stem);
+    hash.stems = [stem];
     if (debug) log('mod: cavarga_c', stem);
 }
 
 function cavarga_cw(hash) {
     var stem = hash.stem.replace(/ष्$/,'च्');
     if (stem == hash.stem) return;
-    hash.stems.push(stem);
+    hash.stems = [stem];
     if (debug) log('mod: cavarga_cw', stem);
 }
 
 function cavarga_cS(hash) {
     var stem = hash.stem.replace(/श$/,'च्').replace(/श्$/,'च्');
     if (stem == hash.stem) return;
-    hash.stems.push(stem);
-    //hash.stems = [stem];
+    hash.stems = [stem];
     if (debug) log('mod: cavarga_cS', stem);
 }
 
@@ -309,32 +312,31 @@ function cavarga_j(hash) {
 function cavarga_SW(hash) {
     var stem = hash.stem.replace(/क्$/,'श्');
     if (stem == hash.stem) return;
-    hash.stems.push(stem);
+    hash.stems = [stem];
     if (debug) log('mod: cavarga_S', stem);
 }
 
-function cavarga_s(hash) {
-    // overlapped with cavarga_j
-    var stem = hash.stem.replace(/ष्$/,'श्');
-    if (stem == hash.stem) return;
-    hash.stems.push(stem);
-    if (debug) log('mod: cavarga_s', stem);
-}
-
-function cavarga_stem_S_cflex_t_flex_w(hash) {
-    var stem = hash.stem.replace(/ष्$/,'श्');
-    log('STEM', stem, hash.stem);
+function cavarga_z_y(hash) {
+    var stem = hash.stem.replace(/क्ष्$/,'श्');
     if (stem == hash.stem) return;
     hash.stems = [stem];
-    if (debug) log('mod: cavarga_s', hash.stems);
+    if (debug) log('mod: cavarga_z_y', stem);
+}
+
+function cavarga_z_t_w(hash) {
+    var stemS = hash.stem.replace(/ष्$/,'श्');
+    var stemc = hash.stem.replace(/ष्$/,'च्');
+    // log('STEM', stemS, hash.stem);
+    if (stemS == hash.stem) return;
+    hash.stems = [stemS, stemc];
+    if (debug) log('mod: cavarga_z_t_w', hash.stems);
 }
 
 
 function retroflex_k(hash) {
     var stem = hash.stem.replace(/क्$/,'ष्');
     if (stem == hash.stem) return;
-    hash.stems.push(stem);
-    //hash.stems = [stem];
+    hash.stems = [stem];
     if (debug) log('mod: retroflex_k', stem);
 }
 
