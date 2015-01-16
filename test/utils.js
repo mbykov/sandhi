@@ -27,7 +27,7 @@ utils.prototype.test = function(tests) {
         it(descr, function(done) {
             // log('----- test', form, flex, cflex);
             var results = sandhi.del(form, flex, cflex);
-            if (debug) log('results', results, stem)
+            if (debug) log('test-results', results, stem)
             isIN(results, stem).should.equal(true);
             done();
         });

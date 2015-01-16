@@ -5,6 +5,8 @@ var utils = require('../utils');
 // form, flex, canon.flex, stem = result
 var aspirated_become_unaspirated = [
     ['रुन्द्ध्वे', 'ध्वे', 'ध्वे', 'रुन्ध्'],
+    ['सिप्तः', 'तः', 'तः', 'सिभ्'],
+    ['', '', '', ''],
 ];
 
 var move_aspirate_forward = [
@@ -16,6 +18,7 @@ var move_aspirate_forward = [
 // h is treated like gh cflex=s
 var h_like_gh_s_z = [
     ['लेक्षि', 'षि', 'सि', 'लेह्'],
+    ['', '', '', ''],
 ];
 
 // h is treated like gh
@@ -29,6 +32,8 @@ var h_like_gh_other = [
     ['मूढ', 'ढ', 'त', 'मुह्'],
     ['लीढ', 'ढ', 'त', 'लिह्'],
     ['ऊढ', 'ढ', 'त', 'ऊह्'],
+    ['स्निग्धः', 'धः', 'त', 'स्निह्'],
+    ['', '', '', ''],
 ];
 
 var move_aspirate_backward = [
@@ -47,6 +52,12 @@ var no_sandhi_change_of_any_kind = [
     ['वचन्ति', 'न्ति', 'xxx', 'वच'], // अन्ति, stem=वच्
     ['वच्मि', 'मि', '', 'वच्'],
     ['वाच्य', 'य', '', 'वाच्'],
+    ['', '', '', ''],
+];
+
+var unvoiced2voiced = [
+    ['हत्तः', 'तः', 'तः', 'हद्'],
+    ['', '', '', ''],
     ['', '', '', ''],
 ];
 
@@ -108,6 +119,9 @@ describe('Internal consonants sandhi', function() {
     });
     describe('final_s OK', function() {
         utils.test(final_s);
+    });
+    describe('unvoiced2voiced OK', function() {
+        utils.test(unvoiced2voiced);
     });
     describe('no_sandhi_change_of_any_kind OK', function() {
         utils.test(no_sandhi_change_of_any_kind);

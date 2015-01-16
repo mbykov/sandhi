@@ -36,7 +36,8 @@ function removeSuffix(form, flex, cflex, krit) {
     var stem = form.replace(re, '');
     if (stem == form) return [];
 
-    //stems.push(stem); // default stem
+    // log('FORM', form, flex, cflex);
+
     var first = cflex[0];
     var clean = stem.replace(/्$/, '');
     // if (stem == clean && flex != 'ढ') return [stem]; // wrong idea
@@ -54,14 +55,11 @@ function removeSuffix(form, flex, cflex, krit) {
 
     // ========================= START =================
 
-    // When the second letter letter is a vowel, a nasal, or a semivowel, no sandhi change of any kind will occur
-    var nosandhi = Const.nasals.concat(Const.semivowels).concat(['म', Const.virama]);
-    if (isIN(nosandhi, flex[0])) hash.stems = [stem];
-
     // EXTERNAL SANDHI THAT MATTER
     // Stops become unvoiced and unaspirated =>
     var stops = Const.unvoiced_unasp;
-    // if (isIN(stops, hash.stemUlt)) unvoiced2voiced(hash);
+    // if (isIN(stops, hash.stemUlt) && !isIN(nosandhi, flex[0])) unvoiced2voiced(hash);
+    if (isIN(stops, hash.stemUlt)) unvoiced2voiced(hash);
     // conflicts with nosandhi
 
     // === Aspirated Letters ===:
@@ -96,7 +94,6 @@ function removeSuffix(form, flex, cflex, krit) {
     if (cflex_in_tTD && stem_starts_d && flex_starts_D) {
         h_like_gh_t_D(hash);
     }
-    // h_ other, i.e. Q
     if (cflex_in_tTD && flex_starts_Q) {
         h_like_gh_other(hash);
     }
@@ -165,6 +162,19 @@ function removeSuffix(form, flex, cflex, krit) {
     if (flex_starts_z && cflex_starts_s && stem_ends_k) retroflex_k(hash);
 
 
+    // When the second letter letter is a vowel, a nasal, or a semivowel, no sandhi change of any kind will occur
+    var nosandhi = Const.nasals.concat(Const.semivowels).concat(['म', Const.virama]);
+    if (isIN(nosandhi, flex[0])) {
+        if (!hash.stems) hash.stems = [];
+        hash.stems.push(stem);
+    }
+
+    for (var key in Const.exceptions) {
+        if (key != hash.stem) continue;
+        var exep = Const.exceptions[key];
+        hash.stems = [exep];
+    }
+
     // =============================== END ============
     // if (hash.stems.length == 0) hash.stems.push(stem); // FIXME: tmp default?
     return _.uniq(hash.stems);
@@ -202,13 +212,14 @@ function final_m(hash) {
 
 // h is treated like gh: The h both ends a root that starts with d and is in front of t, th, or dh;
 // = retroflex_k
-function h_like_gh_s_z__(hash) {
-    var stem = hash.stem.replace(/क्$/, 'ह्');
-    if (stem == hash.stems) return;
-    hash.stems = [stem];
-    if (debug) log('mod: h_like_gh_s_z', stem);
-}
+// function h_like_gh_s_z__(hash) {
+//     var stem = hash.stem.replace(/क्$/, 'ह्');
+//     if (stem == hash.stems) return;
+//     hash.stems = [stem];
+//     if (debug) log('mod: h_like_gh_s_z', stem);
+// }
 
+// flex_starts_z && cflex_starts_s && stem_ends_k
 function retroflex_k(hash) {
     var stemh = hash.stem.replace(/क्$/, 'ह्');
     var stemz = hash.stem.replace(/क्$/,'ष्');
@@ -228,6 +239,8 @@ function h_like_gh_t_D(hash) {
 // three things: 1) changes t, th, and dh — if they follow the h — into ḍh, 2) lengthens the vowel in front of it, if possible, 3) disappears
 function h_like_gh_other(hash) {
     // TODO: four exceptions are snih, muh, nah and dṛh
+    // if (hash.stem == 'स्निग्')
+    // log('==================================', hash);
     var vowel_before_Q = hash.stem.slice(-1);
     var short_vowel = Const.longshort[vowel_before_Q];
     var re = new RegExp(vowel_before_Q + '$');
@@ -309,11 +322,12 @@ function cavarga_z_y(hash) {
 }
 
 function cavarga_z_t_w(hash) {
-    var stemS = hash.stem.replace(/ष्$/,'श्');
-    var stemc = hash.stem.replace(/ष्$/,'च्');
-    var stemj = hash.stem.replace(/ष्$/,'ज्');
-    if (stemS == hash.stem) return;
-    hash.stems = [stemS, stemc, stemj];
+    var stem = hash.stem;
+    var stemS = stem.replace(/ष्$/,'श्');
+    var stemc = stem.replace(/ष्$/,'च्');
+    var stemj = stem.replace(/ष्$/,'ज्');
+    if (stemS == stem) return;
+    hash.stems = [stem, stemS, stemc, stemj];
     if (debug) log('mod: cavarga_z_t_w', hash.stems);
 }
 

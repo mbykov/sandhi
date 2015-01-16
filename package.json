@@ -1,7 +1,7 @@
 {
   "name": "sandhi",
-  "version": "1.0.1",
-  "description": "node sanskrit sandhi module",
+  "version": "0.28.1",
+  "description": "node sanskrit internal sandhi only module",
   "main": "sandhi.js",
   "scripts": {
     "test": "make"
