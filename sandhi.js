@@ -24,8 +24,6 @@ function sandhi() {
     return this;
 }
 
-// TODO: результат должен быть уникальным! - _.uniq(res) !!!
-// TODO: krit вынести наружу
 sandhi.prototype.del = function(form, flex, cflex, prefix, krit) {
     if (prefix) return removePrefix(form, flex, cflex, krit);
     return removeSuffix(form, flex, cflex);
@@ -34,17 +32,14 @@ sandhi.prototype.del = function(form, flex, cflex, prefix, krit) {
 // cflex: -ti, flex: -dhi, etc, i.e. variant
 function removeSuffix(form, flex, cflex, krit) {
     var stems = [];
-    // условие - наружу
     var re = new RegExp(flex + '$');
     var stem = form.replace(re, '');
-    // log('---------', form, flex, cflex, stem, (stem == form));
     if (stem == form) return [];
 
     //stems.push(stem); // default stem
     var first = cflex[0];
     var clean = stem.replace(/्$/, '');
-    // log('---------', form, flex, cflex, stem, (stem == clean));
-    // if (stem == clean && flex != 'ढ') return [stem]; // нельзя из-за _other - mUQa, lIQa, UQa, т.е можно попробовать все, кроме flex=Qa
+    // if (stem == clean && flex != 'ढ') return [stem]; // wrong idea
     var last = clean.slice(-1);
     var flex0 = flex[0];
 
@@ -61,15 +56,13 @@ function removeSuffix(form, flex, cflex, krit) {
 
     // When the second letter letter is a vowel, a nasal, or a semivowel, no sandhi change of any kind will occur
     var nosandhi = Const.nasals.concat(Const.semivowels).concat(['म', Const.virama]);
-    //log('sem', Const.semivowels);
-    // var no_results = (hash.stems.length == 0);
     if (isIN(nosandhi, flex[0])) hash.stems = [stem];
 
     // EXTERNAL SANDHI THAT MATTER
     // Stops become unvoiced and unaspirated =>
     var stops = Const.unvoiced_unasp;
     // if (isIN(stops, hash.stemUlt)) unvoiced2voiced(hash);
-    // противоречит nosandhi
+    // conflicts with nosandhi
 
     // === Aspirated Letters ===:
     // === Aspirated letters become unaspirated
@@ -77,7 +70,6 @@ function removeSuffix(form, flex, cflex, krit) {
 
     // === move_aspirate_forward
     // t- and th-, when they are the second letter, become dh-
-    // если флексия из tT стала dh-, то окончание стема аспирируется
     var flex_starts_D = (flex[0] == 'ध');
     var cflex_in_tT = (isIN(Const.tT, cflex[0]));
     if (cflex_in_tT && flex_starts_D) move_aspirate_forward(hash);
@@ -89,7 +81,6 @@ function removeSuffix(form, flex, cflex, krit) {
     if (stem_starts_asp && stem_ends_voiced_unasp && flex_starts_BsDv) move_aspirate_backward(hash);
 
     // === h is treated like gh:
-    // если стем начинается на d, а флексия на tTD или _s, то gh -> h
     var cflex_in_tTD = (isIN(Const.tTD, cflex[0]));
     var stem_starts_d = (stem[0] == 'द');
     var flex_starts_Q = (flex[0] == 'ढ');
@@ -119,7 +110,7 @@ function removeSuffix(form, flex, cflex, krit) {
     // s disappears when in front of d or dh.
     var dD = ['द', 'ध'];
     var flex_starts_dD = (isIN(dD, flex[0]));
-    if (flex_starts_dD) final_s_zero(hash); // второго признака нет, śās + dhi → śādhi
+    if (flex_starts_dD) final_s_zero(hash); // no second filter, śās + dhi → śādhi
     // TODO: s also becomes t in some parts of the reduplicated perfect
 
     // === final n
@@ -136,7 +127,6 @@ function removeSuffix(form, flex, cflex, krit) {
     //  c always reduces to k. But j is more irregular. It usually becomes k, but it can also become ṭ or ṣ
     // c, ś, and h are converted to k. If the c was a j before this reduction started, it might become ṭ instead. // TODO:
     var flex_in_tT = (isIN(Const.tT, flex[0]));
-    // log(stem_ends_k, cflex_in_tT, flex_in_tT);
     if (stem_ends_k && cflex_in_tT && flex_in_tT) cavarga_c(hash);
     // cavarga_c addendum vazwe
     var stem_ends_z = (hash.stemUlt == 'ष');
@@ -144,7 +134,6 @@ function removeSuffix(form, flex, cflex, krit) {
     // if (stem_ends_z && cflex_in_tT && flex_starts_wW) cavarga_cw(hash); // == no tests
 
     // A final ś changes in these ways - In front of t or th, it becomes ṣ and shifts the letter that follows it to ṭavarga.
-    // log('M', stem_ends_z, cflex_in_tT, flex_starts_wW, stem, hash.stemUlt);
     if (stem_ends_z && cflex_in_tT && flex_starts_wW) cavarga_z_t_w(hash);
 
     // cavarga_c addendum two_lat_atm_vac - vaSe, vaSvahe, etc
@@ -177,9 +166,7 @@ function removeSuffix(form, flex, cflex, krit) {
 
 
     // =============================== END ============
-    // временная затычка для гласных сандхи, и вообще необходимо дефолтное значение
-    // if (hash.stems.length == 0) hash.stems.push(stem);
-
+    // if (hash.stems.length == 0) hash.stems.push(stem); // FIXME: tmp default?
     return _.uniq(hash.stems);
 }
 
@@ -239,7 +226,6 @@ function h_like_gh_t_D(hash) {
 }
 
 // three things: 1) changes t, th, and dh — if they follow the h — into ḍh, 2) lengthens the vowel in front of it, if possible, 3) disappears
-// укорачиваем гласную перед Q - два варианта, и добавляем h
 function h_like_gh_other(hash) {
     // TODO: four exceptions are snih, muh, nah and dṛh
     var vowel_before_Q = hash.stem.slice(-1);
@@ -254,7 +240,6 @@ function h_like_gh_other(hash) {
 }
 
 // t- and th-, when they are the second letter, become dh-
-// если флексия tT стала dh-, то окончание стема аспирируется, d-dh
 function move_aspirate_forward(hash) {
     var asp = u.unasp2asp(hash.stemUlt);
     if (!asp) return;
@@ -327,16 +312,11 @@ function cavarga_z_t_w(hash) {
     var stemS = hash.stem.replace(/ष्$/,'श्');
     var stemc = hash.stem.replace(/ष्$/,'च्');
     var stemj = hash.stem.replace(/ष्$/,'ज्');
-    // log('STEM', stemS, hash.stem);
     if (stemS == hash.stem) return;
     hash.stems = [stemS, stemc, stemj];
     if (debug) log('mod: cavarga_z_t_w', hash.stems);
 }
 
-
-
-// Aspirated letters become unaspirated
-// наоборот, окончание стема без придыхания получает придыхание, кроме gh?
 function aspiratedBecomeUnaspirated(hash) {
     var unasp = u.unasp2asp(hash.stemUlt);
     var stem = u.replaceEnd(hash.stem, hash.stemUlt, unasp);
@@ -356,7 +336,6 @@ function unvoiced2voiced(hash) {
 function k2cSh(hash) {
     var stem;
     var cSh = ['च्', 'श्', 'ह्'];
-    // var cSh = ['च्', 'श्'];
     _.each(cSh, function(lett) {
         stem = hash.stem.replace(/क्$/, lett) ;
         hash.stems.push(stem);
@@ -364,11 +343,11 @@ function k2cSh(hash) {
 }
 
 sandhi.prototype.join = function(first, last) {
-    // склеивание
+    // join
 }
 
 sandhi.prototype.splitAll = function(samasa) {
-    // разбиение на все возможные пары
+    //
 }
 
 function ulog () {
@@ -383,9 +362,5 @@ function ulog () {
 function isIN(arr, item) {
     return (arr.indexOf(item) > -1) ? true : false;
 }
-
-// function reEnd(str) {
-//     return new RegExp(str + '$');
-// }
 
 function log() { console.log.apply(console, arguments) }
