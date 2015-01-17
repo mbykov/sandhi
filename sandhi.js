@@ -34,18 +34,17 @@ function removeSuffix(form, flex, cflex, krit) {
     var stems = [];
     var re = new RegExp(flex + '$');
     var stem = form.replace(re, '');
-    if (stem == form) return [];
+    if (stem == form) return [stem];
+    // log('FORM', stem, (stem == form), form, flex, cflex);
 
-    // log('FORM', form, flex, cflex);
-
-    var first = cflex[0];
+    var cfirst = cflex[0];
     var clean = stem.replace(/्$/, '');
     // if (stem == clean && flex != 'ढ') return [stem]; // wrong idea
     var last = clean.slice(-1);
     var flex0 = flex[0];
 
     var hash = {form: form, stem: stem, flex: flex, cflex: cflex};
-    // hash.stems = [stem];
+    // hash.stems = [stem]; // useless
 
     //hash.first = u.ultima(stem); // stemUlt
     hash.stemUlt = u.ultima(stem);
@@ -58,13 +57,17 @@ function removeSuffix(form, flex, cflex, krit) {
     // EXTERNAL SANDHI THAT MATTER
     // Stops become unvoiced and unaspirated =>
     var stops = Const.unvoiced_unasp;
+    // log(stops)
     // if (isIN(stops, hash.stemUlt) && !isIN(nosandhi, flex[0])) unvoiced2voiced(hash);
     if (isIN(stops, hash.stemUlt)) unvoiced2voiced(hash);
     // conflicts with nosandhi
+    // FIXME: siptaH -> siB
 
     // === Aspirated Letters ===:
     // === Aspirated letters become unaspirated
-    if (isIN(Const.asps, first)) aspiratedBecomeUnaspirated(hash);
+    // FIXME: где второй фильтр?
+    if (isIN(Const.voiced_unasp, hash.stemUlt) && isIN(Const.asps, flex[0])) unaspirated2aspirated(hash);
+    // if (isIN(Const.asps, flex[0])) unaspirated2aspirated(hash);
 
     // === move_aspirate_forward
     // t- and th-, when they are the second letter, become dh-
@@ -100,15 +103,17 @@ function removeSuffix(form, flex, cflex, krit) {
 
     // === final letters ===
     // === final_s - A final s changes in one of two ways: 1 - s changes to t
+    // TODO: The s in vas and ghas becomes t when in front of the s of a verb suffix,
+    // TODO: s also becomes t in some parts of the reduplicated perfect
     if (!krit) krit = true;
     var stem_ends_t = (hash.stemUlt == 'त');
     var flex_starts_s = (flex[0] == 'स');
-    if (stem_ends_t && flex_starts_s && krit) final_s_t(hash);
+    // TODO: only vas and ghas ==> if (stem_ends_t && flex_starts_s && krit) final_s_t(hash);
+
     // s disappears when in front of d or dh.
     var dD = ['द', 'ध'];
     var flex_starts_dD = (isIN(dD, flex[0]));
     if (flex_starts_dD) final_s_zero(hash); // no second filter, śās + dhi → śādhi
-    // TODO: s also becomes t in some parts of the reduplicated perfect
 
     // === final n
     // n becomes the anusvāra root ends with n && flex starts with s
@@ -176,7 +181,7 @@ function removeSuffix(form, flex, cflex, krit) {
     }
 
     // =============================== END ============
-    // if (hash.stems.length == 0) hash.stems.push(stem); // FIXME: tmp default?
+    if (!hash.stems || hash.stems.length == 0) hash.stems = [stem]; // sTA, etc
     return _.uniq(hash.stems);
 }
 
@@ -192,8 +197,7 @@ function final_s_zero(hash) {
     var stem = [hash.stem, 'स्'].join('');
     if (stem == hash.stem) return;
     if (!hash.stems) hash.stems = [];
-    hash.stems.push(stem); // <============= PUSH, or exceptions ?
-    if (debug) log('mod: final_s_zero', stem);
+    hash.stems.push(stem); // <============= PUSH, or exceptions ? no log cause of push
 }
 
 function final_n(hash) {
@@ -331,12 +335,12 @@ function cavarga_z_t_w(hash) {
     if (debug) log('mod: cavarga_z_t_w', hash.stems);
 }
 
-function aspiratedBecomeUnaspirated(hash) {
-    var unasp = u.unasp2asp(hash.stemUlt);
-    var stem = u.replaceEnd(hash.stem, hash.stemUlt, unasp);
+function unaspirated2aspirated(hash) {
+    var asp = u.unasp2asp(hash.stemUlt);
+    var stem = u.replaceEnd(hash.stem, hash.stemUlt, asp);
     if (stem == hash.stem) return;
     hash.stems = [stem];
-    if (debug) log('mod: aspiratedBecomeUnaspirated', stem);
+    if (debug) log('mod: unaspirated2aspirated', hash.stem, hash.stemUlt);
 }
 
 function unvoiced2voiced(hash) {
@@ -344,7 +348,8 @@ function unvoiced2voiced(hash) {
     if (!voiced) return;
     var stem = u.replaceEnd(hash.stem, hash.stemUlt, voiced);
     if (!stem || stem == hash.stem) return;
-    hash.stems = [stem];
+    hash.stems = [stem, hash.stem];
+    if (debug) log('mod: unvoiced2voiced', stem);
 }
 
 function k2cSh(hash) {

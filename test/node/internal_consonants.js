@@ -3,7 +3,7 @@
 var utils = require('../utils');
 
 // form, flex, canon.flex, stem = result
-var aspirated_become_unaspirated = [
+var unaspirated2aspirated = [
     ['रुन्द्ध्वे', 'ध्वे', 'ध्वे', 'रुन्ध्'],
     ['सिप्तः', 'तः', 'तः', 'सिभ्'],
     ['', '', '', ''],
@@ -41,7 +41,7 @@ var move_aspirate_backward = [
     ['', '', '', ''],
 ];
 
-// final_s
+// final_s => vas, Gas exceptions
 var final_s = [
     ['वत्स्यति', 'स्यति', 'xxx', 'वस्'],
     ['जिघत्सति', 'सति', 'xxx', 'जिघस्'],
@@ -56,7 +56,9 @@ var no_sandhi_change_of_any_kind = [
 ];
 
 var unvoiced2voiced = [
-    ['हत्तः', 'तः', 'तः', 'हद्'],
+    ['हत्तः', 'तः', 'xxx', 'हद्'],
+    ['अत्सि', 'सि', 'xxx', 'अद्'],
+    ['अत्थः', 'थः', 'xxx', 'अद्'],
     ['', '', '', ''],
     ['', '', '', ''],
 ];
@@ -99,8 +101,8 @@ var final_m = [
 ];
 
 describe('Internal consonants sandhi', function() {
-    describe('aspirated_become_unaspirated OK', function() {
-        utils.test(aspirated_become_unaspirated);
+    describe('unaspirated2aspirated OK', function() {
+        utils.test(unaspirated2aspirated);
     });
     describe('move_aspirate_backward OK', function() {
         utils.test(move_aspirate_backward);
