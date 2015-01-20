@@ -31,6 +31,9 @@ sandhi.prototype.del = function(form, flex, cflex, prefix, krit) {
 
 // cflex: -ti, flex: -dhi, etc, i.e. variant
 function removeSuffix(form, flex, cflex, krit) {
+
+    // if (form != 'युनक्षि') return; // only for debug
+    // ======================================== FILTER
     var stems = [];
     var re = new RegExp(flex + '$');
     var stem = form.replace(re, '');
@@ -227,8 +230,10 @@ function final_m(hash) {
 function retroflex_k(hash) {
     var stemh = hash.stem.replace(/क्$/, 'ह्');
     var stemz = hash.stem.replace(/क्$/,'ष्');
-    if (stemh == hash.stem && stemz == hash.stem) return;
-    hash.stems = [stemh, stemz];
+    var stemj = hash.stem.replace(/क्$/,'ज्');
+    var stemc = hash.stem.replace(/क्$/,'च्');
+    if (stemh == hash.stem && stemz == hash.stem  && stemj == hash.stem) return;
+    hash.stems = [stemh, stemz, stemj, stemc];
     if (debug) log('mod: retroflex_k', hash.stems);
 }
 
@@ -346,10 +351,12 @@ function unaspirated2aspirated(hash) {
 function unvoiced2voiced(hash) {
     var voiced = u.unvoiced2voiced_unasp(hash.stemUlt);
     if (!voiced) return;
-    var stem = u.replaceEnd(hash.stem, hash.stemUlt, voiced);
-    if (!stem || stem == hash.stem) return;
-    hash.stems = [stem, hash.stem];
-    if (debug) log('mod: unvoiced2voiced', stem);
+    var avoiced = u.unasp2asp(voiced);
+    var vstem = u.replaceEnd(hash.stem, hash.stemUlt, voiced);
+    var avstem = u.replaceEnd(hash.stem, hash.stemUlt, avoiced);
+    if (!vstem || vstem == hash.stem) return;
+    hash.stems = [hash.stem, vstem, avstem];
+    if (debug) log('mod: unvoiced2voiced', hash.stems);
 }
 
 function k2cSh(hash) {
