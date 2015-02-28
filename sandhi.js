@@ -4,9 +4,7 @@
 
 var _ = require('underscore');
 var util = require('util');
-//var slp = require('../utils/slp');
-//var shiva = require('../utils/shivasutra');
-var shiva = require('../shiva');
+var shiva = require('shiva-sutras');
 var Const = require('./lib/const');
 var u = require('./lib/utils');
 
@@ -29,16 +27,13 @@ sandhi.prototype.del = function(form, flex, cflex, prefix, krit) {
     return removeSuffix(form, flex, cflex);
 }
 
-// cflex: -ti, flex: -dhi, etc, i.e. variant
 function removeSuffix(form, flex, cflex, krit) {
 
-    // if (form != 'युनक्षि') return; // only for debug
     // ======================================== FILTER
     var stems = [];
     var re = new RegExp(flex + '$');
     var stem = form.replace(re, '');
     if (stem == form) return [stem];
-    // log('FORM', stem, (stem == form), form, flex, cflex);
 
     var cfirst = cflex[0];
     var clean = stem.replace(/्$/, '');
@@ -47,45 +42,34 @@ function removeSuffix(form, flex, cflex, krit) {
     var flex0 = flex[0];
 
     var hash = {form: form, stem: stem, flex: flex, cflex: cflex};
-    // hash.stems = [stem]; // useless
 
-    //hash.first = u.ultima(stem); // stemUlt
     hash.stemUlt = u.ultima(stem);
-    // hash.virama = u.virama(stem);
-    // hash.second = cflex[0];
-
 
     // ========================= START =================
-
     // EXTERNAL SANDHI THAT MATTER
     // Stops become unvoiced and unaspirated =>
     var stops = Const.unvoiced_unasp;
-    // log(stops)
-    // if (isIN(stops, hash.stemUlt) && !isIN(nosandhi, flex[0])) unvoiced2voiced(hash);
-    if (isIN(stops, hash.stemUlt)) unvoiced2voiced(hash);
-    // conflicts with nosandhi
-    // FIXME: siptaH -> siB
+    // if (u.isIN(stops, hash.stemUlt) && !u.isIN(nosandhi, flex[0])) unvoiced2voiced(hash);
+    if (u.isIN(stops, hash.stemUlt)) unvoiced2voiced(hash);
 
     // === Aspirated Letters ===:
     // === Aspirated letters become unaspirated
-    // FIXME: где второй фильтр?
-    if (isIN(Const.voiced_unasp, hash.stemUlt) && isIN(Const.asps, flex[0])) unaspirated2aspirated(hash);
-    // if (isIN(Const.asps, flex[0])) unaspirated2aspirated(hash);
+    if (u.isIN(Const.voiced_unasp, hash.stemUlt) && u.isIN(Const.asps, flex[0])) unaspirated2aspirated(hash);
 
     // === move_aspirate_forward
     // t- and th-, when they are the second letter, become dh-
     var flex_starts_D = (flex[0] == 'ध');
-    var cflex_in_tT = (isIN(Const.tT, cflex[0]));
+    var cflex_in_tT = (u.isIN(Const.tT, cflex[0]));
     if (cflex_in_tT && flex_starts_D) move_aspirate_forward(hash);
 
     // === move_aspirate_backward
-    var stem_ends_voiced_unasp = (isIN(Const.voiced_unasp, hash.stemUlt));
-    var stem_starts_asp = (isIN(Const.asps, hash.stem[0]));
-    var flex_starts_BsDv = (isIN(Const.BsDv, flex[0]) || /^ध्व/.test(flex) );
+    var stem_ends_voiced_unasp = (u.isIN(Const.voiced_unasp, hash.stemUlt));
+    var stem_starts_asp = (u.isIN(Const.asps, hash.stem[0]));
+    var flex_starts_BsDv = (u.isIN(Const.BsDv, flex[0]) || /^ध्व/.test(flex) );
     if (stem_starts_asp && stem_ends_voiced_unasp && flex_starts_BsDv) move_aspirate_backward(hash);
 
     // === h is treated like gh:
-    var cflex_in_tTD = (isIN(Const.tTD, cflex[0]));
+    var cflex_in_tTD = (u.isIN(Const.tTD, cflex[0]));
     var stem_starts_d = (stem[0] == 'द');
     var flex_starts_Q = (flex[0] == 'ढ');
     // The second letter is s
@@ -115,7 +99,7 @@ function removeSuffix(form, flex, cflex, krit) {
 
     // s disappears when in front of d or dh.
     var dD = ['द', 'ध'];
-    var flex_starts_dD = (isIN(dD, flex[0]));
+    var flex_starts_dD = (u.isIN(dD, flex[0]));
     if (flex_starts_dD) final_s_zero(hash); // no second filter, śās + dhi → śādhi
 
     // === final n
@@ -131,11 +115,11 @@ function removeSuffix(form, flex, cflex, krit) {
     // === cavarga ===
     //  c always reduces to k. But j is more irregular. It usually becomes k, but it can also become ṭ or ṣ
     // c, ś, and h are converted to k. If the c was a j before this reduction started, it might become ṭ instead. // TODO:
-    var flex_in_tT = (isIN(Const.tT, flex[0]));
+    var flex_in_tT = (u.isIN(Const.tT, flex[0]));
     if (stem_ends_k && cflex_in_tT && flex_in_tT) cavarga_c(hash);
     // cavarga_c addendum vazwe
     var stem_ends_z = (hash.stemUlt == 'ष');
-    var flex_starts_wW = (isIN(Const.wW, flex[0]));
+    var flex_starts_wW = (u.isIN(Const.wW, flex[0]));
     // if (stem_ends_z && cflex_in_tT && flex_starts_wW) cavarga_cw(hash); // == no tests
 
     // A final ś changes in these ways - In front of t or th, it becomes ṣ and shifts the letter that follows it to ṭavarga.
@@ -150,11 +134,6 @@ function removeSuffix(form, flex, cflex, krit) {
     // cavarga_c addendum draS - drakzyasi
     var flex_starts_y = (flex[0] == 'य');
     if (stem_ends_z && flex_starts_y) cavarga_z_y(hash);
-
-    // WTF?
-    // var stem_ends_zq = (isIN(Const.zq, hash.stemUlt)); // == no tests
-    // var cflex_starts_tT = (isIN(Const.tT, cflex[0]));
-    // if (stem_ends_kzq && cflex_starts_t_h) cavarga_j(hash);
 
     // FIXME: krit
     if (!krit) krit = true;
@@ -172,7 +151,7 @@ function removeSuffix(form, flex, cflex, krit) {
 
     // When the second letter letter is a vowel, a nasal, or a semivowel, no sandhi change of any kind will occur
     var nosandhi = Const.nasals.concat(Const.semivowels).concat(['म', Const.virama]);
-    if (isIN(nosandhi, flex[0])) {
+    if (u.isIN(nosandhi, flex[0])) {
         if (!hash.stems) hash.stems = [];
         hash.stems.push(stem);
     }
@@ -192,15 +171,14 @@ function final_s_t(hash) {
     var stem = hash.stem.replace(/त्$/, 'स्');
     if (stem == hash.stem) return;
     hash.stems = [stem];
-    if (debug) log('mod: final_s_t', stem);
 }
 
-// final_s_zero - that are exceptions?
+// final_s_zero
 function final_s_zero(hash) {
     var stem = [hash.stem, 'स्'].join('');
     if (stem == hash.stem) return;
     if (!hash.stems) hash.stems = [];
-    hash.stems.push(stem); // <============= PUSH, or exceptions ? no log cause of push
+    hash.stems.push(stem);
 }
 
 function final_n(hash) {
@@ -217,14 +195,6 @@ function final_m(hash) {
     if (debug) log('mod: final_m', stem);
 }
 
-// h is treated like gh: The h both ends a root that starts with d and is in front of t, th, or dh;
-// = retroflex_k
-// function h_like_gh_s_z__(hash) {
-//     var stem = hash.stem.replace(/क्$/, 'ह्');
-//     if (stem == hash.stems) return;
-//     hash.stems = [stem];
-//     if (debug) log('mod: h_like_gh_s_z', stem);
-// }
 
 // flex_starts_z && cflex_starts_s && stem_ends_k
 function retroflex_k(hash) {
@@ -237,7 +207,6 @@ function retroflex_k(hash) {
     if (debug) log('mod: retroflex_k', hash.stems);
 }
 
-
 function h_like_gh_t_D(hash) {
     var stem = hash.stem.replace(/ग्$/, 'ह्');
     if (stem == hash.stems) return;
@@ -248,8 +217,6 @@ function h_like_gh_t_D(hash) {
 // three things: 1) changes t, th, and dh — if they follow the h — into ḍh, 2) lengthens the vowel in front of it, if possible, 3) disappears
 function h_like_gh_other(hash) {
     // TODO: four exceptions are snih, muh, nah and dṛh
-    // if (hash.stem == 'स्निग्')
-    // log('==================================', hash);
     var vowel_before_Q = hash.stem.slice(-1);
     var short_vowel = Const.longshort[vowel_before_Q];
     var re = new RegExp(vowel_before_Q + '$');
@@ -369,24 +336,9 @@ function k2cSh(hash) {
 }
 
 sandhi.prototype.join = function(first, last) {
-    // join
+    // TODO: join
 }
 
 sandhi.prototype.splitAll = function(samasa) {
-    //
+    // TODO:
 }
-
-function ulog () {
-    var obj = arguments[0];
-    if (arguments.length > 1) {
-        console.log('==', arguments[0], '==');
-        var obj = arguments[1];
-    }
-    console.log(util.inspect(obj, showHidden=false, depth=null, colorize=true));
-}
-
-function isIN(arr, item) {
-    return (arr.indexOf(item) > -1) ? true : false;
-}
-
-function log() { console.log.apply(console, arguments) }

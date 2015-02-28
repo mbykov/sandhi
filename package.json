@@ -1,7 +1,7 @@
 {
   "name": "sandhi",
   "version": "0.28.1",
-  "description": "node sanskrit internal sandhi only module",
+  "description": "node.js sanskrit internal sandhi only",
   "main": "sandhi.js",
   "scripts": {
     "test": "make"
@@ -16,7 +16,9 @@
         "url": "https://github.com/mbykov/sandhi.git"
     },
     "dependencies": {
-        "underscore": "*"
+        "underscore": "*",
+        "shiva-sutras": "*",
+        "salita-component": "*"
     },
     "devDependencies": {
         "mocha": "*",

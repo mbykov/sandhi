@@ -1,7 +1,7 @@
 //
 
 var _ = require('underscore');
-var salita = require('../../salit');
+var salita = require('salita-component');
 var sandhi = require('../sandhi');
 var debug = (process.env.debug == 'true') ? true : false;
 
@@ -20,7 +20,6 @@ utils.prototype.test = function(tests) {
         var flex = test[1];
         var cflex = test[2];
         var stem = test[3];
-        //stem =  'रुन्द्';
         var trnForm = salita.sa2slp(form);
         var trnStem = salita.sa2slp(stem);
         var descr = [form, trnForm, flex, cflex, trnStem, stem].join(' -> ');
