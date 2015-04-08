@@ -1,8 +1,8 @@
 {
   "name": "sandhi",
-  "version": "0.28.1",
-    "description": "node.js  module for sanskrit internal only sandhi",
-  "main": "sandhi.js",
+  "version": "1.28.1",
+  "description": "sandhi component for node.js and browser",
+  "main": "index.js",
   "scripts": {
     "test": "make"
   },
@@ -11,19 +11,19 @@
     "sandhi",
     "node.js"
   ],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/mbykov/sandhi.git"
-    },
-    "dependencies": {
-        "underscore": "*",
-        "shiva-sutras": "*",
-        "salita-component": "*"
-    },
-    "devDependencies": {
-        "mocha": "*",
-        "should": "*"
-    },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mbykov/sandhi.git"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+      "duo": "*",
+      "duo-test": "*",
+      "uglify-js": "*",
+      "mocha": "*",
+      "should": "*"
+  },
   "author": "m.bykov",
   "license": "GNU GPL"
 }
