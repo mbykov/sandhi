@@ -16,7 +16,6 @@ utils.prototype.test = function(test) {
     var descr = test.toString();
     it(descr, function() {
         var results = sandhi.add(test);
-        true.should.equal(true);
         isIN(results, compound).should.equal(true);
     });
 }
@@ -27,4 +26,5 @@ function isIN(arr, item) {
     return (arr.indexOf(item) > -1) ? true : false;
 }
 
+// true.should.equal(true);
 function log() { console.log.apply(console, arguments) }

@@ -28,12 +28,25 @@ function sandhi() {
 sandhi.prototype.suffix = function() {
     log('==============SUFFIX');
 }
-sandhi.prototype.add = function(test) {
-    log('==============ADD====', test);
-    return 'योगानुशासन';
+
+sandhi.prototype.add = function(raw) {
+    var test = {first: raw[0], second: raw[1]};
+    test.ends = test.first.slice(-1);
+    test.starts = test.second[0];
+
+    // FIXME: тут или согласная, или лига, или долгая лига
+    var vowelRule = (u.c(Const.consonants, test.ends) && u.c(Const.fullVowels, test.starts)) ? true : false;
+    log('==============ADD====', test, vowelRule);
+
+    return ['योगानुशासन'];
 }
 
+var vRules = {};
 
-//Common name: savarṇadīrgha sandhi
-//7. akaḥ savarṇe dīrghaḥ || 6.1.101 || (vowel sandhi)
+// 7. akaḥ savarṇe dīrghaḥ || 6.1.101 || (vowel sandhi)
+// Common name: savarṇadīrgha sandhi
 // If a simple vowel, short or long, be followed by a similar vowel, short or long, both of them will merge into the similar long vowel
+
+vRules.savarnadirgha = function(test) {
+    if (u.similar(test.ends, test.starts)) return;
+}
