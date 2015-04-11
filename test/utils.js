@@ -15,7 +15,7 @@ utils.prototype.test = function(test) {
     var compound = test.shift();
     var descr = test.toString();
     it(descr, function() {
-        var results = sandhi.add(test);
+        var results = sandhi.add(test[0], test[1]);
         isIN(results, compound).should.equal(true);
     });
 }
