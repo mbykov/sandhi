@@ -50,7 +50,7 @@ sandhi.prototype.add = function(a, b) {
         if (!res) continue;
         results.push(res);
     }
-    log('RR=>', results, (results == 'नेति')); // महामृत - महाामृत
+    log('RR=>', results); // а зачем мне в add - массив? Пока пусть будет
     // results = ['योगानुशासन'];
     return results;
 }
