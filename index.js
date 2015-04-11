@@ -38,7 +38,7 @@ sandhi.prototype.add = function(a, b) {
 
     // FIXME: определение типа теста - vowel - или согласная, или лига, или долгая лига
     var type = (u.c(Const.consonants, test.ends) && u.c(Const.fullVowels, test.starts)) ? true : false;
-    log('=====TEST====', test);
+    log('=====TEST====', JSON.stringify(test));
     test.vtype = true;
     var rules = vowRules;
 
@@ -49,39 +49,7 @@ sandhi.prototype.add = function(a, b) {
         if (!res) continue;
         results.push(res);
     }
-    log('RR=>', results, (results == 'योगानुशासन'));
+    log('RR=>', results, (results == 'महामृत')); // महामृत - महाामृत
     // results = ['योगानुशासन'];
     return results;
 }
-
-// var rules = {}
-
-// // если similar, в первом отбросить гласную, если есть, во втором отбросить гласную, слить с долгой
-
-// /*
-//  *7. akaḥ savarṇe dīrghaḥ || 6.1.101 || (vowel sandhi)
-//  * Common name: savarṇadīrgha sandhi
-//  *  If a simple vowel, short or long, be followed by a similar vowel, short or long, both of them will merge into the similar long vowel
-// */
-// rules.savarnadirgha = {
-//     id: 7,
-//     sutra: '6.1.101',
-//     vowel: true,
-//     method: function(test) {
-//         if (!u.similar(test.ends, test.starts)) return;
-//         // test.first.pop();
-//         test.second.shift();
-//         return test.first.concat(u.dirgha(test.starts), test.second).join('');
-//     }
-// }
-
-// rules.a7 = {
-//     id: 8,
-//     vowel: false,
-//     name: 'savarnadirgha',
-//     method: function(test) {
-//         return;
-//         if (!u.similar(test.ends, test.starts)) return;
-//         return 'kuku';
-//     },
-// }
