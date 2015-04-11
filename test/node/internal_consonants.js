@@ -33,14 +33,30 @@ var s6_1_88 = [
     // ['', '', ''],
 ]
 
+var s6_1_87 = [
+    ['नेति', 'न', 'इति'],
+    // ['', '', ''],
+    // ['', '', ''],
+    // ['', '', ''],
+    // ['', '', ''],
+    // ['', '', ''],
+    // ['', '', ''],
+    // ['', '', ''],
+]
+
 describe('vowel sandhi', function() {
     describe('6.1.101 - simple vowel, followed by a similar vowel', function() {
         s6_1_101.forEach(function(test) {
             utils.test(test);
         });
     });
-    describe('6.1.88 - a or ā is followed by e, o, ai or au', function() {
+    describe('6.1.88 - a or ā is followed by e, o, ai or au - vriddhi', function() {
         s6_1_88.forEach(function(test) {
+            utils.test(test);
+        });
+    });
+    describe('6.1.87 - a or ā is followed by i, ī, u, ū, ṛ, ṝ or ḷ -  guna ', function() {
+        s6_1_87.forEach(function(test) {
             utils.test(test);
         });
     });

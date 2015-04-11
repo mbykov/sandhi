@@ -34,22 +34,23 @@ sandhi.prototype.suffix = function() {
 //
 
 sandhi.prototype.add = function(a, b) {
-    var test = {first: a.split(''), ends: a.slice(-1), second: b.split(''), starts: b[0]};
+    // var test = {first: a.split(''), ends: a.slice(-1), second: b.split(''), starts: b[0]};
 
-    // FIXME: определение типа теста - vowel - или согласная, или лига, или долгая лига
-    var type = (u.c(Const.consonants, test.ends) && u.c(Const.fullVowels, test.starts)) ? true : false;
-    log('=====TEST====', JSON.stringify(test));
-    test.vtype = true;
+    // // FIXME: определение типа теста - vowel - или согласная, или лига, или долгая лига
+    // var type = (u.c(Const.consonants, test.ends) && u.c(Const.fullVowels, test.starts)) ? true : false;
+    // log('=====TEST====', JSON.stringify(test));
+    // test.vtype = true;
     var rules = vowRules;
 
     var results = [];
     for (var name in rules) {
+        var test = {first: a.split(''), ends: a.slice(-1), second: b.split(''), starts: b[0]};
         var rule = rules[name];
         var res = rule.method(test);
         if (!res) continue;
         results.push(res);
     }
-    // log('RR=>', results, (results == 'नरैन्द्रिय')); // महामृत - महाामृत
+    log('RR=>', results, (results == 'नेति')); // महामृत - महाामृत
     // results = ['योगानुशासन'];
     return results;
 }
