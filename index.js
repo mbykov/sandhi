@@ -49,7 +49,7 @@ sandhi.prototype.add = function(a, b) {
         if (!res) continue;
         results.push(res);
     }
-    log('RR=>', results, (results == 'महामृत')); // महामृत - महाामृत
+    // log('RR=>', results, (results == 'नरैन्द्रिय')); // महामृत - महाामृत
     // results = ['योगानुशासन'];
     return results;
 }

@@ -13,6 +13,7 @@ function utils(str) {
 
 utils.prototype.test = function(test) {
     var compound = test.shift();
+    if (!compound) return;
     var descr = test.toString();
     it(descr, function() {
         var results = sandhi.add(test[0], test[1]);
