@@ -76,9 +76,9 @@ var tests = [
     },
     {sutra: '6.1.78',
      descr: 'diphthong followed by any vowel, including itself, changes to its semi-vowel equivalent',
-     only: 'int',
+     only: 'int', // он же не только инт?
      tests: [
-         ['शक्तये', 'शक्ते', 'ए'], //
+         ['शक्तये', 'शक्ते', 'ए'],
          ['', '', ''],
          ['', '', ''],
          ['', '', ''],
@@ -112,6 +112,7 @@ describe('vowel sandhi', function() {
         var descr = [t.sutra, t.descr, t.only].join(' - ');
         describe(descr, function() {
             t.tests.forEach(function(test) {
+                if (t.only) test.push(t.only);
                 utils.test(test);
             });
         });
