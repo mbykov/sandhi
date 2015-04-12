@@ -33,7 +33,7 @@ sandhi.prototype.suffix = function() {
 // здесь я не имею механизма while - для дальнейшей обработки и исходной пары, и добавленной. Где-то встретится случай, где это станет необходимо
 //
 
-sandhi.prototype.add = function(a, b) {
+sandhi.prototype.add = function(test) {
     // var test = {first: a.split(''), ends: a.slice(-1), second: b.split(''), starts: b[0]};
 
     // // FIXME: определение типа теста - vowel - или согласная, или лига, или долгая лига
@@ -42,9 +42,12 @@ sandhi.prototype.add = function(a, b) {
     // test.vtype = true;
     var rules = vowRules;
 
+    var first = test[0];
+    var second = test[1];
+    var only = test[2];
     var results = [];
     for (var name in rules) {
-        var test = {first: a.split(''), ends: a.slice(-1), second: b.split(''), starts: b[0]};
+        var test = {first: first.split(''), ends: first.slice(-1), second: second.split(''), starts: second[0], only: only};
         var rule = rules[name];
         var res = rule.method(test);
         if (!res) continue;

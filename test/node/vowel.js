@@ -74,11 +74,11 @@ var tests = [
          // ['', '', ''],
      ]
     },
-    {sutra: '',
-     descr: '',
-     ext: true,
+    {sutra: '6.1.78',
+     descr: 'diphthong followed by any vowel, including itself, changes to its semi-vowel equivalent',
+     only: 'int',
      tests: [
-         ['', '', ''], //
+         ['शक्तये', 'शक्ते', 'ए'], //
          ['', '', ''],
          ['', '', ''],
          ['', '', ''],
@@ -89,7 +89,7 @@ var tests = [
     },
     {sutra: '',
      descr: '',
-     ext: true,
+     only: 'int',
      tests: [
          ['', '', ''], //
          ['', '', ''],
@@ -97,7 +97,7 @@ var tests = [
     },
     {sutra: '',
      descr: '',
-     ext: true,
+     only: 'int',
      tests: [
          ['', '', ''], //
          ['', '', ''],
@@ -109,7 +109,7 @@ var tests = [
 describe('vowel sandhi', function() {
     tests.forEach(function(t) {
         if (t.sutra == '') return;
-        var descr = [t.sutra, t.descr].join(' - ');
+        var descr = [t.sutra, t.descr, t.only].join(' - ');
         describe(descr, function() {
             t.tests.forEach(function(test) {
                 utils.test(test);
@@ -117,21 +117,3 @@ describe('vowel sandhi', function() {
         });
     });
 });
-
-// describe('vowel sandhi', function() {
-//     describe('6.1.101 - simple vowel, followed by a similar vowel', function() {
-//         s6_1_101.forEach(function(test) {
-//             utils.test(test);
-//         });
-//     });
-//     describe('6.1.88 - a or ā is followed by e, o, ai or au - vriddhi', function() {
-//         s6_1_88.forEach(function(test) {
-//             utils.test(test);
-//         });
-//     });
-//     describe('6.1.87 - a or ā is followed by i, ī, u, ū, ṛ, ṝ or ḷ -  guna ', function() {
-//         s6_1_87.forEach(function(test) {
-//             utils.test(test);
-//         });
-//     });
-// });
