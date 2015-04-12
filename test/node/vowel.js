@@ -71,20 +71,53 @@ var s6_1_87 = [
     // ['', '', ''],
 ]
 
+var tests = [
+    {sutra: '1.6.101',
+     descr: 'simple vowel, followed by a similar vowel',
+     tests: [
+         ['योगानुशासन', 'योग', 'अनुशासन'], // a + a = A
+         ['योगानन्द', 'योग', 'आनन्द'],
+         ['महामृत', 'महा', 'अमृत'],
+         ['महानन्द', 'महा', 'आनन्द'],
+     ]
+    },
+    {sutra: '',
+     descr: '',
+     ext: true,
+     tests: [
+         ['', '', ''], //
+         ['', '', ''],
+     ]
+    },
+
+]
+
 describe('vowel sandhi', function() {
-    describe('6.1.101 - simple vowel, followed by a similar vowel', function() {
-        s6_1_101.forEach(function(test) {
-            utils.test(test);
-        });
-    });
-    describe('6.1.88 - a or ā is followed by e, o, ai or au - vriddhi', function() {
-        s6_1_88.forEach(function(test) {
-            utils.test(test);
-        });
-    });
-    describe('6.1.87 - a or ā is followed by i, ī, u, ū, ṛ, ṝ or ḷ -  guna ', function() {
-        s6_1_87.forEach(function(test) {
-            utils.test(test);
+    tests.forEach(function(t) {
+        if (t.sutra == '') return;
+        var descr = [t.sutra, t.descr].join(' - ');
+        describe(descr, function() {
+            t.tests.forEach(function(test) {
+                utils.test(test);
+            });
         });
     });
 });
+
+// describe('vowel sandhi', function() {
+//     describe('6.1.101 - simple vowel, followed by a similar vowel', function() {
+//         s6_1_101.forEach(function(test) {
+//             utils.test(test);
+//         });
+//     });
+//     describe('6.1.88 - a or ā is followed by e, o, ai or au - vriddhi', function() {
+//         s6_1_88.forEach(function(test) {
+//             utils.test(test);
+//         });
+//     });
+//     describe('6.1.87 - a or ā is followed by i, ī, u, ū, ṛ, ṝ or ḷ -  guna ', function() {
+//         s6_1_87.forEach(function(test) {
+//             utils.test(test);
+//         });
+//     });
+// });
