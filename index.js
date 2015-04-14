@@ -45,7 +45,7 @@ sandhi.prototype.add = function(test) {
     var first = test[0];
     var second = test[1];
     var only = test[2];
-    var results = [];
+    var results = []; // FIXME: пока что накопитель тут не нужен - неск решений дает сам метод при ोपतिोनाल
     for (var name in rules) {
         var test = {first: first.split(''), ends: first.slice(-1), second: second.split(''), starts: second[0], only: only};
         var rule = rules[name];
@@ -54,6 +54,5 @@ sandhi.prototype.add = function(test) {
         results = results.concat(res);
     }
     // log('RESULTS=>', results); // а зачем мне в add - массив? Пока пусть будет
-    // results = ['योगानुशासन'];
     return results;
 }
