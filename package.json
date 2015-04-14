@@ -1,29 +1,30 @@
 {
-  "name": "sandhi",
-  "version": "1.28.1",
-  "description": "sandhi component for node.js and browser",
-  "main": "index.js",
-  "scripts": {
-    "test": "make"
-  },
-  "keywords": [
-    "sanskrit",
-    "sandhi",
-    "node.js"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/mbykov/sandhi.git"
-  },
-  "dependencies": {
-  },
-  "devDependencies": {
-      "duo": "*",
-      "duo-test": "*",
-      "uglify-js": "*",
-      "mocha": "*",
-      "should": "*"
-  },
-  "author": "m.bykov",
-  "license": "GNU GPL"
+    "name": "sandhi",
+    "version": "1.28.1",
+    "description": "sandhi component for node.js and browser",
+    "main": "index.js",
+    "scripts": {
+        "test": "make"
+    },
+    "keywords": [
+        "sanskrit",
+        "sandhi",
+        "node.js"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/mbykov/sandhi.git"
+    },
+    "dependencies": {
+        "shiva-sutras": "*",
+    },
+    "devDependencies": {
+        "duo": "*",
+        "duo-test": "*",
+        "uglify-js": "*",
+        "mocha": "*",
+        "should": "*"
+    },
+    "author": "m.bykov",
+    "license": "GNU GPL"
 }

@@ -4,7 +4,7 @@
 
 var util = require('util');
 // var shiva = require('mbykov/shiva-sutras');
-var shiva = require('shiva-sutras');
+// var shiva = require('shiva-sutras');
 var Const = require('./lib/const');
 var u = require('./lib/utils');
 var vowRules = require('./lib/vowel_rule');
@@ -51,7 +51,7 @@ sandhi.prototype.add = function(test) {
         var rule = rules[name];
         var res = rule.method(test);
         if (!res) continue;
-        results.push(res);
+        results = results.concat(res);
     }
     // log('RESULTS=>', results); // а зачем мне в add - массив? Пока пусть будет
     // results = ['योगानुशासन'];
