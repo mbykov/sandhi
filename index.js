@@ -49,6 +49,7 @@ sandhi.prototype.add = function(test) {
     for (var name in rules) {
         var test = {first: first.split(''), ends: first.slice(-1), second: second.split(''), starts: second[0], only: only};
         var rule = rules[name];
+        // log('ONLY', only, rule.id, rule.sutra);
         var res = rule.method(test);
         if (!res) continue;
         results = results.concat(res);
