@@ -47,7 +47,6 @@ sandhi.prototype.add = function(test) {
     var only = test[2];
     var ends = first.slice(-1);
     var matra = Const.liga2vow[ends] ||ends; // only one vowel
-    log('M', matra)
     var results = []; // FIXME: пока что накопитель тут не нужен - неск решений дает сам метод при ोपतिोनाल
     for (var name in rules) {
         var test = {first: first.split(''), ends: ends, matra: matra, second: second.split(''), starts: second[0], only: only};
