@@ -8,6 +8,7 @@ var util = require('util');
 var Const = require('./lib/const');
 var u = require('./lib/utils');
 var vowRules = require('./lib/vowel_rule');
+var consRules = require('./lib/cons_rules');
 var log = u.log;
 
 var debug = (process.env.debug == 'true') ? true : false;
@@ -40,7 +41,8 @@ sandhi.prototype.add = function(test) {
     // var type = (u.c(Const.consonants, test.ends) && u.c(Const.fullVowels, test.starts)) ? true : false;
     // log('=====TEST====', JSON.stringify(test));
     // test.vtype = true;
-    var rules = vowRules;
+
+    var vow_rules = vowRules;
 
     var first = test[0];
     var second = test[1];
@@ -48,9 +50,9 @@ sandhi.prototype.add = function(test) {
     var ends = first.slice(-1);
     var matra = Const.liga2vow[ends] ||ends; // only one vowel
     var results = []; // FIXME: пока что накопитель тут не нужен - неск решений дает сам метод при ोपतिोनाल
-    for (var name in rules) {
+    for (var name in vow_rules) {
         var test = {first: first.split(''), ends: ends, matra: matra, second: second.split(''), starts: second[0], only: only};
-        var rule = rules[name];
+        var rule = vow_rules[name];
         // log('ONLY', only, rule.id, rule.sutra);
         var res = rule.method(test);
         if (!res) continue;
