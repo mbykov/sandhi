@@ -68,7 +68,9 @@ sandhi.prototype.add = function(test) {
     consRules.forEach(function(rule) {
         test = {first: first, fin: fin,  second: second, beg: second[0], only: only};
         // log('R', test);
-        results = rule.method(test);
+        var res = rule.method(test);
+        if (!res) return;
+        results = results.concat(res);
     });
 
 
