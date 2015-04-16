@@ -2,8 +2,14 @@ var utils = require('../utils');
 
 var tests = [
     {sutra: '8.2.39',
-     descr: 'hard consonant followed by a soft consonant or vowel changes to the third of its class',
+     descr: 'hard consonant followed by a soft consonant or v. changes to the third of its class',
      tests: [
+         ['श्रीमद्भगवद्गीता', 'श्रीमत्', 'भगवद्गीता'],
+         ['वनादागच्छामि', 'वनात्', 'आगच्छामि'],
+         ['', '', ''],
+         ['', '', ''],
+         ['', '', ''],
+         ['', '', ''],
          ['', '', ''],
          ['', '', ''],
      ]

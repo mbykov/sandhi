@@ -35,29 +35,44 @@ sandhi.prototype.suffix = function() {
 //
 
 sandhi.prototype.add = function(test) {
-    // var test = {first: a.split(''), ends: a.slice(-1), second: b.split(''), starts: b[0]};
+    // var test = {first: a.split(''), fin: a.slice(-1), second: b.split(''), beg: b[0]};
 
     // // FIXME: определение типа теста - vowel - или согласная, или лига, или долгая лига
-    // var type = (u.c(Const.consonants, test.ends) && u.c(Const.fullVowels, test.starts)) ? true : false;
+    // var type = (u.c(Const.consonants, test.fin) && u.c(Const.fullVowels, test.beg)) ? true : false;
     // log('=====TEST====', JSON.stringify(test));
     // test.vtype = true;
 
     var vow_rules = vowRules;
 
-    var first = test[0];
-    var second = test[1];
+    var first = test[0].split('');
+    var second = test[1].split('');
     var only = test[2];
-    var ends = first.slice(-1);
-    var matra = Const.liga2vow[ends] ||ends; // only one vowel
+    var fin = first.slice(-1)[0];
+    var matra = Const.liga2vow[fin] ||fin; // only one vowel
     var results = []; // FIXME: пока что накопитель тут не нужен - неск решений дает сам метод при ोपतिोनाल
+
+    var test, res;
     for (var name in vow_rules) {
-        var test = {first: first.split(''), ends: ends, matra: matra, second: second.split(''), starts: second[0], only: only};
+        var test = {first: first, fin: fin, matra: matra, second: second, beg: second[0], only: only};
         var rule = vow_rules[name];
         // log('ONLY', only, rule.id, rule.sutra);
         var res = rule.method(test);
         if (!res) continue;
         results = results.concat(res);
     }
+
+    if (fin == Const.virama) {
+        first.pop();
+        fin = first.slice(-1)[0];
+    }
+    consRules.forEach(function(rule) {
+        test = {first: first, fin: fin,  second: second, beg: second[0], only: only};
+        // log('R', test);
+        results = rule.method(test);
+    });
+
+
+
     // log('RESULTS=>', results); // а зачем мне в add - массив? Пока пусть будет
     return results;
 }
