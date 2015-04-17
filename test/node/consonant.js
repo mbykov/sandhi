@@ -32,10 +32,10 @@ var tests = [
     {sutra: '8.4.40',
      descr: 'Dental + Palatal -> Palatal; Palatal + Dental -> Palatal, except 8.4.44',
      tests: [
-         ['शिवश्च', 'शिवस्', 'च'], // dental + palatal
-         ['याच्ञा', 'याच्', 'ना'], // palatal + dental
-         ['', '', ''],
-         ['', '', ''],
+         // ['शिवश्च', 'शिवस्', 'च'], // dental + palatal
+         // ['याच्ञा', 'याच्', 'ना'], // palatal + dental
+         ['तच्च', 'तत्', 'च'],
+         ['तज्जह', 'तत्', 'जह'],
          ['', '', ''],
          ['', '', ''],
          ['', '', ''],

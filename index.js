@@ -31,10 +31,55 @@ sandhi.prototype.suffix = function() {
     log('==============SUFFIX');
 }
 
-// здесь я не имею механизма while - для дальнейшей обработки и исходной пары, и добавленной. Где-то встретится случай, где это станет необходимо
-//
+/*
+  короче, выходит, нужно все переделать. Сутра должна выполнять только то, что в сутре, и возвращать обе части - с пометкой - сливать-не-сливать
+  либо возвращить optional вариант. Т.е. метод в сутре
+  а на выходе - слить все
+*/
 
-sandhi.prototype.add = function(test) {
+sandhi.prototype.add = function(arr) {
+    var tests = makeTests(arr);
+    // log('RES TESTS', tests);
+    var opt;
+    consRules.every(function(rule) {
+        // log('N:', rule.sutra);
+        tests.forEach(function(test) {
+            // if only bla-bla
+            opt = rule.method(test);
+        });
+        if (opt && opt.length) {
+            tests.push(opt);
+        }
+        return opt;
+    });
+    var results = tests.map(function(test) {
+        if (test.vir) test.first.push(Const.virama);
+        return test.first.concat(test.second).join('');
+    });
+    // log('R', results);
+    log('R=>', results.map(function(r) { return JSON.stringify(r.split(''))}));
+    return results;
+}
+
+function makeTests(test) {
+    var first = test[0].split('');
+    var second = test[1].split('');
+    var fin = first.slice(-1)[0];
+    var beg = second[0];
+    var vir = false;
+    if (fin == Const.virama) {
+        first.pop();
+        fin = first.slice(-1)[0];
+        vir = true;
+    }
+    return [{first: first, fin: fin, vir: vir, second: second, beg: beg}];
+}
+
+function p(sutra, word) {
+    console.log('=>', sutra, JSON.stringify(word.split('')));
+}
+
+sandhi.prototype.add_ = function(test) {
     // var test = {first: a.split(''), fin: a.slice(-1), second: b.split(''), beg: b[0]};
 
     // // FIXME: определение типа теста - vowel - или согласная, или лига, или долгая лига
@@ -42,39 +87,54 @@ sandhi.prototype.add = function(test) {
     // log('=====TEST====', JSON.stringify(test));
     // test.vtype = true;
 
-    var vow_rules = vowRules;
+    // var vow_rules = vowRules;
 
-    var first = test[0].split('');
-    var second = test[1].split('');
-    var only = test[2];
-    var fin = first.slice(-1)[0];
-    var matra = Const.liga2vow[fin] ||fin; // only one vowel
-    var results = []; // FIXME: пока что накопитель тут не нужен - неск решений дает сам метод при ोपतिोनाल
+    // var first = test[0].split('');
+    // var second = test[1].split('');
+    // var only = test[2];
+    // var fin = first.slice(-1)[0];
+    // var matra = Const.liga2vow[fin] ||fin; // only one vowel
+    // var results = []; // FIXME: пока что накопитель тут не нужен - неск решений дает сам метод при ोपतिोनाल
+
+    // var test, res;
+    // for (var name in vow_rules) {
+    //     var t = {first: first, fin: fin, matra: matra, second: second, beg: second[0], only: only};
+    //     var rule = vow_rules[name];
+    //     // log('ONLY', only, rule.id, rule.sutra);
+    //     var res = rule.method(t);
+    //     if (!res) continue;
+    //     results = results.concat(res);
+    // }
+
+    /*
+      короче, выходит, нужно все переделать. Сутра должна выполнять только то, что в сутре, и возвращать обе части - с пометкой - сливать-не-сливать
+      либо возвращить optional вариант. Т.е. метод в сутре
+      а на выходе - слить все
+     */
 
     var test, res;
-    for (var name in vow_rules) {
-        var test = {first: first, fin: fin, matra: matra, second: second, beg: second[0], only: only};
-        var rule = vow_rules[name];
-        // log('ONLY', only, rule.id, rule.sutra);
-        var res = rule.method(test);
-        if (!res) continue;
-        results = results.concat(res);
-    }
+    var first, second, only, fin, beg, matra, vir;
 
+    first = test[0].split('');
+    second = test[1].split('');
+    only = test[2];
+    fin = first.slice(-1)[0];
     if (fin == Const.virama) {
         first.pop();
         fin = first.slice(-1)[0];
+        vir: true;
     }
+
     consRules.forEach(function(rule) {
-        test = {first: first, fin: fin,  second: second, beg: second[0], only: only};
-        // log('R', test);
-        var res = rule.method(test);
-        if (!res) return;
-        results = results.concat(res);
+        var t = {first: first, fin: fin,  second: second, beg: second[0], only: only, vir: vir};
+        // log('R test', t);
+        var res = rule.method(t);
+        // log('r=>', res);
+        // тут стратегии - либо накопитель, либо тест затирает предыдущий
+        if (res) results = [res];
+        // if (!res) return;
+        // results = results.concat(res);
     });
-
-
-
-    // log('RESULTS=>', results); // а зачем мне в add - массив? Пока пусть будет
+    // log('R=>', results.map(function(r) { return r.split('')}));
     return results;
 }
