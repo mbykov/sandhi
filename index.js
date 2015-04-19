@@ -56,8 +56,7 @@ sandhi.prototype.add = function(arr) {
         if (test.vir) test.first.push(Const.virama);
         return test.first.concat(test.second).join('');
     });
-    // log('R', results);
-    log('R=>', results.map(function(r) { return JSON.stringify(r.split(''))}));
+    // log('R=>', results.map(function(r) { return JSON.stringify(r.split(''))}));
     return results;
 }
 
@@ -75,8 +74,8 @@ function makeTests(test) {
     return [{first: first, fin: fin, vir: vir, second: second, beg: beg}];
 }
 
-function p(sutra, word) {
-    console.log('=>', sutra, JSON.stringify(word.split('')));
+function p(sutra, test) {
+    console.log('=>', sutra, JSON.stringify(test));
 }
 
 sandhi.prototype.add_ = function(test) {
