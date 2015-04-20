@@ -45,6 +45,7 @@ sandhi.prototype.add = function(arr) {
         // log('N:', rule.sutra);
         tests.forEach(function(test) {
             // if only bla-bla
+            if (u.c(test.sutras, rule.sutra)) return;
             opt = rule.method(test);
         });
         if (opt && opt.length) {
@@ -52,6 +53,12 @@ sandhi.prototype.add = function(arr) {
         }
         return opt;
     });
+    // второе слово на гласную - проверить: FIXME:
+    // if (u.c(Const.allvowels, test.beg)) {
+    //     second.shift();
+    //     liga = Const.vow2liga[test.beg];
+    //     second.unshift(liga);
+    // }
     var results = tests.map(function(test) {
         if (test.vir) test.first.push(Const.virama);
         return test.first.concat(test.second).join('');
@@ -71,7 +78,7 @@ function makeTests(test) {
         fin = first.slice(-1)[0];
         vir = true;
     }
-    return [{first: first, fin: fin, vir: vir, second: second, beg: beg}];
+    return [{first: first, fin: fin, vir: vir, second: second, beg: beg, sutras: []}];
 }
 
 function p(sutra, test) {

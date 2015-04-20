@@ -30,13 +30,22 @@ var tests = [
     },
 
     {sutra: '8.4.40',
-     descr: 'Dental + Palatal / Palatal (ex S) + Dental -> Palatal, except - 8.4.44',
+     descr: 'Dental + Palatal / Palatal (ex S) + Dental -> Palatal',
      tests: [
          ['शिवश्च', 'शिवस्', 'च'], // dental + palatal
-         ['याच्ञा', 'याच्', 'ना'], // palatal + dental
          ['तच्च', 'तत्', 'च'],
-         ['तज्जह', 'तत्', 'जह'], // здесь после 4.40 нужно применить 2.39. Стало быть, порядок обратный? Или прямой, но тут - "уточнение" 2.39
+         ['तज्जह', 'तत्', 'जह'], // 8.4.40 -> 4.4.53
          ['', '', ''],
+         ['', '', ''],
+         ['', '', ''],
+         ['', '', ''],
+     ]
+    },
+
+    {sutra: '8.4.44',
+     descr: 'Dental + Palatal / Palatal (ex S) + Dental -> Palatal, except - 8.4.44',
+     tests: [
+         ['याच्ञा', 'याच्', 'ना'], // palatal + dental
          ['', '', ''],
          ['', '', ''],
          ['', '', ''],
