@@ -53,13 +53,13 @@ sandhi.prototype.add = function(arr) {
         }
         return opt;
     });
-    // второе слово на гласную - проверить: FIXME:
-    // if (u.c(Const.allvowels, test.beg)) {
-    //     second.shift();
-    //     liga = Const.vow2liga[test.beg];
-    //     second.unshift(liga);
-    // }
     var results = tests.map(function(test) {
+        if (u.c(Const.allvowels, test.beg)) {
+            test.second.shift();
+            liga = Const.vow2liga[test.beg];
+            test.second.unshift(liga); //    // नगरादागच्छति     - "न","ग","र","ा","त","्","ा","ग","च","्","छ","त","ि"]
+            test.vir = false;
+        }
         if (test.vir) test.first.push(Const.virama);
         return test.first.concat(test.second).join('');
     });
