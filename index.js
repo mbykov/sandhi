@@ -78,7 +78,7 @@ function makeTests(test) {
         fin = first.slice(-1)[0];
         vir = true;
     }
-    return [{first: first, fin: fin, vir: vir, second: second, beg: beg, sutras: []}];
+    return [{a: test[0], first: first, fin: fin, vir: vir, b: test[1], second: second, beg: beg, sutras: []}];
 }
 
 function p(sutra, test) {
