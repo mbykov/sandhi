@@ -84,9 +84,22 @@ var tests = [
      ]
     },
 
+    {sutra: '8.4.45',
+     descr: ' (class consonant) followed by (nasal) optionally changes to the (nasal of class)',
+     only: 'ext',
+     tests: [
+         ['एतन्मुरारि', 'एतद्', 'मुरारि'], // opt
+         ['एतद्मुरारि', 'एतद्', 'मुरारि'],
+         ['षण्मासा', 'षट्', 'मासा'],
+         ['षड्मासा', 'षट्', 'मासा'], // то же самое, 3-й класс - какая сутра ???
+         ['', '', ''],
+         ['', '', ''],
+     ]
+    },
+
     {sutra: '',
      descr: '',
-     only: 'int',
+     only: 'ext',
      tests: [
          ['', '', ''],
          ['', '', ''],
