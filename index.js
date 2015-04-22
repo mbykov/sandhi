@@ -44,8 +44,17 @@ sandhi.prototype.add = function(arr) {
         var test = makeTests(arr);
         results = rule.method(test);
     });
-
-    log('R=>', results);
+    results = results.map(function(test) {
+        if (u.c(Const.allvowels, test.beg)) {
+            test.second.shift();
+            liga = Const.vow2liga[test.beg];
+            test.second.unshift(liga);
+            test.vir = false;
+        }
+        if (test.vir) test.first.push(Const.virama);
+        var conc = (test.conc) ? '' : ' ';
+        return [test.first.join(''), test.second.join('')].join(conc);
+    });
     // log('R=>', results.map(function(r) { return JSON.stringify(r.split(''))}));
     return results;
 }
@@ -61,7 +70,7 @@ function makeTests(arr) {
         fin = first.slice(-1)[0];
         vir = true;
     }
-    return {first: first, fin: fin, vir: vir, second: second, beg: beg};
+    return {first: first, fin: fin, vir: vir, second: second, beg: beg, conc: true};
 }
 
 function p(sutra, test) {
