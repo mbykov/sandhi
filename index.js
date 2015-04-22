@@ -40,9 +40,10 @@ sandhi.prototype.suffix = function() {
 
 sandhi.prototype.add = function(arr) {
     var results = [];
-    consRules.every(function(rule) {
+    consRules.forEach(function(rule) {
         var test = makeTests(arr);
-        results = rule.method(test);
+        var res = rule.method(test);
+        if (res) results = res;
     });
     results = results.map(function(test) {
         if (u.c(Const.allvowels, test.beg)) {
