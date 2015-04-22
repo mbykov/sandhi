@@ -3,6 +3,7 @@
 */
 
 var util = require('util');
+// var typeOf = require('typeof');
 // var shiva = require('mbykov/shiva-sutras');
 // var shiva = require('shiva-sutras');
 var Const = require('./lib/const');
@@ -33,43 +34,25 @@ sandhi.prototype.suffix = function() {
 
 /*
   короче, выходит, нужно все переделать. Сутра должна выполнять только то, что в сутре, и возвращать обе части - с пометкой - сливать-не-сливать
-  либо возвращить optional вариант. Т.е. метод в сутре
-  а на выходе - слить все
+  либо возвращить optional вариант.
+  Пусть есть два типа методов - сначала выполняются предварительные, - и после них финальные, возвращают false
 */
 
 sandhi.prototype.add = function(arr) {
-    var tests = makeTests(arr);
-    // log('RES TESTS', tests);
-    var opt;
+    var results = [];
     consRules.every(function(rule) {
-        // log('N:', rule.sutra);
-        tests.forEach(function(test) {
-            // if only bla-bla
-            if (u.c(test.sutras, rule.sutra)) return;
-            opt = rule.method(test);
-        });
-        if (opt && opt.length) {
-            tests.push(opt);
-        }
-        return opt;
+        var test = makeTests(arr);
+        results = rule.method(test);
     });
-    var results = tests.map(function(test) {
-        if (u.c(Const.allvowels, test.beg)) {
-            test.second.shift();
-            liga = Const.vow2liga[test.beg];
-            test.second.unshift(liga); //    // नगरादागच्छति     - "न","ग","र","ा","त","्","ा","ग","च","्","छ","त","ि"]
-            test.vir = false;
-        }
-        if (test.vir) test.first.push(Const.virama);
-        return test.first.concat(test.second).join('');
-    });
+
+    log('R=>', results);
     // log('R=>', results.map(function(r) { return JSON.stringify(r.split(''))}));
     return results;
 }
 
-function makeTests(test) {
-    var first = test[0].split('');
-    var second = test[1].split('');
+function makeTests(arr) {
+    var first = arr[0].split('');
+    var second = arr[1].split('');
     var fin = first.slice(-1)[0];
     var beg = second[0];
     var vir = false;
@@ -78,7 +61,7 @@ function makeTests(test) {
         fin = first.slice(-1)[0];
         vir = true;
     }
-    return [{a: test[0], first: first, fin: fin, vir: vir, b: test[1], second: second, beg: beg, sutras: []}];
+    return {first: first, fin: fin, vir: vir, second: second, beg: beg};
 }
 
 function p(sutra, test) {

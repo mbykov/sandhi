@@ -16,7 +16,7 @@
         "url": "https://github.com/mbykov/sandhi.git"
     },
     "dependencies": {
-        "shiva-sutras": "*",
+        "shiva-sutras": "*"
     },
     "devDependencies": {
         "duo": "*",
