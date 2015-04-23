@@ -11,14 +11,20 @@ function utils(str) {
     return this;
 }
 
-utils.prototype.test = function(test) {
+utils.prototype.test = function(test, idx) {
     var compound = test.shift();
+    var first = test[0];
+    var second = test[1];
     if (!compound) return;
     var descr = test.toString();
-    descr = [descr, compound].join(' -- ');
+    descr = [idx, descr, compound].join(' - ');
     it(descr, function() {
-        var results = sandhi.add(test);
-        isIN(results, compound).should.equal(true);
+        var added = sandhi.add(test);
+        isIN(added, compound).should.equal(true);
+        var main = added[0]; // какое решение тестировать на минус?
+        // ======== FIXME: а если second не является подстрокой? Тогда - пока что - д.б. second без beg ?
+        var removed = sandhi.del(compound, second);
+        true.should.equal(true);
     });
 }
 

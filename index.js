@@ -24,24 +24,54 @@ function sandhi() {
 /*
   берем тест, смотрим тип правила: vowel, visarga, cons
   массив условий для правила => if vowel + частные условия
-  применение следующего правила, но уже для массива x,y
-  какие прерывают? как?
 */
-
-sandhi.prototype.suffix = function() {
-    log('==============SUFFIX');
-}
 
 /*
-  короче, выходит, нужно все переделать. Сутра должна выполнять только то, что в сутре, и возвращать обе части - с пометкой - сливать-не-сливать
-  либо возвращить optional вариант.
-  Пусть есть два типа методов - сначала выполняются предварительные, - и после них финальные, возвращают false
+  1. если подстрока - вычесть, если нет, вычесть без beg
+  2.
 */
+sandhi.prototype.del = function(samasa, second) {
+    log('==============SUFFIX', samasa, second);
+    var test = makeDelTest(samasa, second);
+    log('TEST', test);
+}
 
+function makeDelTest(samasa, second) {
+    var suff, pref;
+    var arr = samasa.split(second);
+    if (arr.length == 1) return log('==== second is not substr TODO recursion');
+    else if (arr.length == 2) {
+        if (arr[0] == '') pref = true;
+        else if (arr[1] == '') suff = true;
+    } else {
+        return log('CENTER OF A STRING, CAN NOT BE');
+    }
+
+    var test = {samasa: samasa.split('')};
+    if (suff) {
+        test.second = second.split('');
+        var first = samasa.replace(second, '');
+        log('F', first, second)
+        test.first = first.split('');
+        test.fin = test.first.slice(-1);
+        if (test.fin == Const.virama) {
+            test.first.pop();
+            test.fin = test.first.slice(-1)[0];
+            test.vir = true;
+        }
+        test.suff = true;
+    }
+    return test;
+}
+
+
+/*
+
+*/
 sandhi.prototype.add = function(arr) {
     var results = [];
     consRules.forEach(function(rule) {
-        var test = makeTests(arr);
+        var test = makeTest(arr);
         var res = rule.method(test);
         if (res) results = res;
     });
@@ -60,7 +90,7 @@ sandhi.prototype.add = function(arr) {
     return results;
 }
 
-function makeTests(arr) {
+function makeTest(arr) {
     var first = arr[0].split('');
     var second = arr[1].split('');
     var fin = first.slice(-1)[0];

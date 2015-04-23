@@ -122,9 +122,9 @@ describe('consonant sandhi', function() {
         if (t.sutra == '') return;
         var descr = [t.sutra, t.descr, t.only].join(' - ');
         describe(descr, function() {
-            t.tests.forEach(function(test) {
+            t.tests.forEach(function(test, idx) {
                 if (t.only) test.push(t.only);
-                utils.test(test);
+                utils.test(test, idx);
             });
         });
     });
