@@ -33,13 +33,14 @@ function sandhi() {
 */
 sandhi.prototype.del = function(samasa, second) {
     var results = [];
+    var res, test; // ??? всегда в точности один результат ?
     delConsRules.forEach(function(rule) {
-        var test = makeDelTest(samasa, second);
-        var res = rule.method(test);
-        log('DEL RES', res);
-        // if (res) {
-        // }
+        test = makeDelTest(samasa, second);
+        res = rule.method(test);
     });
+    var result = makeResult(res);
+    // log('DELETE RES', result);
+    return result; // RES у меня - всегда ОДНА пара first + second ?
 }
 
 function makeDelTest(samasa, second) {
@@ -65,6 +66,7 @@ function makeDelTest(samasa, second) {
             test.vir = true;
         }
         test.second = second.split('');
+        test.beg = test.second[0];
         test.suff = true;
     }
     return test;
@@ -81,7 +83,9 @@ sandhi.prototype.add = function(arr) {
         var res = rule.method(test);
         if (res) results = res;
     });
+    // FIXME: вынести в coalesce ?
     results = results.map(function(test) {
+        // return makeResult(test);
         if (u.c(Const.allvowels, test.beg)) {
             test.second.shift();
             liga = Const.vow2liga[test.beg];
@@ -95,6 +99,23 @@ sandhi.prototype.add = function(arr) {
     // log('R=>', results.map(function(r) { return JSON.stringify(r.split(''))}));
     return results;
 }
+
+// result - разный для add и del ? - или просто samasa бессмысленна для del ?
+function makeResult(test) {
+    if (u.c(Const.allvowels, test.beg)) {
+        test.second.shift();
+        liga = Const.vow2liga[test.beg];
+        test.second.unshift(liga);
+        test.vir = false;
+    }
+    if (test.vir) test.first.push(Const.virama);
+    var conc = (test.conc) ? '' : ' ';
+    // return [test.first.join(''), test.second.join('')].join(conc);
+    // samasa does not have sense for .del()
+    var samasa = [test.first.join(''), test.second.join('')].join(conc);
+    return {first: test.first.join(''), second: test.second.join(''), samasa: samasa};
+}
+
 
 function makeTest(arr) {
     var first = arr[0].split('');
