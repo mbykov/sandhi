@@ -16,8 +16,13 @@ utils.prototype.test = function(test, idx) {
     var first = test[0];
     var second = test[1];
     if (!compound) return;
-    var descr = test.toString();
-    descr = [idx, descr, compound].join(' - ');
+    var add = test.join(' + ');
+    var descr = [idx, 'add', add, compound].join(' - ');
+    it(descr, function() {
+        var added = sandhi.add(test);
+        isIN(added, compound).should.equal(true);
+    });
+    descr = [idx, 'del', compound, test.toString()].join(' - ');
     it(descr, function() {
         var added = sandhi.add(test);
         isIN(added, compound).should.equal(true);

@@ -10,6 +10,7 @@ var Const = require('./lib/const');
 var u = require('./lib/utils');
 var vowRules = require('./lib/vowel_rule');
 var consRules = require('./lib/cons_rules');
+var delConsRules = require('./lib/del_cons_rules');
 var log = u.log;
 
 var debug = (process.env.debug == 'true') ? true : false;
@@ -31,9 +32,14 @@ function sandhi() {
   2.
 */
 sandhi.prototype.del = function(samasa, second) {
-    log('==============SUFFIX', samasa, second);
-    var test = makeDelTest(samasa, second);
-    log('TEST', test);
+    var results = [];
+    delConsRules.forEach(function(rule) {
+        var test = makeDelTest(samasa, second);
+        var res = rule.method(test);
+        log('DEL RES', res);
+        // if (res) {
+        // }
+    });
 }
 
 function makeDelTest(samasa, second) {
@@ -49,9 +55,8 @@ function makeDelTest(samasa, second) {
 
     var test = {samasa: samasa.split('')};
     if (suff) {
-        test.second = second.split('');
         var first = samasa.replace(second, '');
-        log('F', first, second)
+        // log('F', first, second)
         test.first = first.split('');
         test.fin = test.first.slice(-1);
         if (test.fin == Const.virama) {
@@ -59,6 +64,7 @@ function makeDelTest(samasa, second) {
             test.fin = test.first.slice(-1)[0];
             test.vir = true;
         }
+        test.second = second.split('');
         test.suff = true;
     }
     return test;
