@@ -43,10 +43,16 @@ sandhi.prototype.del = function(samasa, second) {
     return result; // RES у меня - всегда ОДНА пара first + second ?
 }
 
-function makeDelTest(samasa, second) {
+function makeDelTest(samasa, second, beg) {
     var suff, pref;
     var arr = samasa.split(second);
-    if (arr.length == 1) return log('==== second is not substr TODO recursion');
+    if (arr.length == 1) {
+        // return log('==== second is not substr TODO recursion');
+        beg = second[0];
+        // log('MAKE', beg)
+        second = second.substr(1);
+        return makeDelTest(samasa, second, beg);
+    }
     else if (arr.length == 2) {
         if (arr[0] == '') pref = true;
         else if (arr[1] == '') suff = true;
@@ -59,14 +65,21 @@ function makeDelTest(samasa, second) {
         var first = samasa.replace(second, '');
         // log('F', first, second)
         test.first = first.split('');
-        test.fin = test.first.slice(-1);
+        if (beg) beg = test.first.pop();
+        test.fin = test.first.slice(-1)[0];
         if (test.fin == Const.virama) {
             test.first.pop();
             test.fin = test.first.slice(-1)[0];
             test.vir = true;
         }
         test.second = second.split('');
-        test.beg = test.second[0];
+        if (beg) {
+            test.beg = beg;
+            test.sec = test.second[0]; // 0 - cause test.second already shifted
+        } else {
+            test.beg = test.second[0];
+            test.sec = test.second[1];
+        }
         test.suff = true;
     }
     return test;
