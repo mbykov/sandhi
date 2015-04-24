@@ -38,8 +38,9 @@ sandhi.prototype.del = function(samasa, second) {
         test = makeDelTest(samasa, second);
         res = rule.method(test);
     });
+    // log('DELETE RESULT', res);
+    if (!res) return log('========== NO RESULT =========');
     var result = makeResult(res);
-    // log('DELETE RES', result);
     return result; // RES у меня - всегда ОДНА пара first + second ?
 }
 
@@ -47,23 +48,22 @@ function makeDelTest(samasa, second, beg) {
     var suff, pref;
     var arr = samasa.split(second);
     if (arr.length == 1) {
-        // return log('==== second is not substr TODO recursion');
+        // second is in changed form, remove beginning
         beg = second[0];
         // log('MAKE', beg)
         second = second.substr(1);
         return makeDelTest(samasa, second, beg);
-    }
-    else if (arr.length == 2) {
+    } else if (arr.length > 0) {
         if (arr[0] == '') pref = true;
-        else if (arr[1] == '') suff = true;
+        else if (arr.slice(-1) == '') suff = true;
     } else {
-        return log('CENTER OF A STRING, CAN NOT BE');
+        return log('CAN NOT BE');
     }
 
     var test = {samasa: samasa.split('')};
     if (suff) {
-        var first = samasa.replace(second, '');
-        // log('F', first, second)
+        var re = new RegExp(second + '$');
+        var first = samasa.replace(re, '');
         test.first = first.split('');
         if (beg) beg = test.first.pop();
         test.fin = test.first.slice(-1)[0];

@@ -25,7 +25,7 @@ utils.prototype.test = function(test, idx) {
     descr = [idx, 'del', compound, test.toString()].join(' - ');
     it(descr, function() {
         var del = sandhi.del(compound, second);
-        log('DEL', del);
+        // log('DEL', del);
         del.first.should.equal(first);
         del.second.should.equal(second);
         // true.should.equal(true);
