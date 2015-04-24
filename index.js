@@ -32,15 +32,14 @@ function sandhi() {
   2.
 */
 sandhi.prototype.del = function(samasa, second) {
-    var results = [];
-    var res, test; // ??? всегда в точности один результат ?
+    var result;
+    var res, test;
     delConsRules.forEach(function(rule) {
         test = makeDelTest(samasa, second);
         res = rule.method(test);
+        if (res) result = makeResult(res);
     });
-    // log('DELETE RESULT', res);
-    if (!res) return log('========== NO RESULT =========');
-    var result = makeResult(res);
+    // log('DELETE RESULT', result);
     return result; // RES у меня - всегда ОДНА пара first + second ?
 }
 
