@@ -61,7 +61,7 @@ test:
 		--grep $(g) \
 		--timeout 3000 \
 		$(TESTS) \
-#		2> /dev/null
+		2> /dev/null
 
 
 .PHONY: all clean server test

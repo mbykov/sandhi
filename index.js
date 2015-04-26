@@ -116,7 +116,7 @@ sandhi.prototype.add = function(arr) {
     return results;
 }
 
-// result - разный для add и del ? - или просто samasa бессмысленна для del ?
+// result - samasa бессмысленна для del()
 function makeResult(test) {
     if (u.c(Const.allvowels, test.beg)) {
         test.second.shift();
@@ -127,19 +127,18 @@ function makeResult(test) {
     var conc = (test.conc) ? '' : ' ';
     var ends = (test.ends) ? test.ends : [test.end];
     var results = ends.map(function(e) {
-        test.first.push(e);
-        if (test.vir) test.first.push(Const.virama);
-        var samasa = [test.first.join(''), test.second.join('')].join(conc);
-        return {first: test.first.join(''), second: test.second.join(''), samasa: samasa};
+        var first = JSON.parse(JSON.stringify(test.first));
+        first.push(e);
+        if (test.vir) first.push(Const.virama);
+        var samasa = [first.join(''), test.second.join('')].join(conc);
+        return {first: first.join(''), second: test.second.join(''), samasa: samasa};
     });
     // if (test.vir) test.first.push(Const.virama);
     // var samasa = [test.first.join(''), test.second.join('')].join(conc);
     // return {first: test.first.join(''), second: test.second.join(''), samasa: samasa};
-    // log('RRR', results[0], test.first);
-    // first: 'तानन्', second: 'जनान्', samasa: 'तानन् जनान्'
+    // log('Results', results);
     return results;
 }
-
 
 function makeTest(arr) {
     var first = arr[0].split('');
