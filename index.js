@@ -28,8 +28,7 @@ function sandhi() {
 */
 
 /*
-  1. если подстрока - вычесть, если нет, вычесть без beg
-  2.
+
 */
 sandhi.prototype.del = function(samasa, second) {
     var result;
@@ -70,6 +69,11 @@ function makeDelTest(samasa, second, beg) {
             test.first.pop();
             test.fin = test.first.slice(-1)[0];
             test.vir = true;
+        }
+        if (test.fin == Const.candra) {
+            test.first.pop();
+            test.fin = test.first.slice(-1)[0];
+            test.candra = true;
         }
         test.second = second.split('');
         if (beg) {
@@ -120,12 +124,20 @@ function makeResult(test) {
         test.second.unshift(liga);
         test.vir = false;
     }
-    if (test.vir) test.first.push(Const.virama);
     var conc = (test.conc) ? '' : ' ';
-    // return [test.first.join(''), test.second.join('')].join(conc);
-    // samasa does not have sense for .del()
-    var samasa = [test.first.join(''), test.second.join('')].join(conc);
-    return {first: test.first.join(''), second: test.second.join(''), samasa: samasa};
+    var ends = (test.ends) ? test.ends : [test.end];
+    var results = ends.map(function(e) {
+        test.first.push(e);
+        if (test.vir) test.first.push(Const.virama);
+        var samasa = [test.first.join(''), test.second.join('')].join(conc);
+        return {first: test.first.join(''), second: test.second.join(''), samasa: samasa};
+    });
+    // if (test.vir) test.first.push(Const.virama);
+    // var samasa = [test.first.join(''), test.second.join('')].join(conc);
+    // return {first: test.first.join(''), second: test.second.join(''), samasa: samasa};
+    // log('RRR', results[0], test.first);
+    // first: 'तानन्', second: 'जनान्', samasa: 'तानन् जनान्'
+    return results;
 }
 
 
