@@ -11,25 +11,42 @@ var u = require('./lib/utils');
 var vowRules = require('./lib/vowel_rule');
 var consRules = require('./lib/cons_rules');
 var delConsRules = require('./lib/del_cons_rules');
+var marks = require('./lib/markers');
 var log = u.log;
 
 var debug = (process.env.debug == 'true') ? true : false;
 
 module.exports = sandhi();
 
+/*
+  TODO: берем тест, смотрим тип правила: vowel, visarga, cons  массив условий для правила => if vowel + частные условия
+*/
 function sandhi() {
     if (!(this instanceof sandhi)) return new sandhi();
     return this;
 }
 
-/*
-  берем тест, смотрим тип правила: vowel, visarga, cons
-  массив условий для правила => if vowel + частные условия
-*/
 
 /*
 
 */
+sandhi.prototype.split = function(samasa, second) {
+    var result;
+    var res, test;
+    marks.forEach(function(sutra) {
+        if (sutra.num == '') return;
+        var mks = sutra.marks();
+        log('MARKS', sutra.num, mks.toString());
+    });
+    // log('DELETE RESULT', result);
+    return result;
+}
+
+
+
+
+
+
 sandhi.prototype.del = function(samasa, second) {
     var result;
     var res, test;
@@ -136,7 +153,7 @@ function makeResult(test) {
     // if (test.vir) test.first.push(Const.virama);
     // var samasa = [test.first.join(''), test.second.join('')].join(conc);
     // return {first: test.first.join(''), second: test.second.join(''), samasa: samasa};
-    // log('Results', results);
+    log('Results', results);
     return results;
 }
 

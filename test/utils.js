@@ -16,23 +16,30 @@ utils.prototype.test = function(test, idx) {
     var first = test[0];
     var second = test[1];
     if (!compound) return;
-    var add = test.join(' + ');
-    var descr = [idx, 'add', add, compound].join(' - ');
+    var addtext = test.join(' + ');
+    // var descr = [idx, 'add', addtext, compound].join(' - ');
+    // it(descr, function() {
+    //     var added = sandhi.add(test);
+    //     isIN(added, compound).should.equal(true);
+    // });
+    // descr = [idx, 'del', compound, test.toString()].join(' - ');
+    // it(descr, function() {
+    //     var result = false;
+    //     var dels = sandhi.del(compound, second);
+    //     dels.forEach(function(del) {
+    //         if (del.first == first && del.second == second) result = true;
+    //     });
+    //     // log('DEL', del);
+    //     // del.first.should.equal(first);
+    //     // del.second.should.equal(second);
+    //     result.should.equal(true);
+    // });
+    var descr = [idx, 'split', addtext, compound].join(' - ');
     it(descr, function() {
-        var added = sandhi.add(test);
-        isIN(added, compound).should.equal(true);
-    });
-    descr = [idx, 'del', compound, test.toString()].join(' - ');
-    it(descr, function() {
-        var result = false;
-        var dels = sandhi.del(compound, second);
-        dels.forEach(function(del) {
-            if (del.first == first && del.second == second) result = true;
-        });
-        // log('DEL', del);
-        // del.first.should.equal(first);
-        // del.second.should.equal(second);
-        result.should.equal(true);
+        var splitted = sandhi.split(test);
+        var spJSON = splitted.map(function(split) { return JSON.stringify(split)});
+        var resJSON = JSON.stringify(test);
+        isIN(spJSON, resJSON).should.equal(true);
     });
 }
 

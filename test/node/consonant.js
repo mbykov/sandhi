@@ -97,10 +97,20 @@ var tests = [
      ]
     },
 
-    {sutra: '',
-     descr: '',
-     only: 'ext',
+    {sutra: '8.4.55',
+     descr: 'soft consonant except nasal, followed by a hard consonant changes to 1st consonant of class',
+     // only: 'ext',
      tests: [
+         ['एतत्पतति', 'एतद्', 'पतति'],
+         ['सुहृत्सु', 'सुहृद्', 'सु'],
+         ['', '', ''],
+         ['', '', ''],
+         ['', '', ''],
+         ['', '', ''],
+         ['', '', ''],
+         ['', '', ''],
+         ['', '', ''],
+         ['', '', ''],
          ['', '', ''],
          ['', '', ''],
      ]
@@ -110,7 +120,7 @@ var tests = [
      descr: '',
      only: 'int',
      tests: [
-         ['', '', ''], //
+         ['', '', ''],
          ['', '', ''],
      ]
     },
