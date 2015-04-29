@@ -35,15 +35,15 @@ sandhi.prototype.split = function(samasa, second) {
     var res, test;
     marks.forEach(function(sutra) {
         if (sutra.num == '') return;
-        var mks = sutra.marks();
-        log('MARKS', sutra.num, mks.toString());
+        if (sutra.num != '8.4.55') return;
+        var mks = sutra.marks;
+        // var keys = Object.keys()
+        // log('MARKS', sutra.num, JSON.stringify(mks));
+        res = sutra.method(samasa);
     });
-    // log('DELETE RESULT', result);
-    return result;
+    log('SPLIT RESULT', res);
+    return res;
 }
-
-
-
 
 
 

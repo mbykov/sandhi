@@ -62,17 +62,8 @@ test:
 		--grep $(g) \
 		--timeout 3000 \
 		$(TESTS) \
-		2> /dev/null
+#		2> /dev/null
 
-# samasa:
-# 	@NODE_ENV=test ./node_modules/.bin/mocha \
-# 		--require should \
-# 		--reporter $(REPORTER) \
-# 		--slow 500 \
-# 		--grep $(g) \
-# 		--timeout 3000 \
-# 		$(TESTS) \
-# 		2> /dev/null
 
 
 .PHONY: all clean server test
