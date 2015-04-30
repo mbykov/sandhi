@@ -11,7 +11,7 @@ var u = require('./lib/utils');
 var vowRules = require('./lib/vowel_rule');
 var consRules = require('./lib/cons_rules');
 var delConsRules = require('./lib/del_cons_rules');
-var marks = require('./lib/markers');
+var sutras = require('./lib/markers');
 var log = u.log;
 
 var debug = (process.env.debug == 'true') ? true : false;
@@ -27,24 +27,98 @@ function sandhi() {
 }
 
 
-/*
-
-*/
-sandhi.prototype.split = function(samasa, second) {
-    var result;
-    var res, test;
-    marks.forEach(function(sutra) {
-        if (sutra.num == '') return;
-        if (sutra.num != '8.4.55') return;
-        var mks = sutra.marks;
-        // var keys = Object.keys()
-        // log('MARKS', sutra.num, JSON.stringify(mks));
-        res = sutra.method(samasa);
+function makeMarkList(samasa) {
+    var marks = [];
+    var arr = samasa.split('');
+    var idx = 0;
+    arr.forEach(function(letter, i) {
+        if (u.c(Const.special, letter)) return;
+        var mark;
+        var next1 = arr[i+1];
+        var next2 = arr[i+2];
+        if (!next1 || !next2) return;
+        if (u.c(Const.hal, letter) && (next1 == Const.virama) && u.c(Const.hal, next2)) {
+            var pattern = [letter, Const.virama, next2].join('');
+            mark = {type: 'cons', pattern: pattern, fin: letter, beg: next2, idx: idx, pos: i};
+            // mark = {type: 'cons', mark: pattern, idx: idx, pos: i};
+            idx++;
+            marks.push(mark);
+        }
     });
-    log('SPLIT RESULT', res);
-    return res;
+    return marks;
 }
 
+// http://codereview.stackexchange.com/questions/7001/generating-all-combinations-of-an-array
+function combinator(arr) {
+    var fn = function(active, rest, a) {
+        if (active.length==0 && rest.length==0)
+            return;
+        if (rest.length==0) {
+            a.push(active);
+        } else {
+            fn(active.concat(rest[0]), rest.slice(1), a);
+            fn(active, rest.slice(1), a);
+        }
+        return a;
+    }
+    return fn([], arr, []);
+}
+
+function mark2sandhi(marks) {
+    var sandhi = {};
+    marks.forEach(function(mark) {
+        sutras.forEach(function(sutra) {
+            if (sutra.num == '') return;
+            // if (sutra.num != '8.4.45') return;
+            var marks = sutra.marks;
+            var key = [mark.fin, mark.beg].join('');
+            // log('P', sutra.num, key, sutra.marks['नम']);
+            if (!sutra.marks[key]) return;
+            // FIXME: sandhi.method() порождения
+            // log('====', sutra.marks[key]);
+            var values = sutra.method(sutra.marks[key]);
+            var sandhis = values.map(function(value) {
+                var letts = value.split('');
+                return [letts[0], Const.virama, ' ', letts[1]].join('');
+            });
+            // log('=====V', sandhis);
+            mark.sandhis = sandhis;
+        });
+    });
+    // return marks;
+}
+
+function replByPos(samasa, pattern, sandhi, pos) {
+    // log('==== SANDHI', sandhi);
+    var first = samasa.slice(0, pos);
+    var second = samasa.slice(pos);
+    // log('===', first, second, sandhi)
+    var result = second.replace(pattern, sandhi);
+    return [first, result].join('');
+}
+
+
+/**/
+sandhi.prototype.split = function(samasa) {
+    var res = [];
+    var marks = makeMarkList(samasa);
+    mark2sandhi(marks);
+    // log('ML', marks);
+    // log(combinator('abcd'.split('')));
+    var combis = combinator(marks);
+    combis.forEach(function(comb) {
+        var result = samasa;
+        comb.forEach(function(mark) {
+            mark.sandhis.forEach(function(sandhi) {
+                result = replByPos(samasa, mark.pattern, sandhi, mark.pos);
+                res.push(result);
+            });
+        });
+    });
+
+    // log('SPLIT RESULT', res);
+    return res;
+}
 
 
 sandhi.prototype.del = function(samasa, second) {

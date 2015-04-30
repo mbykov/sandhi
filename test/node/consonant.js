@@ -50,6 +50,7 @@ var tests = [
     {sutra: '8.4.41',
      descr: 'A (dental class consonant) followed by a (cerebral class consonant) changes to the (corresponding cerebral)',
      tests: [
+         ['ताण्डम्बरानरामष्षष्ठः्', 'तान्', 'डम्बरान्'],
          ['ताण्डम्बरान्', 'तान्', 'डम्बरान्'],
          ['तट्षट्', 'तत्', 'षट्'],
          ['रामष्षष्ठः', 'रामस्', 'षष्ठः'],

@@ -37,10 +37,8 @@ utils.prototype.test = function(test, idx) {
     var descr = [idx, 'split', addtext, compound].join(' - ');
     it(descr, function() {
         var splitted = sandhi.split(compound);
-        var spJSONs = splitted.map(function(split) { return JSON.stringify(split)});
-        var resJSON = JSON.stringify(test.join(' '));
-        log('TEST', spJSONs, resJSON)
-        isIN(spJSONs, resJSON).should.equal(true);
+        var testStr = [first, second].join(' ');
+        isIN(splitted, testStr).should.equal(true);
     });
 }
 
