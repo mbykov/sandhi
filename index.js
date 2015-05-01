@@ -69,26 +69,29 @@ function mark2sandhi(marks) {
     marks.forEach(function(mark) {
         sutras.forEach(function(sutra) {
             if (sutra.num == '') return;
-            // if (sutra.num != '8.4.45') return;
-            var marks = sutra.marks;
+            if (sutra.num != '8.4.45') return;
+
+            // var marks = sutra.marks;
             var key = [mark.fin, mark.beg].join('');
             // log('P', sutra.num, key, sutra.marks['नम']);
-            if (!sutra.marks[key]) return;
+            // if (!sutra.marks[key]) return;
             // FIXME: sandhi.method() порождения
             // log('====', sutra.marks[key]);
-            var values = sutra.method(sutra.marks[key]);
+            // var values = sutra.method(sutra.marks[key]);
+            var values = sutra.split(key);
+            if (!values) return;
             var sandhis = values.map(function(value) {
                 var letts = value.split('');
                 return [letts[0], Const.virama, ' ', letts[1]].join('');
             });
-            // log('=====V', sandhis);
+
             mark.sandhis = sandhis;
         });
     });
     // return marks;
 }
 
-function replByPos(samasa, pattern, sandhi, pos) {
+function replaceByPos(samasa, pattern, sandhi, pos) {
     // log('==== SANDHI', sandhi);
     var first = samasa.slice(0, pos);
     var second = samasa.slice(pos);
@@ -104,14 +107,21 @@ sandhi.prototype.split = function(samasa) {
     var marks = makeMarkList(samasa);
     mark2sandhi(marks);
     // log('ML', marks);
+    // log('way', Const.way) // kttp
+    // log('mam', Const.mam)
+    // log('baS', Const.baS)
+    // log('Const.nasal_nm', Const.nasal_nm)
+    // log('Const.finalhard_nm', Const.finalhard_nm)
+
     // log(combinator('abcd'.split('')));
     var combis = combinator(marks);
     combis.forEach(function(comb) {
         var result = samasa;
         comb.forEach(function(mark) {
             mark.sandhis.forEach(function(sandhi) {
-                result = replByPos(samasa, mark.pattern, sandhi, mark.pos);
+                result = replaceByPos(samasa, mark.pattern, sandhi, mark.pos);
                 res.push(result);
+                // FIXME: - тут фигня, д.б. накопление замен на каждый маркер
             });
         });
     });
