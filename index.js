@@ -71,20 +71,27 @@ function mark2sandhi(marks) {
             if (sutra.num == '') return;
             if (sutra.num != '8.4.45') return;
 
-            // var marks = sutra.marks;
-            var key = [mark.fin, mark.beg].join('');
-            // log('P', sutra.num, key, sutra.marks['नम']);
-            // if (!sutra.marks[key]) return;
-            // FIXME: sandhi.method() порождения
-            // log('====', sutra.marks[key]);
-            // var values = sutra.method(sutra.marks[key]);
-            var values = sutra.split(key);
-            if (!values) return;
-            var sandhis = values.map(function(value) {
-                var letts = value.split('');
-                return [letts[0], Const.virama, ' ', letts[1]].join('');
-            });
+           //  ssss
+           //  // var c1 = u.class1(mark.fin);
+           //  // log('======', mark.fin, tavarga);
+           // // var marks = sutra.marks;
+           //  var key = [mark.fin, mark.beg].join('');
+           //  // log('P', sutra.num, key, sutra.marks['नम']);
+           //  // if (!sutra.marks[key]) return;
+           //  // FIXME: sandhi.method() порождения
+           //  // log('====', sutra.marks[key]);
+           //  // var values = sutra.method(sutra.marks[key]);
+           //  var values = sutra.split(key);
 
+           //  if (!values) return;
+           //  var sandhis = values.map(function(value) {
+           //      var letts = value.split('');
+           //      return [letts[0], Const.virama, ' ', letts[1]].join('');
+           //  });
+
+            var sandhis = sutra.split(mark);
+            // log('=======S', sandhis)
+            if (!sandhis) return;
             mark.sandhis = sandhis;
         });
     });
@@ -108,6 +115,7 @@ sandhi.prototype.split = function(samasa) {
     mark2sandhi(marks);
     // log('ML', marks);
     // log('way', Const.way) // kttp
+    // log('car', Const.car) // kttp
     // log('mam', Const.mam)
     // log('baS', Const.baS)
     // log('Const.nasal_nm', Const.nasal_nm)
