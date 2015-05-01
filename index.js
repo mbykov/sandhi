@@ -69,7 +69,7 @@ function mark2sandhi(marks) {
     marks.forEach(function(mark) {
         sutras.forEach(function(sutra) {
             if (sutra.num == '') return;
-            if (sutra.num != '8.4.45') return;
+            // if (sutra.num != '8.4.45') return;
             var sandhis = sutra.split(mark);
             if (!sandhis) return;
             mark.sandhis = sandhis;
