@@ -110,6 +110,51 @@ sandhi.prototype.split = function(samasa) {
     return res;
 }
 
+sandhi.prototype.add = function(first, second) {
+    var marks;
+    sutras.forEach(function(sutra) {
+        if (sutra.num == '') return;
+        // if (sutra.num != '8.4.45') return;
+        var mark = makeTest(first, second);
+        marks = marks || sutra.add(mark);
+    });
+    if (!marks) return;
+    var res = [];
+    marks.forEach(function(mark) {
+        var samasa = makeAddResult(mark)
+        res.push(samasa);
+    });
+    return res;
+}
+
+// result - samasa бессмысленна для del()
+function makeAddResult(test) {
+    if (u.c(Const.allvowels, test.beg)) {
+        test.second.shift();
+        liga = Const.vow2liga[test.beg];
+        test.second.unshift(liga);
+        test.vir = false;
+    }
+    var conc = (test.conc) ? ' ' : '';
+    test.first.push(test.end);
+    if (test.vir) test.first.push(Const.virama);
+    return [test.first.join(''), test.second.join('')].join(conc);
+}
+
+function makeTest(f, s) {
+    var first = f.split('');
+    var second = s.split('');
+    var fin = first.slice(-1)[0];
+    var beg = second[0];
+    var vir = false;
+    if (fin == Const.virama) {
+        first.pop();
+        fin = first.slice(-1)[0];
+        vir = true;
+    }
+    // var pattern = (vir) ? [fin, Const.virama, beg].join('') : [fin, beg].join('');
+    return {first: first, fin: fin, vir: vir, second: second, beg: beg};
+}
 
 sandhi.prototype.del = function(samasa, second) {
     var result;
@@ -173,7 +218,7 @@ function makeDelTest(samasa, second, beg) {
 /*
 
 */
-sandhi.prototype.add = function(arr) {
+sandhi.prototype.add__ = function(arr) {
     var results = [];
     consRules.forEach(function(rule) {
         var test = makeTest(arr);
@@ -197,31 +242,7 @@ sandhi.prototype.add = function(arr) {
     return results;
 }
 
-// result - samasa бессмысленна для del()
-function makeResult(test) {
-    if (u.c(Const.allvowels, test.beg)) {
-        test.second.shift();
-        liga = Const.vow2liga[test.beg];
-        test.second.unshift(liga);
-        test.vir = false;
-    }
-    var conc = (test.conc) ? '' : ' ';
-    var ends = (test.ends) ? test.ends : [test.end];
-    var results = ends.map(function(e) {
-        var first = JSON.parse(JSON.stringify(test.first));
-        first.push(e);
-        if (test.vir) first.push(Const.virama);
-        var samasa = [first.join(''), test.second.join('')].join(conc);
-        return {first: first.join(''), second: test.second.join(''), samasa: samasa};
-    });
-    // if (test.vir) test.first.push(Const.virama);
-    // var samasa = [test.first.join(''), test.second.join('')].join(conc);
-    // return {first: test.first.join(''), second: test.second.join(''), samasa: samasa};
-    log('Results', results);
-    return results;
-}
-
-function makeTest(arr) {
+function makeTest_old_(arr) {
     var first = arr[0].split('');
     var second = arr[1].split('');
     var fin = first.slice(-1)[0];
