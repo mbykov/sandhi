@@ -92,16 +92,17 @@ sandhi.prototype.split = function(samasa) {
     var res = [];
     var marks = makeMarkList(samasa);
     mark2sandhi(marks);
-
     // log(combinator('abcd'.split('')));
     var combis = combinator(marks);
     combis.forEach(function(comb) {
         var result = samasa;
         comb.forEach(function(mark) {
+            if (!mark.sandhis) return;
             mark.sandhis.forEach(function(sandhi) {
                 result = replaceByPos(samasa, mark.pattern, sandhi, mark.pos);
                 res.push(result);
                 // FIXME: - тут фигня, д.б. накопление замен на каждый маркер
+                // ВТОРОЕ - результаты не уникальны - 4.45.+4  - [ 'तत् मुग्धम्', 'तद् मुग्धम्', 'तत् मुग्धम्', 'तद् मुग्धम्' ]
             });
         });
     });
@@ -124,6 +125,7 @@ sandhi.prototype.add = function(first, second) {
         var samasa = makeAddResult(mark)
         res.push(samasa);
     });
+    // log('ADD RES', res);
     return res;
 }
 
