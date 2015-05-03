@@ -119,6 +119,8 @@ sandhi.prototype.add = function(first, second) {
         var mark = makeTest(first, second);
         marks = marks || sutra.add(mark);
     });
+
+    // FIXME: makeAddResult(mark) попросту перенести в первый цикл
     if (!marks) return;
     var res = [];
     marks.forEach(function(mark) {
@@ -129,7 +131,6 @@ sandhi.prototype.add = function(first, second) {
     return res;
 }
 
-// result - samasa бессмысленна для del()
 function makeAddResult(test) {
     if (u.c(Const.allvowels, test.beg)) {
         test.second.shift();
