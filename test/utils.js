@@ -17,7 +17,7 @@ utils.prototype.test = function(test, idx) {
     var second = test[1];
     if (!compound) return;
     var addtext = test.join(' + ');
-    var descr = [idx, 'add', addtext, compound].join(' - ');
+    var descr = [idx+1, 'add', addtext, compound].join(' - ');
     // add
     it(descr, function() {
         var added = sandhi.add(first, second);
@@ -25,7 +25,7 @@ utils.prototype.test = function(test, idx) {
         isIN(added, compound).should.equal(true);
     });
     // split
-    var descr = [idx, 'split', addtext, compound].join(' - ');
+    var descr = [idx+1, 'split', addtext, compound].join(' - ');
     it(descr, function() {
         var splitted = sandhi.split(compound);
         var testStr = [first, second].join(' ');
