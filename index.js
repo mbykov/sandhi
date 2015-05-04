@@ -53,10 +53,10 @@ function makeMarkList(samasa) {
             mark = {type: 'cons', pattern: pattern, fin: sym, beg: next2, idx: idx, pos: i};
             idx++;
             marks.push(mark);
+        // } else if ((u.c(Const.consonants, fin) || u.c(Const.allligas, fin)) && u.c(Const.allvowels, beg)) {
         } else if (u.c(Const.dirgha_ligas, sym) && sym != 'ॢ') {
-            // не, че-то глупо, лучше все комбинации на гласную
-           // а как? либо долгая, либо комбинации с гласными
-            mark = {type: 'dirgha', pattern: sym, idx: idx, pos: i};
+            // FIXME: остальные гласные маркеры добавить по ходу дела - и проверить !la
+            mark = {type: 'vow', pattern: sym, idx: idx, pos: i};
             idx++;
             // log('==== mark', mark);
             marks.push(mark);
@@ -131,23 +131,23 @@ sandhi.prototype.split = function(samasa) {
 }
 
 sandhi.prototype.add = function(first, second) {
-    var marks;
-    log('===', Const.dirgha, Const.dirgha_ligas);
+    var res = [];
+    // log('===', Const.allligas);
+    var mark = makeMarker(first, second);
+    var fn = ['./lib/', mark.type, '_sutras'].join('');
+    var sutras = require(fn);
     sutras.forEach(function(sutra) {
         if (sutra.num == '') return;
-        // if (sutra.num != '8.4.45') return;
-        var mark = makeMarker(first, second);
-        marks = marks || sutra.add(mark);
-        // ======== ??? почему я маркер внутри сутры делаю?
+        if (sutra.type != mark.type) return;
+        var tmps = sutra.add(mark);
+        // log('--------------', tmps);
+        if (!tmps) return;
+        tmps.forEach(function(mark) {
+            var samasa = makeAddResult(mark);
+            res.push(samasa);
+        });
     });
 
-    // FIXME: makeAddResult(mark) попросту перенести в первый цикл
-    if (!marks) return;
-    var res = [];
-    marks.forEach(function(mark) {
-        var samasa = makeAddResult(mark)
-        res.push(samasa);
-    });
     // log('ADD RES', res);
     return res;
 }
@@ -173,13 +173,13 @@ function makeMarker(f, s) {
             fin = first.slice(-1)[0];
             candra = true;
         }
-        marker = {first: first, fin: fin, vir: vir, second: second, beg: beg};
-        marker.type = 'cons';
+        marker = {type: 'cons', first: first, fin: fin, vir: vir, second: second, beg: beg};
         if (vir) marker.vir = true;
         if (candra) marker.candra = true;
-    } else if (u.c(Cons.dirgha_ligas, fin)) {
-        // нужно - гласная, краткая и длинная и подобная гласная
-        log('тут будет создание маркера гласной долгой')
+    } else if ((u.c(Const.consonants, fin) || u.c(Const.allligas, fin)) && u.c(Const.allvowels, beg)) {
+        // почему-то в allligas первое значение - пробел. Нужно убрать?
+        marker = {type: 'vow', first: first, fin: fin, second: second, beg: beg};
+        // log('VOW MARK', marker);
     }
     return marker;
 }

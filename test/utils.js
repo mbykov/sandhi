@@ -17,20 +17,25 @@ utils.prototype.test = function(test, idx) {
     var second = test[1];
     if (!compound) return;
     var addtext = test.join(' + ');
-    var descr = [idx+1, 'add', addtext, compound].join(' - ');
+    var idxstr = ['_', idx+1, '_'].join('');
+    var descr = [idxstr, 'add', addtext, compound].join(' - ');
     // add
     it(descr, function() {
         var added = sandhi.add(first, second);
+        if (!added) {
+            log('===================false, no added');
+            false.should.equal(true);
+        }
         // log('TEST ADD', added);
         isIN(added, compound).should.equal(true);
     });
     // split
-    var descr = [idx+1, 'split', addtext, compound].join(' - ');
-    it(descr, function() {
-        var splitted = sandhi.split(compound);
-        var testStr = [first, second].join(' ');
-        isIN(splitted, testStr).should.equal(true);
-    });
+    // var descr = [idxstr, 'split', addtext, compound].join(' - ');
+    // it(descr, function() {
+    //     var splitted = sandhi.split(compound);
+    //     var testStr = [first, second].join(' ');
+    //     isIN(splitted, testStr).should.equal(true);
+    // });
 }
 
 
