@@ -145,9 +145,10 @@ sandhi.prototype.add = function(first, second) {
             res.push(samasa);
         });
     });
-    // log('ADD RES', res);
+    log('ADD RES', res);
     return res;
 }
+
 
 function makeMarker(f, s) {
     var first = f.split('');
