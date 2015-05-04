@@ -2,6 +2,7 @@
   node.js and component
 */
 
+var _ = require('underscore');
 var util = require('util');
 // var typeOf = require('typeof');
 // var shiva = require('mbykov/shiva-sutras');
@@ -25,6 +26,17 @@ function sandhi() {
     if (!(this instanceof sandhi)) return new sandhi();
     return this;
 }
+
+/*
+  в make Mark List не только virama, но и candra, и?
+
+  if (fin == Const.candra) {
+  first.pop();
+  fin = first.slice(-1)[0];
+  candra = true;
+  }
+
+*/
 
 
 function makeMarkList(samasa) {
@@ -65,16 +77,32 @@ function combinator(arr) {
 }
 
 function mark2sandhi(marks) {
-    var sandhi = {};
     marks.forEach(function(mark) {
         sutras.forEach(function(sutra) {
             if (sutra.num == '') return;
-            // if (sutra.num != '8.4.45') return;
             var sandhis = sutra.split(mark);
             if (!sandhis) return;
             mark.sandhis = sandhis;
         });
     });
+}
+
+function fake2sandhi(marks) {
+    marks.forEach(function(mark) {
+        if (!mark.sandhis) mark.sandhis = [[[mark.fin, Const.virama].join(''), mark.beg].join(' ')];
+    });
+}
+
+function fullMarkList(marks) {
+    var list = [];
+    marks.forEach(function(mark) {
+        mark.sandhis.forEach(function(sandhi) {
+            var m = JSON.parse(JSON.stringify(mark));
+            m.sandhi = sandhi;
+            list.push(m);
+        });
+    });
+    return list;
 }
 
 function replaceByPos(samasa, pattern, sandhi, pos) {
@@ -86,9 +114,41 @@ function replaceByPos(samasa, pattern, sandhi, pos) {
     return [first, result].join('');
 }
 
-
-/**/
+/*
+  make test g=4.41.+7.+spli
+  ВТОРОЕ - результаты не уникальны - 4.45.+4  - [ 'तत् मुग्धम्', 'तद् मुग्धम्', 'तत् मुग्धम्', 'तद् मुग्धम्' ]
+*/
 sandhi.prototype.split = function(samasa) {
+    var res = [];
+    var marks = makeMarkList(samasa);
+    mark2sandhi(marks);
+    fake2sandhi(marks); // FIXME: только для отладки комбинатора
+    var list = fullMarkList(marks)
+    // log('== marks', marks);
+    log('== list', list.length);
+    // list = [1,2,3,4,5];
+    var combinations = combinator(list);
+    // log('== combs', combinations);
+    combinations.forEach(function(comb) {
+        var result = samasa;
+        comb.forEach(function(mark) {
+            result = replaceByPos(result, mark.pattern, mark.sandhi, mark.pos);
+            res.push(result);
+            // mark.sandhis.forEach(function(sandhi) {
+            //     // var nresult = JSON.parse(JSON.stringify(result));
+            //     result = replaceByPos(result, mark.pattern, sandhi, mark.pos);
+            //     res.push(result);
+            // log('===', comb.length, mark.pattern, mark.sandhi, result);
+            // });
+        });
+    });
+    var uniq = _.uniq(res);
+    log('SPLIT RESULT', uniq.length, res.length);
+    log('SPLIT RESULT', uniq);
+    return uniq;
+}
+
+sandhi.prototype.split_copy = function(samasa) {
     var res = [];
     var marks = makeMarkList(samasa);
     mark2sandhi(marks);
@@ -101,6 +161,8 @@ sandhi.prototype.split = function(samasa) {
             mark.sandhis.forEach(function(sandhi) {
                 result = replaceByPos(samasa, mark.pattern, sandhi, mark.pos);
                 res.push(result);
+                // ===========================================================
+                // make test g=4.41.+7.+spli
                 // FIXME: - тут фигня, д.б. накопление замен на каждый маркер
                 // ВТОРОЕ - результаты не уникальны - 4.45.+4  - [ 'तत् मुग्धम्', 'तद् मुग्धम्', 'तत् मुग्धम्', 'तद् मुग्धम्' ]
             });
@@ -150,13 +212,21 @@ function makeTest(f, s) {
     var fin = first.slice(-1)[0];
     var beg = second[0];
     var vir = false;
+    var candra = false;
     if (fin == Const.virama) {
         first.pop();
         fin = first.slice(-1)[0];
         vir = true;
     }
-    // var pattern = (vir) ? [fin, Const.virama, beg].join('') : [fin, beg].join('');
-    return {first: first, fin: fin, vir: vir, second: second, beg: beg};
+    if (fin == Const.candra) {
+        first.pop();
+        fin = first.slice(-1)[0];
+        candra = true;
+    }
+    var test = {first: first, fin: fin, vir: vir, second: second, beg: beg};
+    if (vir) test.vir = true;
+    if (candra) test.candra = true;
+    return test;
 }
 
 sandhi.prototype.del = function(samasa, second) {

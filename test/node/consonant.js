@@ -57,7 +57,7 @@ var tests = [
          ['तड्डयते', 'तत्', 'डयते'],
          ['तट्टिका', 'तत्', 'टिका'],
          ['', '', ''],
-         ['', '', ''],
+         ['वाग्देवताचरितचित्रितचित्तसद्मा', 'वाक् देवता चरित चित्रित चित्त सद्मा', ''], // INTEGR
          ['', '', ''],
      ]
     },
@@ -73,7 +73,7 @@ var tests = [
     },
 
     {sutra: '8.4.60',
-     descr: 'If a dental n or other than n and s is followed by l',
+     descr: 'a dental n or dental other than n and s is followed by l',
      only: 'ext',
      tests: [
          ['तल्लयः', 'तत्', 'लयः'],
