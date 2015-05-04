@@ -132,7 +132,6 @@ sandhi.prototype.split = function(samasa) {
 
 sandhi.prototype.add = function(first, second) {
     var res = [];
-    // log('===', Const.allligas);
     var mark = makeMarker(first, second);
     var fn = ['./lib/', mark.type, '_sutras'].join('');
     var sutras = require(fn);
@@ -140,14 +139,12 @@ sandhi.prototype.add = function(first, second) {
         if (sutra.num == '') return;
         if (sutra.type != mark.type) return;
         var tmps = sutra.add(mark);
-        // log('--------------', tmps);
         if (!tmps) return;
         tmps.forEach(function(mark) {
             var samasa = makeAddResult(mark);
             res.push(samasa);
         });
     });
-
     // log('ADD RES', res);
     return res;
 }
