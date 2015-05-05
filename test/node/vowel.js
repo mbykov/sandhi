@@ -151,12 +151,11 @@ var tests = [
      ]
     },
 
-    // {sutra: '6.1.78',
-     {sutra: '',
-     descr: 'diphthong followed by any vowel, including itself, changes to its semi-vowel equivalent - external - optional',
+    {sutra: '6.1.78',
+     descr: 'diphthong followed by any vowel-a, including itself, changes to its semi-vowel equivalent - external - optional',
      tests: [
          ['हरयिह', 'हरे', 'इह'], // coalesced
-         ['हर इह', 'हरे', 'इह'], // semi-vow dropped, one by one
+         ['हर इह', 'हरे', 'इह'], // semi-vow dropped
          ['विष्णविह', 'विष्णो', 'इह'],
          ['विष्णविह', 'विष्णो', 'इह'],
          ['देव्यायर्पय', 'देव्यै', 'अर्पय'],
