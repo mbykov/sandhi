@@ -138,7 +138,9 @@ sandhi.prototype.add = function(first, second) {
     sutras.forEach(function(sutra) {
         if (sutra.num == '') return;
         if (sutra.type != mark.type) return;
-        var tmps = sutra.add(mark);
+        var test = JSON.parse(JSON.stringify(mark));
+        // log('====> E', sutra.num, test);
+        var tmps = sutra.add(test);
         if (!tmps) return;
         // log('MARK', sutra.num, mark)
         tmps.forEach(function(mark) {
