@@ -140,6 +140,7 @@ sandhi.prototype.add = function(first, second) {
         if (sutra.type != mark.type) return;
         var tmps = sutra.add(mark);
         if (!tmps) return;
+        // log('MARK', sutra.num, mark)
         tmps.forEach(function(mark) {
             var samasa = makeAddResult(mark);
             res.push(samasa);
@@ -177,6 +178,7 @@ function makeMarker(f, s) {
     } else if ((u.c(Const.consonants, fin) || u.c(Const.allligas, fin)) && u.c(Const.allvowels, beg)) {
         // почему-то в allligas первое значение - пробел. Нужно убрать?
         marker = {type: 'vow', first: first, fin: fin, second: second, beg: beg};
+        if (u.c(Const.consonants, fin)) marker.fin = '';
         // log('VOW MARK', marker);
     }
     return marker;
@@ -190,7 +192,7 @@ function makeAddResult(test) {
         test.vir = false;
     }
     var conc = (test.conc) ? ' ' : '';
-    test.first.push(test.end);
+    if (test.end) test.first.push(test.end);
     if (test.vir) test.first.push(Const.virama);
     return [test.first.join(''), test.second.join('')].join(conc);
 }

@@ -1,7 +1,7 @@
 var utils = require('../utils');
 
 var tests = [
-    {sutra: '1.6.101',
+    {sutra: '6.1.101',
      descr: 'simple vowel, followed by a similar vowel',
      tests: [
          ['योगानुशासन', 'योग', 'अनुशासन'], // a + a = A
@@ -40,22 +40,6 @@ var tests = [
          // ['', '', ''],
      ]
     },
-    {sutra: '6.1.88',
-     descr: 'a or ā is followed by e, o, ai or au - vriddhi',
-     tests: [
-         ['नरैन्द्रिय', 'नर', 'ऐन्द्रिय'],
-         ['सदैश्वर', 'सदा', 'ऐश्वर'],
-         ['नरौदर्य', 'नर', 'औदर्य'],
-         ['सदौरग', 'सदा', 'औरग'],
-
-         ['देवैकत्व', 'देव', 'एकत्व'], // a + e = E
-         ['सैव', 'सा', 'एव'],
-
-         ['परौजस्', 'पर', 'ओजस्'], // a + o = O
-         ['महौघ', 'महा', 'ओघ'],
-         // ['', '', ''],
-     ]
-    },
 
     {sutra: '6.1.87',
      descr: 'a or ā is followed by i, ī, u, ū, ṛ, ṝ or ḷ -  guna',
@@ -81,7 +65,26 @@ var tests = [
      ]
     },
 
-    {sutra: '6.1.78',
+    // {sutra: '6.1.88',
+     {sutra: '',
+     descr: 'a or ā is followed by e, o, ai or au - vriddhi',
+     tests: [
+         ['नरैन्द्रिय', 'नर', 'ऐन्द्रिय'],
+         ['सदैश्वर', 'सदा', 'ऐश्वर'],
+         ['नरौदर्य', 'नर', 'औदर्य'],
+         ['सदौरग', 'सदा', 'औरग'],
+
+         ['देवैकत्व', 'देव', 'एकत्व'], // a + e = E
+         ['सैव', 'सा', 'एव'],
+
+         ['परौजस्', 'पर', 'ओजस्'], // a + o = O
+         ['महौघ', 'महा', 'ओघ'],
+         // ['', '', ''],
+     ]
+    },
+
+    // {sutra: '6.1.78',
+     {sutra: '',
      descr: 'diphthong followed by any vowel, including itself, changes to its semi-vowel equivalent',
      only: 'int',
      tests: [
@@ -96,7 +99,9 @@ var tests = [
          ['', '', ''],
      ]
     },
-    {sutra: '6.1.78',
+
+    // {sutra: '6.1.78',
+     {sutra: '',
      descr: 'diphthong followed by any vowel, including itself, changes to its semi-vowel equivalent - external - optional',
      tests: [
          ['हरयिह', 'हरे', 'इह'], // coalesced
@@ -122,7 +127,8 @@ var tests = [
      ]
     },
 
-    {sutra: '6.1.109',
+    // {sutra: '6.1.109',
+     {sutra: '',
      descr: '"e" and "o" at the end of a word, when followed by "a" gives avagraha',
      only: 'ext',
      tests: [
@@ -134,7 +140,8 @@ var tests = [
      ]
     },
 
-    {sutra: '6.1.77',
+    // {sutra: '6.1.77',
+     {sutra: '',
      descr: 'simple vowel except A or Aa followed by a dissimilar simple vowel changes to its semi-vowel',
      tests: [
          ['योग्यङ्ग', 'योगि', 'अङ्ग'], // i
