@@ -145,7 +145,7 @@ sandhi.prototype.add = function(first, second) {
             res.push(samasa);
         });
     });
-    log('ADD RES', res);
+    // log('ADD RES', res);
     return res;
 }
 
@@ -183,7 +183,7 @@ function makeMarker(f, s) {
 }
 
 function makeAddResult(test) {
-    if (u.c(Const.allvowels, test.beg)) {
+    if (test.type == 'cons' && u.c(Const.allvowels, test.beg)) {
         test.second.shift();
         liga = Const.vow2liga[test.beg];
         test.second.unshift(liga);
