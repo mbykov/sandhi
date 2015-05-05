@@ -153,6 +153,7 @@ sandhi.prototype.add = function(first, second) {
 }
 
 
+
 function makeMarker(f, s) {
     var first = f.split('');
     var second = s.split('');
@@ -178,11 +179,16 @@ function makeMarker(f, s) {
         if (vir) marker.vir = true;
         if (candra) marker.candra = true;
     } else if ((u.c(Const.consonants, fin) || u.c(Const.allligas, fin)) && u.c(Const.allvowels, beg)) {
-        // почему-то в allligas первое значение - пробел. Нужно убрать?
         marker = {type: 'vow', first: first, fin: fin, second: second, beg: beg};
         if (u.c(Const.consonants, fin)) marker.fin = '';
         // log('VOW MARK', marker);
+    } else if ((first.length == 1) && u.c(Const.allvowels, fin) && u.c(Const.allvowels, beg)) {
+        // FIXME: случай first из одной гласной буквы. Заменил на лигу, все равно выталкивавется. Но similar с L-liga глючит. Надо бы переделать
+        fin = u.liga(fin);
+        marker = {type: 'vow', first: first, fin: fin, second: second, beg: beg};
+        // log('VOW MARK ONE', marker);
     }
+    // log('MARKER', marker);
     return marker;
 }
 
