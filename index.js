@@ -38,7 +38,7 @@ function sandhi() {
 
 */
 
-function makeMarkList(samasa) {
+function makeMarkerList(samasa) {
     var marks = [];
     var arr = samasa.split('');
     var idx = 0;
@@ -53,8 +53,8 @@ function makeMarkList(samasa) {
             mark = {type: 'cons', pattern: pattern, fin: sym, beg: next2, idx: idx, pos: i};
             idx++;
             marks.push(mark);
-        // } else if ((u.c(Const.consonants, fin) || u.c(Const.allligas, fin)) && u.c(Const.allvowels, beg)) {
         } else if (u.c(Const.dirgha_ligas, sym) && sym != 'ॢ') {
+            // } else if ((u.c(Const.consonants, fin) || u.c(Const.allligas, fin)) && u.c(Const.allvowels, beg)) {
             // FIXME: остальные гласные маркеры добавить по ходу дела - и проверить !la - на la-liga нет теста
             mark = {type: 'vow', pattern: sym, idx: idx, pos: i};
             idx++;
@@ -74,9 +74,8 @@ function mark2sandhi(marks) {
             if (sutra.num == '') return; // FIXME:
             if (sutra.type != mark.type) return;
             var sandhis = sutra.split(mark);
-            // if (!sandhis) return;
-            // mark.sandhis = sandhis;
-            if (!sandhis) { // FIXME: до полного списка сутр
+            if (!sandhis) return;
+            if (mark.type == 'cons' && !sandhis) { // FIXME: до полного списка сутр, для комбинатора
                 mark.fake = true;
                 sandhis = [[[mark.fin, Const.virama].join(''), mark.beg].join(' ')];
             }
@@ -90,59 +89,36 @@ function mark2sandhi(marks) {
     return list;
 }
 
-function fake2sandhi(marks) {
-    marks.forEach(function(mark) {
-        if (!mark.sandhis) {
-            mark.fake = true;
-            mark.sandhis = [[[mark.fin, Const.virama].join(''), mark.beg].join(' ')];
-        }
-    });
-}
-
-// FIXME: fullMarkList - нужно объединить с  mark2sandhi => sandhiList
-// marker на каждую комбинацию, техническое
-function fullMarkList(marks) {
-    var list = [];
-    marks.forEach(function(mark) {
-        mark.sandhis.forEach(function(sandhi) {
-            var m = JSON.parse(JSON.stringify(mark));
-            m.sandhi = sandhi;
-            list.push(m);
-        });
-    });
-    return list;
-}
-
-function replaceByPos(samasa, pattern, sandhi, pos) {
-    // log('==== SANDHI', sandhi);
-    var first = samasa.slice(0, pos);
-    var second = samasa.slice(pos);
-    // log('===', first, second, sandhi)
-    var result = second.replace(pattern, sandhi);
-    return [first, result].join('');
-}
-
 /*
   make test g=4.41.+7.+split
 */
 sandhi.prototype.split = function(samasa) {
     var res = [];
-    var marks = makeMarkList(samasa);
-    // mark2sandhi(marks);
-    // fake2sandhi(marks); // FIXME: только для отладки комбинатора
-    // var list = fullMarkList(marks);
+    var marks = makeMarkerList(samasa);
     var list = mark2sandhi(marks);
-    log('==list==', list.length);
+    // log('==list==', list.map(function(m) { return JSON.stringify(m)}));
     var combinations = u.combinator(list);
+    var cleans = []; // параллельные замены (одного маркера) не пермутируют между собой
+    combinations.forEach(function(comb) {
+        var idxs = comb.map(function(m) {
+            return m.idx;
+        });
+        // log('IDXS', idxs, 'uniq', _.uniq(idxs));
+        if (idxs.length == _.uniq(idxs).length) cleans.push(comb);
+    });
+    // log('==clean==', cleans.map(function(m) { return JSON.stringify(m)}));
+    // log(123, marks.length, list.length, combinations.length, 'cleans', cleans.length)
     combinations.forEach(function(comb) {
         var result = samasa;
         comb.forEach(function(mark) {
-            result = replaceByPos(result, mark.pattern, mark.sandhi, mark.pos);
+            // log('M',mark.sandhi);
+            result = u.replaceByPos(result, mark.pattern, mark.sandhi, mark.pos);
             res.push(result);
+            // log('S', result);
         });
     });
     var uniq = _.uniq(res);
-    // log('SPLIT RESULT', uniq.length);
+    log('SPLIT RESULT', res.length, uniq.length);
     return uniq;
 }
 
@@ -167,8 +143,6 @@ sandhi.prototype.add = function(first, second) {
     // log('ADD RES', res);
     return res;
 }
-
-
 
 function makeMarker(f, s) {
     var first = f.split('');
