@@ -55,7 +55,7 @@ function makeMarkList(samasa) {
             marks.push(mark);
         // } else if ((u.c(Const.consonants, fin) || u.c(Const.allligas, fin)) && u.c(Const.allvowels, beg)) {
         } else if (u.c(Const.dirgha_ligas, sym) && sym != 'ॢ') {
-            // FIXME: остальные гласные маркеры добавить по ходу дела - и проверить !la
+            // FIXME: остальные гласные маркеры добавить по ходу дела - и проверить !la - на la-liga нет теста
             mark = {type: 'vow', pattern: sym, idx: idx, pos: i};
             idx++;
             // log('==== mark', mark);
@@ -66,26 +66,41 @@ function makeMarkList(samasa) {
 }
 
 function mark2sandhi(marks) {
+    var list = [];
     marks.forEach(function(mark) {
         var fn = ['./lib/', mark.type, '_sutras'].join('');
         var sutras = require(fn);
         sutras.forEach(function(sutra) {
-            if (sutra.num == '') return;
+            if (sutra.num == '') return; // FIXME:
             if (sutra.type != mark.type) return;
             var sandhis = sutra.split(mark);
-            if (!sandhis) return;
-            mark.sandhis = sandhis;
+            // if (!sandhis) return;
+            // mark.sandhis = sandhis;
+            if (!sandhis) { // FIXME: до полного списка сутр
+                mark.fake = true;
+                sandhis = [[[mark.fin, Const.virama].join(''), mark.beg].join(' ')];
+            }
+            sandhis.forEach(function(sandhi) {
+                var m = JSON.parse(JSON.stringify(mark));
+                m.sandhi = sandhi;
+                list.push(m);
+            });
         });
     });
+    return list;
 }
 
 function fake2sandhi(marks) {
     marks.forEach(function(mark) {
-        if (!mark.sandhis) mark.sandhis = [[[mark.fin, Const.virama].join(''), mark.beg].join(' ')];
+        if (!mark.sandhis) {
+            mark.fake = true;
+            mark.sandhis = [[[mark.fin, Const.virama].join(''), mark.beg].join(' ')];
+        }
     });
 }
 
 // FIXME: fullMarkList - нужно объединить с  mark2sandhi => sandhiList
+// marker на каждую комбинацию, техническое
 function fullMarkList(marks) {
     var list = [];
     marks.forEach(function(mark) {
@@ -113,10 +128,11 @@ function replaceByPos(samasa, pattern, sandhi, pos) {
 sandhi.prototype.split = function(samasa) {
     var res = [];
     var marks = makeMarkList(samasa);
-    mark2sandhi(marks);
-    fake2sandhi(marks); // FIXME: только для отладки комбинатора
-    var list = fullMarkList(marks);
-    // log(list)
+    // mark2sandhi(marks);
+    // fake2sandhi(marks); // FIXME: только для отладки комбинатора
+    // var list = fullMarkList(marks);
+    var list = mark2sandhi(marks);
+    log('==list==', list.length);
     var combinations = u.combinator(list);
     combinations.forEach(function(comb) {
         var result = samasa;

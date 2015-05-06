@@ -30,12 +30,12 @@ utils.prototype.test = function(test, idx) {
         isIN(added, compound).should.equal(true);
     });
     // split
-    // var descr = [idxstr, 'split', addtext, compound].join(' - ');
-    // it(descr, function() {
-    //     var splitted = sandhi.split(compound);
-    //     var testStr = [first, second].join(' ');
-    //     isIN(splitted, testStr).should.equal(true);
-    // });
+    var descr = [idxstr, 'split', addtext, compound].join(' - ');
+    it(descr, function() {
+        var splitted = sandhi.split(compound);
+        var testStr = [first, second].join(' ');
+        isIN(splitted, testStr).should.equal(true);
+    });
 }
 
 
