@@ -47,19 +47,22 @@ function makeMarkerList(samasa) {
         var mark;
         var next1 = arr[i+1];
         var next2 = arr[i+2];
-        if (!next1 || !next2) return;
-        if (u.c(Const.hal, sym) && (next1 == Const.virama) && u.c(Const.hal, next2)) {
+        if (next1 && next2 && u.c(Const.hal, sym) && (next1 == Const.virama) && u.c(Const.hal, next2)) {
             var pattern = [sym, Const.virama, next2].join('');
             mark = {type: 'cons', pattern: pattern, fin: sym, beg: next2, idx: idx, pos: i};
             idx++;
             marks.push(mark);
-        } else if (u.c(Const.dirgha_ligas, sym) && sym != 'ॢ') {
+        // } else if (u.c(Const.dirgha_ligas, sym) && sym != 'ॢ') {
+        } else if (u.c(Const.dirgha_ligas, sym)) {
             // } else if ((u.c(Const.consonants, fin) || u.c(Const.allligas, fin)) && u.c(Const.allvowels, beg)) {
             // FIXME: остальные гласные маркеры добавить по ходу дела - и проверить !la - на la-liga нет теста
             mark = {type: 'vow', pattern: sym, idx: idx, pos: i};
             idx++;
-            // log('==== mark', mark);
+            // log('===>>> mark', i, 'mark', mark);
             marks.push(mark);
+        } else {
+            // log('can not mark');
+            return;
         }
     });
     return marks;
@@ -95,6 +98,8 @@ function mark2sandhi(marks) {
 sandhi.prototype.split = function(samasa) {
     var res = [];
     var marks = makeMarkerList(samasa);
+    if (marks.length == 0) return log('==no_markers!!!=='); // FIXME: этого не должно быть
+    // log('==marks==', marks.map(function(m) { return JSON.stringify(m)}));
     var list = mark2sandhi(marks);
     // log('==list==', list.map(function(m) { return JSON.stringify(m)}));
     var combinations = u.combinator(list);
@@ -107,8 +112,8 @@ sandhi.prototype.split = function(samasa) {
         if (idxs.length == _.uniq(idxs).length) cleans.push(comb);
     });
     // log('==clean==', cleans.map(function(m) { return JSON.stringify(m)}));
-    // log(123, marks.length, list.length, combinations.length, 'cleans', cleans.length)
-    combinations.forEach(function(comb) {
+    // log('123 marks', marks.length, 'list', list.length, 'combs', combinations.length, 'cleans', cleans.length)
+    cleans.forEach(function(comb) {
         var result = samasa;
         comb.forEach(function(mark) {
             // log('M',mark.sandhi);
@@ -118,7 +123,7 @@ sandhi.prototype.split = function(samasa) {
         });
     });
     var uniq = _.uniq(res);
-    log('SPLIT RESULT', res.length, uniq.length);
+    // log('SPLIT RESULT', res.length, uniq.length);
     return uniq;
 }
 
