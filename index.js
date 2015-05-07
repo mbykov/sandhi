@@ -38,32 +38,45 @@ function sandhi() {
 
 */
 
+/*
+  vowels:
+  dirgha_liga -> simple vowel, followed by a similar vowel
+  e, o, ar, al - > a or ā is followed by simple vowel - guna
+*/
 function makeMarkerList(samasa) {
     var marks = [];
     var arr = samasa.split('');
     var idx = 0;
     arr.forEach(function(sym, i) {
         if (u.c(Const.special, sym)) return;
-        var mark;
+        var mark, pattern;
         var next1 = arr[i+1];
         var next2 = arr[i+2];
         if (next1 && next2 && u.c(Const.hal, sym) && (next1 == Const.virama) && u.c(Const.hal, next2)) {
-            var pattern = [sym, Const.virama, next2].join('');
+            if (sym == 'र') return; // FIXME - д.б. список всех невозможных комбинаций, возможно, не здесь, а перед определителем маркера, вне if
+            pattern = [sym, Const.virama, next2].join('');
             mark = {type: 'cons', pattern: pattern, fin: sym, beg: next2, idx: idx, pos: i};
             idx++;
             marks.push(mark);
-        // } else if (u.c(Const.dirgha_ligas, sym) && sym != 'ॢ') {
-        } else if (u.c(Const.dirgha_ligas, sym)) {
+            // log('M cons', i, sym, next1, next2);
+            // } else if (u.c(Const.dirgha_ligas, sym) && sym != 'ॢ') {
+        } else if (u.c(Const.dirgha_ligas, sym) || (u.c(Const.guna_diphs, u.vowel(sym)) ) ) { // FIXME: проверить !la - на la-liga нет теста
             // } else if ((u.c(Const.consonants, fin) || u.c(Const.allligas, fin)) && u.c(Const.allvowels, beg)) {
-            // FIXME: остальные гласные маркеры добавить по ходу дела - и проверить !la - на la-liga нет теста
             mark = {type: 'vow', pattern: sym, idx: idx, pos: i};
             idx++;
-            // log('===>>> mark', i, 'mark', mark);
+            // log('M vow dirgha', i, 'mark', mark);
+            marks.push(mark);
+        } else if ((u.c(Const.hal, sym) || sym == Const.A) && (next1 == 'र' || next1 == 'ल') && next2 == Const.virama) {
+            pattern = [next1, Const.virama].join('');
+            mark = {type: 'vow', pattern: pattern, idx: idx, pos: i};
+            idx++;
+            // log('M vow fF', i, 'mark', mark);
             marks.push(mark);
         } else {
             // log('can not mark');
             return;
         }
+        // log('SYM', i, sym, next1, next2);
     });
     return marks;
 }
@@ -112,7 +125,7 @@ sandhi.prototype.split = function(samasa) {
         if (idxs.length == _.uniq(idxs).length) cleans.push(comb);
     });
     // log('==clean==', cleans.map(function(m) { return JSON.stringify(m)}));
-    // log('123 marks', marks.length, 'list', list.length, 'combs', combinations.length, 'cleans', cleans.length)
+    if (cleans.length > 100) log('==cleans.size==', marks.length, 'list', list.length, 'combs', combinations.length, 'cleans', cleans.length)
     cleans.forEach(function(comb) {
         var result = samasa;
         comb.forEach(function(mark) {
