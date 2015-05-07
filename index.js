@@ -60,23 +60,37 @@ function makeMarkerList(samasa) {
             marks.push(mark);
             // log('M cons', i, sym, next1, next2);
             // } else if (u.c(Const.dirgha_ligas, sym) && sym != 'ॢ') {
-        } else if (u.c(Const.dirgha_ligas, sym) || (u.c(Const.guna_diphs, u.vowel(sym)) ) ) { // FIXME: проверить !la - на la-liga нет теста
+            // dirgha, guna, vriddhi ->
+        } else if (u.c(Const.dirgha_ligas, sym) || u.c(Const.guna_diphs, u.vowel(sym))  || u.c(Const.vriddhi_diphs, u.vowel(sym))) { // FIXME: проверить !la - на la-liga нет теста
             // } else if ((u.c(Const.consonants, fin) || u.c(Const.allligas, fin)) && u.c(Const.allvowels, beg)) {
             mark = {type: 'vow', pattern: sym, idx: idx, pos: i};
             idx++;
             // log('M vow dirgha', i, 'mark', mark);
             marks.push(mark);
+            // guna r,l ->
         } else if ((u.c(Const.hal, sym) || sym == Const.A) && (next1 == 'र' || next1 == 'ल') && next2 == Const.virama) {
             pattern = [next1, Const.virama].join('');
             mark = {type: 'vow', pattern: pattern, idx: idx, pos: i};
             idx++;
             // log('M vow fF', i, 'mark', mark);
             marks.push(mark);
+            // yana-sandhi=semivows ->
+        } else if (u.c(Const.yaR, sym)) { // simple vowel except Aa followed by a dissimilar simple vowel changes to its semi-vowel
+            // тут нужно добавить dissimilar FIXME:
+            if (u.c(Const.allligas, next1)) {
+                pattern = [sym, next1].join('');
+                mark = {type: 'vow', pattern: pattern, idx: idx, pos: i};
+            } else if (u.c(Const.consonants, next1)) {
+                mark = {type: 'vow', pattern: sym, idx: idx, pos: i};
+            } else return;
+            idx++;
+            // log('M vow yaNa', i, 'mark', mark);
+            marks.push(mark);
         } else {
             // log('can not mark');
             return;
         }
-        // log('SYM', i, sym, next1, next2);
+        // log('SYM', i, sym, next1, next2); // योग्यङ्ग अङ्ग
     });
     return marks;
 }
