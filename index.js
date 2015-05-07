@@ -75,11 +75,12 @@ function makeMarkerList(samasa) {
             // log('M vow fF', i, 'mark', mark);
             marks.push(mark);
             // yana-sandhi=semivows ->
-        } else if (u.c(Const.yaR, sym)) { // simple vowel except Aa followed by a dissimilar simple vowel changes to its semi-vowel
+        } else if (u.c(Const.yaR, sym) && !u.similar(sym, next1)) { // simple vowel except Aa followed by a dissimilar simple vowel changes to its semi-vowel
             // тут нужно добавить dissimilar FIXME:
             if (u.c(Const.allligas, next1)) {
-                pattern = [sym, next1].join('');
+                pattern = [Const.virama, sym, next1].join('');
                 mark = {type: 'vow', pattern: pattern, idx: idx, pos: i};
+                // log('SYM', i, sym, next1, u.similar(sym, next1));
             } else if (u.c(Const.consonants, next1)) {
                 mark = {type: 'vow', pattern: sym, idx: idx, pos: i};
             } else return;
@@ -140,6 +141,7 @@ sandhi.prototype.split = function(samasa) {
     });
     // log('==clean==', cleans.map(function(m) { return JSON.stringify(m)}));
     if (cleans.length > 100) log('==cleans.size==', marks.length, 'list', list.length, 'combs', combinations.length, 'cleans', cleans.length)
+    // log(cleans)
     cleans.forEach(function(comb) {
         var result = samasa;
         comb.forEach(function(mark) {
@@ -147,10 +149,11 @@ sandhi.prototype.split = function(samasa) {
             result = u.replaceByPos(result, mark.pattern, mark.sandhi, mark.pos);
             res.push(result);
             // log('S', result);
+            // опять двадцать пять, затирается результат make test g=6.1.77.+_3_
         });
     });
     var uniq = _.uniq(res);
-    // log('SPLIT RESULT', res.length, uniq.length);
+    log('SPLIT RESULT', res.length, uniq.length, xuniq);
     return uniq;
 }
 
