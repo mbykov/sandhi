@@ -49,6 +49,7 @@ function makeMarkerList(samasa) {
     var idx = 0;
     arr.forEach(function(sym, i) {
         if (u.c(Const.special, sym)) return;
+        if (i == 0) return;
         var mark, pattern;
         var next1 = arr[i+1];
         var next2 = arr[i+2];
@@ -61,11 +62,10 @@ function makeMarkerList(samasa) {
             // log('M cons', i, sym, next1, next2);
             // } else if (u.c(Const.dirgha_ligas, sym) && sym != 'ॢ') {
             // dirgha, guna, vriddhi ->
-        } else if (u.c(Const.dirgha_ligas, sym) || u.c(Const.guna_diphs, u.vowel(sym))  || u.c(Const.vriddhi_diphs, u.vowel(sym))) { // FIXME: проверить !la - на la-liga нет теста
-            // } else if ((u.c(Const.consonants, fin) || u.c(Const.allligas, fin)) && u.c(Const.allvowels, beg)) {
+        } else if (u.c(Const.dirgha_ligas, sym) || u.c(Const.guna_diphs, u.guna(sym)) || u.c(Const.vriddhi_diphs, u.vriddhi(sym))) { // FIXME: проверить !la - на la-liga нет теста
             mark = {type: 'vow', pattern: sym, idx: idx, pos: i};
             idx++;
-            // log('M vow dirgha', i, 'mark', mark);
+            // log('M vow dirgha+guna', i, 'mark', mark);
             marks.push(mark);
             // guna r,l ->
         } else if ((u.c(Const.hal, sym) || sym == Const.A) && (next1 == 'र' || next1 == 'ल') && next2 == Const.virama) {
@@ -77,9 +77,10 @@ function makeMarkerList(samasa) {
             // yana-sandhi=semivows ->
         } else if (u.c(Const.yaR, sym) && !u.similar(sym, next1)) { // simple vowel except Aa followed by a dissimilar simple vowel changes to its semi-vowel
             // тут нужно добавить dissimilar FIXME:
+            // переделать на sym=virama, next1=yaR, etc
             if (u.c(Const.allligas, next1)) {
                 pattern = [Const.virama, sym, next1].join('');
-                mark = {type: 'vow', pattern: pattern, idx: idx, pos: i};
+                mark = {type: 'vow', pattern: pattern, idx: idx, pos: i-1};
                 // log('SYM', i, sym, next1, u.similar(sym, next1));
             } else if (u.c(Const.consonants, next1)) {
                 mark = {type: 'vow', pattern: sym, idx: idx, pos: i};
@@ -147,13 +148,13 @@ sandhi.prototype.split = function(samasa) {
         comb.forEach(function(mark) {
             // log('M',mark.sandhi);
             result = u.replaceByPos(result, mark.pattern, mark.sandhi, mark.pos);
+            // result = result.replace(mark.pattern, mark.sandhi);
             res.push(result);
-            // log('S', result);
-            // опять двадцать пять, затирается результат make test g=6.1.77.+_3_
+            // log('S', mark.pos, samasa, result, mark.pattern, mark.sandhi);
         });
     });
     var uniq = _.uniq(res);
-    log('SPLIT RESULT', res.length, uniq.length, xuniq);
+    // log('SPLIT RESULT', res.length, uniq.length);
     return uniq;
 }
 
