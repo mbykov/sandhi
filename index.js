@@ -141,18 +141,21 @@ sandhi.prototype.split = function(samasa) {
         if (idxs.length == _.uniq(idxs).length) cleans.push(comb);
     });
     // log('==clean==', cleans.map(function(m) { return JSON.stringify(m)}));
-    if (cleans.length > 100) log('==cleans.size==', marks.length, 'list', list.length, 'combs', combinations.length, 'cleans', cleans.length)
-    // log(cleans)
+    if (cleans.length > 100) log('==cleans.size== marks:', marks.length, 'list:', list.length, 'combs:', combinations.length, 'cleans:', cleans.length)
+    // log(cleans);
     cleans.forEach(function(comb) {
         var result = samasa;
         comb.forEach(function(mark) {
-            // log('M',mark.sandhi);
+            // log('M', mark.sandhi);
             result = u.replaceByPos(result, mark.pattern, mark.sandhi, mark.pos);
             // result = result.replace(mark.pattern, mark.sandhi);
+            // TODO: как-то проверить наличие гласной в каждом слове комбинации - когда обнаружу пример
             res.push(result);
-            // log('S', mark.pos, samasa, result, mark.pattern, mark.sandhi);
+            // log('result', mark.pos, samasa, '-', result);
         });
     });
+    // как могут образоваться не uniq результы? не понимаю.
+    // Во-вторых, я могу отбросить слово без гласных только после замены - в комбинатор не поместить
     var uniq = _.uniq(res);
     // log('SPLIT RESULT', res.length, uniq.length);
     return uniq;
