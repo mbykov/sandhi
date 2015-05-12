@@ -53,7 +53,8 @@ function makeMarkerList(samasa) {
         var mark, pattern;
         var next1 = arr[i+1];
         var next2 = arr[i+2];
-        if (next1 && next2 && u.c(Const.hal, sym) && (next1 == Const.virama) && u.c(Const.hal, next2)) {
+        // if (i == 1) log(1, i, sym, u.guna(sym))
+        if (next1 && next2 && u.c(Const.Jay, sym) && (next1 == Const.virama) && u.c(Const.hal, next2)) { // Jay = hard+soft
             if (sym == 'र') return; // FIXME - д.б. список всех невозможных комбинаций, возможно, не здесь, а перед определителем маркера, вне if
             pattern = [sym, Const.virama, next2].join('');
             mark = {type: 'cons', pattern: pattern, fin: sym, beg: next2, idx: idx, pos: i};
@@ -62,17 +63,18 @@ function makeMarkerList(samasa) {
             // log('M cons', i, sym, next1, next2);
             // } else if (u.c(Const.dirgha_ligas, sym) && sym != 'ॢ') {
             // dirgha, guna, vriddhi ->
-        } else if (u.c(Const.dirgha_ligas, sym) || u.c(Const.guna_diphs, u.guna(sym)) || u.c(Const.vriddhi_diphs, u.vriddhi(sym))) { // FIXME: проверить !la - на la-liga нет теста
+        } else if (u.c(Const.dirgha_ligas, sym) || u.c(Const.guna_diphs, u.vowel(sym)) || u.c(Const.vriddhi_diphs, u.vowel(sym))) { // FIXME: проверить !la - на la-liga нет теста
             mark = {type: 'vow', pattern: sym, idx: idx, pos: i};
             idx++;
-            // log('M vow dirgha+guna', i, 'mark', mark);
+            // log('M vow dirgha+guna', i, 'mark', mark); // FIXME: разнести в разные случаи?
             marks.push(mark);
             // guna r,l ->
-        } else if ((u.c(Const.hal, sym) || sym == Const.A) && (next1 == 'र' || next1 == 'ल') && next2 == Const.virama) {
+        } else if ((u.c(Const.hal, sym) || sym == Const.A) && (next1 == 'र' || next1 == 'ल') && next2 == Const.virama) { // तवल्कार
+        // } else if (true) { // तवल्कार ==== непонятно
             pattern = [next1, Const.virama].join('');
-            mark = {type: 'vow', pattern: pattern, idx: idx, pos: i};
+            mark = {type: 'vow', pattern: pattern, idx: idx, pos: i+1};
             idx++;
-            // log('M vow fF', i, 'mark', mark);
+            // log('M vow guna special', i, 'mark', mark);
             marks.push(mark);
             // yana-sandhi=semivows ->
         } else if (u.c(Const.yaR, sym) && !u.similar(sym, next1)) { // simple vowel except Aa followed by a dissimilar simple vowel changes to its semi-vowel
