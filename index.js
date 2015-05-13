@@ -89,7 +89,7 @@ function makeMarkerList(samasa) {
             } else return;
             idx++;
             // log('M vow yaNa', i, 'mark', mark);
-            marks.push(mark);
+            // marks.push(mark);
         } else {
             // log('can not mark');
             return;
@@ -147,19 +147,21 @@ sandhi.prototype.split = function(samasa) {
     // log(cleans);
     cleans.forEach(function(comb) {
         var result = samasa;
+        // log('COMB', comb.length);
         comb.forEach(function(mark) {
             // log('M', mark.sandhi);
             result = u.replaceByPos(result, mark.pattern, mark.sandhi, mark.pos);
             // result = result.replace(mark.pattern, mark.sandhi);
             // TODO: как-то проверить наличие гласной в каждом слове комбинации - когда обнаружу пример
-            res.push(result);
-            // log('result', mark.pos, samasa, '-', result);
+            // log('mark:', mark.pos, 'pt:', mark.pattern, 'sa:', mark.sandhi, mark);
         });
+        // log('result:', result);
+        res.push(result);
     });
     // как могут образоваться не uniq результы? не понимаю.
     // Во-вторых, я могу отбросить слово без гласных только после замены - в комбинатор не поместить
     var uniq = _.uniq(res);
-    // log('SPLIT RESULT', res.length, uniq.length);
+    if (res.length != uniq.length) log('SPLIT RES:', res.length, 'uniq:', uniq.length, 'cleans:', cleans.length); // भानूदयः
     return uniq;
 }
 
