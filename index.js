@@ -48,53 +48,60 @@ function makeMarkerList(samasa) {
     var arr = samasa.split('');
     var idx = 0;
     arr.forEach(function(sym, i) {
-        if (u.c(Const.special, sym)) return;
+        // if (u.c(Const.special, sym)) return;
         if (i == 0) return;
         var mark, pattern;
         var next1 = arr[i+1];
         var next2 = arr[i+2];
         // if (i == 1) log(1, i, sym, u.guna(sym))
-        if (next1 && next2 && u.c(Const.Jay, sym) && (next1 == Const.virama) && u.c(Const.hal, next2)) { // Jay = hard+soft
-            if (sym == 'र') return; // FIXME - д.б. список всех невозможных комбинаций, возможно, не здесь, а перед определителем маркера, вне if
+        if (sym == Const.virama && u.c(Const.yaR, next1) && next2 != Const.virama) { // simple vowel except Aa followed by a dissimilar simple vowel changes to its semi-vowel
+            // yana-sandhi=semivows -> योग्यङ्ग
+            if (u.c(Const.allligas, next2)) {
+                pattern = [Const.virama, next1, next2].join('');
+            } else {
+                pattern = [Const.virama, next1].join('');
+            }
+            mark = {type: 'yana', pattern: pattern, beg: next2, idx: idx, pos: i, size: i+pattern.length}; //
+            idx++;
+            // log('M vow yaNa', i, 'mark', mark); // योगि + अङ्ग - योग्यङ्ग
+            marks.push(mark);
+        } else if (next1 && next2 && u.c(Const.Jay, sym) && (next1 == Const.virama) && u.c(Const.hal, next2)) { // Jay = hard+soft
+            if (sym == 'र') return; // FIXME: - д.б. список всех невозможных комбинаций, возможно, не здесь, а перед определителем маркера, вне if
             pattern = [sym, Const.virama, next2].join('');
             mark = {type: 'cons', pattern: pattern, fin: sym, beg: next2, idx: idx, pos: i};
             idx++;
-            marks.push(mark);
+            // marks.push(mark);
             // log('M cons', i, sym, next1, next2);
             // } else if (u.c(Const.dirgha_ligas, sym) && sym != 'ॢ') {
             // dirgha, guna, vriddhi ->
-        } else if (u.c(Const.dirgha_ligas, sym) || u.c(Const.guna_diphs, u.vowel(sym)) || u.c(Const.vriddhi_diphs, u.vowel(sym))) { // FIXME: проверить !la - на la-liga нет теста
-            mark = {type: 'vow', pattern: sym, idx: idx, pos: i};
+        } else if (u.c(Const.dirgha_ligas, sym)) { // FIXME: проверить !la - на la-liga нет теста
+            mark = {type: 'dirgha', pattern: sym, idx: idx, pos: i};
             idx++;
-            // log('M vow dirgha+guna', i, 'mark', mark); // FIXME: разнести в разные случаи?
-            marks.push(mark);
+            // log('M vow dirgha', i, 'mark', mark);
+            // marks.push(mark);
+        } else if (u.c(Const.gunas, u.vowel(sym))) {
+            mark = {type: 'guna', pattern: sym, idx: idx, pos: i, size: i+1};
+            idx++;
+            // log('M vow guna', i, 'mark', mark);
+            // marks.push(mark);
+            // guna r,l ->
+        } else if (u.c(Const.vriddhis, u.vowel(sym))) {
+            mark = {type: 'vriddhi', pattern: sym, idx: idx, pos: i};
+            idx++;
+            // log('M vow guna', i, 'mark', mark);
+            // marks.push(mark);
             // guna r,l ->
         } else if ((u.c(Const.hal, sym) || sym == Const.A) && (next1 == 'र' || next1 == 'ल') && next2 == Const.virama) { // तवल्कार
-        // } else if (true) { // तवल्कार ==== непонятно
             pattern = [next1, Const.virama].join('');
-            mark = {type: 'vow', pattern: pattern, idx: idx, pos: i+1};
+            mark = {type: 'guna', pattern: pattern, idx: idx, pos: i+1};
             idx++;
             // log('M vow guna special', i, 'mark', mark);
-            marks.push(mark);
-            // yana-sandhi=semivows ->
-        } else if (u.c(Const.yaR, sym) && !u.similar(sym, next1)) { // simple vowel except Aa followed by a dissimilar simple vowel changes to its semi-vowel
-            // тут нужно добавить dissimilar FIXME:
-            // переделать на sym=virama, next1=yaR, etc
-            if (u.c(Const.allligas, next1)) {
-                pattern = [Const.virama, sym, next1].join('');
-                mark = {type: 'vow', pattern: pattern, idx: idx, pos: i-1};
-                // log('SYM', i, sym, next1, u.similar(sym, next1));
-            } else if (u.c(Const.consonants, next1)) {
-                mark = {type: 'vow', pattern: sym, idx: idx, pos: i};
-            } else return;
-            idx++;
-            // log('M vow yaNa', i, 'mark', mark);
             // marks.push(mark);
         } else {
             // log('can not mark');
             return;
         }
-        // log('SYM', i, sym, next1, next2); // योग्यङ्ग अङ्ग
+        // log('SYM', i, sym, next1, next2);
     });
     return marks;
 }
@@ -102,7 +109,10 @@ function makeMarkerList(samasa) {
 function mark2sandhi(marks) {
     var list = [];
     marks.forEach(function(mark) {
-        var fn = ['./lib/', mark.type, '_sutras'].join('');
+        var ftype;
+        if (u.c(['dirgha', 'guna', 'vriddhi', 'yana', 'ayadi', 'vow'], mark.type)) ftype = 'vow';
+        else return;
+        var fn = ['./lib/', ftype, '_sutras'].join('');
         var sutras = require(fn);
         sutras.forEach(function(sutra) {
             if (sutra.num == '') return; // FIXME:
@@ -130,7 +140,7 @@ sandhi.prototype.split = function(samasa) {
     var res = [];
     var marks = makeMarkerList(samasa);
     if (marks.length == 0) return log('==no_markers!!!=='); // FIXME: этого не должно быть
-    // log('==marks==', marks.map(function(m) { return JSON.stringify(m)}));
+    log('==marks==', marks.map(function(m) { return JSON.stringify(m)}));
     var list = mark2sandhi(marks);
     // log('==list==', list.map(function(m) { return JSON.stringify(m)}));
     var combinations = u.combinator(list);
@@ -143,7 +153,7 @@ sandhi.prototype.split = function(samasa) {
         if (idxs.length == _.uniq(idxs).length) cleans.push(comb);
     });
     // log('==clean==', cleans.map(function(m) { return JSON.stringify(m)}));
-    if (cleans.length > 100) log('==cleans.size== marks:', marks.length, 'list:', list.length, 'combs:', combinations.length, 'cleans:', cleans.length)
+    // if (cleans.length > 100) log('==cleans.size== marks:', marks.length, 'list:', list.length, 'combs:', combinations.length, 'cleans:', cleans.length)
     // log(cleans);
     cleans.forEach(function(comb) {
         var result = samasa;
@@ -161,18 +171,23 @@ sandhi.prototype.split = function(samasa) {
     // как могут образоваться не uniq результы? не понимаю.
     // Во-вторых, я могу отбросить слово без гласных только после замены - в комбинатор не поместить
     var uniq = _.uniq(res);
-    if (res.length != uniq.length) log('SPLIT RES:', res.length, 'uniq:', uniq.length, 'cleans:', cleans.length); // भानूदयः
+    if (res.length != uniq.length) log('NOT UNIQ! SPLIT RES:', res.length, 'uniq:', uniq.length, 'cleans:', cleans.length); // भानूदयः
+    // log('RES', uniq.length);
     return uniq;
 }
 
 sandhi.prototype.add = function(first, second) {
     var res = [];
     var mark = makeMarker(first, second);
-    var fn = ['./lib/', mark.type, '_sutras'].join('');
+    var ftype;
+    if (u.c(['dirgha', 'guna', 'vriddhi', 'yana', 'ayadi', 'vow'], mark.type)) ftype = 'vow';
+    else return;
+    var fn = ['./lib/', ftype, '_sutras'].join('');
+    // var fn = ['./lib/', mark.type, '_sutras'].join('');
     var sutras = require(fn);
     sutras.forEach(function(sutra) {
         if (sutra.num == '') return;
-        if (sutra.type != mark.type) return;
+        // if (sutra.type != mark.type) return; // убрал, чтобы не прописывать подтип - диргха, etc, как в сплите
         var test = JSON.parse(JSON.stringify(mark));
         // log('====> E', sutra.num, test);
         var tmps = sutra.add(test);
@@ -212,11 +227,11 @@ function makeMarker(f, s) {
         if (vir) marker.vir = true;
         if (candra) marker.candra = true;
     } else if ((u.c(Const.consonants, fin) || u.c(Const.allligas, fin)) && u.c(Const.allvowels, beg)) {
+        // здесь можно найти и указать не type=vow, а подтипы. Чтобы не гонять все сутры, но это одно и тоже, кажется. В сплите я указываю типы, потому что маркеров много
         marker = {type: 'vow', first: first, fin: fin, second: second, beg: beg};
         if (u.c(Const.consonants, fin)) marker.fin = '';
         // log('VOW MARK', marker);
-    } else if ((first.length == 1) && u.c(Const.allvowels, fin) && u.c(Const.allvowels, beg)) {
-        // FIXME: случай first из одной гласной буквы. Заменил на лигу, все равно выталкивавется. Но similar с L-liga глючит. Надо бы переделать
+    } else if ((first.length == 1) && u.c(Const.allvowels, fin) && u.c(Const.allvowels, beg)) {        // FIXME: случай first из одной гласной буквы.
         fin = u.liga(fin);
         marker = {type: 'vow', first: first, fin: fin, second: second, beg: beg};
         // log('VOW MARK ONE', marker);
