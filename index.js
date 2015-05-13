@@ -47,10 +47,14 @@ function makeMarkerList(samasa) {
     var marks = [];
     var arr = samasa.split('');
     var idx = 0;
+    /*
+      FIXME: здесь как-то нужно установить пределы
+    */
     arr.forEach(function(sym, i) {
         // if (u.c(Const.special, sym)) return;
-        if (i == 0) return;
-        var mark, pattern;
+        if (i < 1) return;
+        if (i > samasa.length - 1) return;
+        var mark, pattern, size;
         var next1 = arr[i+1];
         var next2 = arr[i+2];
         // if (i == 1) log(1, i, sym, u.guna(sym))
@@ -63,14 +67,14 @@ function makeMarkerList(samasa) {
             }
             mark = {type: 'yana', pattern: pattern, beg: next2, idx: idx, pos: i, size: i+pattern.length}; //
             idx++;
-            // log('M vow yaNa', i, 'mark', mark); // योगि + अङ्ग - योग्यङ्ग
+            log('M vow yaNa', i, 'mark', mark); // योगि + अङ्ग - योग्यङ्ग
             marks.push(mark);
         } else if (next1 && next2 && u.c(Const.Jay, sym) && (next1 == Const.virama) && u.c(Const.hal, next2)) { // Jay = hard+soft
             if (sym == 'र') return; // FIXME: - д.б. список всех невозможных комбинаций, возможно, не здесь, а перед определителем маркера, вне if
             pattern = [sym, Const.virama, next2].join('');
             mark = {type: 'cons', pattern: pattern, fin: sym, beg: next2, idx: idx, pos: i};
             idx++;
-            // marks.push(mark);
+            marks.push(mark);
             // log('M cons', i, sym, next1, next2);
             // } else if (u.c(Const.dirgha_ligas, sym) && sym != 'ॢ') {
             // dirgha, guna, vriddhi ->
@@ -78,25 +82,25 @@ function makeMarkerList(samasa) {
             mark = {type: 'dirgha', pattern: sym, idx: idx, pos: i};
             idx++;
             // log('M vow dirgha', i, 'mark', mark);
-            // marks.push(mark);
+            marks.push(mark);
         } else if (u.c(Const.gunas, u.vowel(sym))) {
             mark = {type: 'guna', pattern: sym, idx: idx, pos: i, size: i+1};
             idx++;
             // log('M vow guna', i, 'mark', mark);
-            // marks.push(mark);
+            marks.push(mark);
             // guna r,l ->
         } else if (u.c(Const.vriddhis, u.vowel(sym))) {
             mark = {type: 'vriddhi', pattern: sym, idx: idx, pos: i};
             idx++;
             // log('M vow guna', i, 'mark', mark);
-            // marks.push(mark);
+            marks.push(mark);
             // guna r,l ->
         } else if ((u.c(Const.hal, sym) || sym == Const.A) && (next1 == 'र' || next1 == 'ल') && next2 == Const.virama) { // तवल्कार
             pattern = [next1, Const.virama].join('');
             mark = {type: 'guna', pattern: pattern, idx: idx, pos: i+1};
             idx++;
             // log('M vow guna special', i, 'mark', mark);
-            // marks.push(mark);
+            marks.push(mark);
         } else {
             // log('can not mark');
             return;
@@ -140,7 +144,7 @@ sandhi.prototype.split = function(samasa) {
     var res = [];
     var marks = makeMarkerList(samasa);
     if (marks.length == 0) return log('==no_markers!!!=='); // FIXME: этого не должно быть
-    log('==marks==', marks.map(function(m) { return JSON.stringify(m)}));
+    // log('==marks==', marks.map(function(m) { return JSON.stringify(m)}));
     var list = mark2sandhi(marks);
     // log('==list==', list.map(function(m) { return JSON.stringify(m)}));
     var combinations = u.combinator(list);
