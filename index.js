@@ -57,18 +57,27 @@ function makeMarkerList(samasa) {
         var mark, pattern, size;
         var next1 = arr[i+1];
         var next2 = arr[i+2];
-        // if (i == 1) log(1, i, sym, u.guna(sym))
+
         if (sym == Const.virama && u.c(Const.yaR, next1) && next2 != Const.virama) { // simple vowel except Aa followed by a dissimilar simple vowel changes to its semi-vowel
-            // yana-sandhi=semivows -> योग्यङ्ग
+            // 6.1.77 yana = semi-vowels
             if (u.c(Const.allligas, next2)) {
                 pattern = [Const.virama, next1, next2].join('');
             } else {
                 pattern = [Const.virama, next1].join('');
             }
-            mark = {type: 'yana', pattern: pattern, beg: next2, idx: idx, pos: i, size: i+pattern.length}; //
+            mark = {type: 'yana', pattern: pattern, beg: next2, idx: idx, pos: i};
             idx++;
             log('M vow yaNa', i, 'mark', mark); // योगि + अङ्ग - योग्यङ्ग
             marks.push(mark);
+        } else if (u.c(Const.yaR, sym) && u.c(Const.allligas, next1)) {
+            // 6.1.78 - ayadi
+            // descr: 'diphthong followed by any vowel (e,o vow-a), including itself, changes to its semi-vowel equivalent - external - optional',
+            // e,o+vow-a => ay,av+vow; E,O+vow => Ay,Av+vow
+            pattern = [sym, next1].join('');
+            mark = {type: 'ayadi', pattern: pattern, idx: idx, pos: i};
+            // log('M vow ayadi', i, 'mark', mark);
+            marks.push(mark);
+
         } else if (next1 && next2 && u.c(Const.Jay, sym) && (next1 == Const.virama) && u.c(Const.hal, next2)) { // Jay = hard+soft
             if (sym == 'र') return; // FIXME: - д.б. список всех невозможных комбинаций, возможно, не здесь, а перед определителем маркера, вне if
             pattern = [sym, Const.virama, next2].join('');
@@ -77,25 +86,27 @@ function makeMarkerList(samasa) {
             marks.push(mark);
             // log('M cons', i, sym, next1, next2);
             // } else if (u.c(Const.dirgha_ligas, sym) && sym != 'ॢ') {
-            // dirgha, guna, vriddhi ->
         } else if (u.c(Const.dirgha_ligas, sym)) { // FIXME: проверить !la - на la-liga нет теста
+            // 6.1.101
             mark = {type: 'dirgha', pattern: sym, idx: idx, pos: i};
             idx++;
             // log('M vow dirgha', i, 'mark', mark);
             marks.push(mark);
         } else if (u.c(Const.gunas, u.vowel(sym))) {
+            // 6.1.87
             mark = {type: 'guna', pattern: sym, idx: idx, pos: i, size: i+1};
             idx++;
             // log('M vow guna', i, 'mark', mark);
             marks.push(mark);
             // guna r,l ->
         } else if (u.c(Const.vriddhis, u.vowel(sym))) {
+            // 6.1.88
             mark = {type: 'vriddhi', pattern: sym, idx: idx, pos: i};
             idx++;
             // log('M vow guna', i, 'mark', mark);
             marks.push(mark);
-            // guna r,l ->
-        } else if ((u.c(Const.hal, sym) || sym == Const.A) && (next1 == 'र' || next1 == 'ल') && next2 == Const.virama) { // तवल्कार
+        } else if ((u.c(Const.hal, sym) || sym == Const.A) && (next1 == 'र' || next1 == 'ल') && next2 == Const.virama) {
+            // 6.1.87 r,l
             pattern = [next1, Const.virama].join('');
             mark = {type: 'guna', pattern: pattern, idx: idx, pos: i+1};
             idx++;
