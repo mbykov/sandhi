@@ -19,46 +19,28 @@ var debug = (process.env.debug == 'true') ? true : false;
 
 module.exports = sandhi();
 
-/*
-  TODO: берем тест, смотрим тип правила: vowel, visarga, cons  массив условий для правила => if vowel + частные условия
-*/
+/**/
 function sandhi() {
     if (!(this instanceof sandhi)) return new sandhi();
     return this;
 }
 
 /*
-  в make Mark List не только virama, но и candra, и?
-
-  if (fin == Const.candra) {
-  first.pop();
-  fin = first.slice(-1)[0];
-  candra = true;
-  }
-
-*/
-
-/*
-  vowels:
-  dirgha_liga -> simple vowel, followed by a similar vowel
-  e, o, ar, al - > a or ā is followed by simple vowel - guna
 */
 function makeMarkerList(samasa) {
     var marks = [];
     var arr = samasa.split('');
     var idx = 0;
-    /*
-      FIXME: здесь как-то нужно установить пределы
-    */
     arr.forEach(function(sym, i) {
         // if (u.c(Const.special, sym)) return;
+        // FIXME: здесь как-то нужно установить пределы аккуратнее, а не просто - со второй до предпоследней
         if (i < 1) return;
         if (i > samasa.length - 2) return;
         var mark, pattern, size;
         var next1 = arr[i+1];
         var next2 = arr[i+2];
 
-        if (sym == Const.virama && u.c(Const.yaR, next1) && next2 != Const.virama) { // simple vowel except Aa followed by a dissimilar simple vowel changes to its semi-vowel
+        if (sym == Const.virama && u.c(Const.yaR, next1) && next2 != Const.virama) { // simple vowel except Aa followed by a dissimilar simple vowel changes to its semi-vowel (+virama)
             // 6.1.77 yana = semi-vowels
             if (u.c(Const.allligas, next2)) {
                 pattern = [Const.virama, next1, next2].join('');
@@ -69,11 +51,22 @@ function makeMarkerList(samasa) {
             idx++;
             // log('M vow yaNa', i, 'mark', mark); // योगि + अङ्ग - योग्यङ्ग
             marks.push(mark);
-        } else if (u.c(Const.yaR, sym) && u.c(Const.allligas, next1)) { // diphthong followed by any vowel (e,o vow-a), including itself, changes to its semi-vowel equivalent - external - optional
+        } else if (sym == Const.A && u.c(Const.yava, next1)) { // diphthong-vridhi, beg: vow or cons-for-a - to only ya,va
+            // TODO: засада - перебивает dirgha-type - देहाविष्ट - आविष्ट - TODO: убрать везде else?
+            // 6.1.78 - ayadi - e,o+vow-a => ay,av+vow; E,O+vow => Ay,Av+vow
+            if (u.c(Const.allligas, next2)) {
+                pattern = [Const.A, next1, next2].join('');
+            } else {
+                pattern = [Const.A, next1].join('');
+            }
+            mark = {type: 'ayadi', pattern: pattern, beg: next2, idx: idx, pos: i};
+            // log('M vow ayadi-vriddhi', i, 'mark', mark);
+            marks.push(mark);
+        } else if (u.c(Const.yava, sym) && u.c(Const.allligas, next1)) { // diphthong followed by any vowel (e,o vow-a), including itself, changes to its semi-vowel equivalent - external - optional
             // 6.1.78 - ayadi - e,o+vow-a => ay,av+vow; E,O+vow => Ay,Av+vow
             pattern = [sym, next1].join('');
             mark = {type: 'ayadi', pattern: pattern, idx: idx, pos: i};
-            // log('M vow ayadi', i, 'mark', mark);
+            // log('M vow ayadi-guna-wo-a', i, 'mark', mark);
             marks.push(mark);
 
         } else if (next1 && next2 && u.c(Const.Jay, sym) && (next1 == Const.virama) && u.c(Const.hal, next2)) { // Jay = hard+soft
@@ -157,7 +150,7 @@ sandhi.prototype.split = function(str) {
         var next = samasas[idx+1];
         if (next && u.endsaA(samasa) && u.startsaA(next)) {
             // изменяю окончание самаса
-            log('HERE AA', str);
+            // log('HERE AA', str);
         }
         splits[samasa] = splitone(samasa);
     });
@@ -165,38 +158,24 @@ sandhi.prototype.split = function(str) {
 }
 
 /*
-  make test g=4.41.+7.+split
+  make test g=4.41.+7.+split // देह + आविष्ट - देहाविष्ट
 */
 // sandhi.prototype.splitone = function(samasa) {
 function splitone(samasa) {
     var res = [];
     var marks = makeMarkerList(samasa);
-    if (marks.length == 0) return log('==no_markers!!!=='); // FIXME: этого не должно быть
+    if (marks.length == 0) return; // log('==no_markers!!!=='); // FIXME: этого не должно быть
     // log('==marks==', marks.map(function(m) { return JSON.stringify(m)}));
     var list = mark2sandhi(marks);
     // log('==list==', list.map(function(m) { return JSON.stringify(m)}));
+    if (list.length == 0) return; // log('==no_markers!!!=='); // FIXME: этого не должно быть // 6.1.78.+_12_
     var cleans = u.combinator(list);
-    // var combinations = u.combinator(list);
-    // var cleans = []; // параллельные замены (одного маркера) не пермутируют между собой
-    // combinations.forEach(function(comb) {
-    //     var idxs = comb.map(function(m) {
-    //         return m.idx;
-    //     });
-    //     // log('IDXS', idxs, 'uniq', _.uniq(idxs));
-    //     if (idxs.length == _.uniq(idxs).length) cleans.push(comb);
-    // });
-    // log('==clean==', cleans.map(function(m) { return JSON.stringify(m)}));
-    // log(cleans);
     if (cleans.length > 15) log('==cleans.size== marks:', marks.length, 'list:', list.length, 'cleans:', cleans.length)
     cleans.forEach(function(comb) {
         var result = samasa;
-        // log('COMB', comb.length);
         comb.forEach(function(mark) {
             // log('M', mark.sandhi);
             result = u.replaceByPos(result, mark.pattern, mark.sandhi, mark.pos);
-            // result = result.replace(mark.pattern, mark.sandhi);
-            // TODO: как-то проверить наличие гласной в каждом слове комбинации - когда обнаружу пример
-            // log('mark:', mark.pos, 'pt:', mark.pattern, 'sa:', mark.sandhi, mark);
         });
         // log('result:', result);
         res.push(result);
@@ -233,6 +212,7 @@ sandhi.prototype.add = function(first, second) {
     // log('ADD RES', res);
     return res;
 }
+
 
 function makeMarker(f, s) {
     var first = f.split('');
