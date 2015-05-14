@@ -53,7 +53,7 @@ function makeMarkerList(samasa) {
     arr.forEach(function(sym, i) {
         // if (u.c(Const.special, sym)) return;
         if (i < 1) return;
-        if (i > samasa.length - 1) return;
+        if (i > samasa.length - 2) return;
         var mark, pattern, size;
         var next1 = arr[i+1];
         var next2 = arr[i+2];
@@ -69,12 +69,8 @@ function makeMarkerList(samasa) {
             idx++;
             // log('M vow yaNa', i, 'mark', mark); // योगि + अङ्ग - योग्यङ्ग
             marks.push(mark);
-        } else if (u.c(Const.yaR, sym) && u.c(Const.allligas, next1)) {
-        // } else if (true) {
-            // 6.1.78 - ayadi
-            // descr: 'diphthong followed by any vowel (e,o vow-a), including itself, changes to its semi-vowel equivalent - external - optional',
-            // e,o+vow-a => ay,av+vow; E,O+vow => Ay,Av+vow
-            // log(1111)
+        } else if (u.c(Const.yaR, sym) && u.c(Const.allligas, next1)) { // diphthong followed by any vowel (e,o vow-a), including itself, changes to its semi-vowel equivalent - external - optional
+            // 6.1.78 - ayadi - e,o+vow-a => ay,av+vow; E,O+vow => Ay,Av+vow
             pattern = [sym, next1].join('');
             mark = {type: 'ayadi', pattern: pattern, idx: idx, pos: i};
             // log('M vow ayadi', i, 'mark', mark);
@@ -92,7 +88,7 @@ function makeMarkerList(samasa) {
             // 6.1.101
             mark = {type: 'dirgha', pattern: sym, idx: idx, pos: i};
             idx++;
-            // log('M vow dirgha', i, 'mark', mark);
+            // log('M vow dirgha', i, 'mark', mark, 'size', samasa.length); // योगि + ॠकार - योग्यॄकार
             marks.push(mark);
         } else if (u.c(Const.gunas, u.vowel(sym))) {
             // 6.1.87
@@ -189,9 +185,9 @@ function splitone(samasa) {
     //     // log('IDXS', idxs, 'uniq', _.uniq(idxs));
     //     if (idxs.length == _.uniq(idxs).length) cleans.push(comb);
     // });
-    // // log('==clean==', cleans.map(function(m) { return JSON.stringify(m)}));
-    // // if (cleans.length > 100) log('==cleans.size== marks:', marks.length, 'list:', list.length, 'combs:', combinations.length, 'cleans:', cleans.length)
-    // // log(cleans);
+    // log('==clean==', cleans.map(function(m) { return JSON.stringify(m)}));
+    // log(cleans);
+    if (cleans.length > 15) log('==cleans.size== marks:', marks.length, 'list:', list.length, 'cleans:', cleans.length)
     cleans.forEach(function(comb) {
         var result = samasa;
         // log('COMB', comb.length);
