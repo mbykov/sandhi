@@ -67,12 +67,14 @@ function makeMarkerList(samasa) {
             }
             mark = {type: 'yana', pattern: pattern, beg: next2, idx: idx, pos: i};
             idx++;
-            log('M vow yaNa', i, 'mark', mark); // योगि + अङ्ग - योग्यङ्ग
+            // log('M vow yaNa', i, 'mark', mark); // योगि + अङ्ग - योग्यङ्ग
             marks.push(mark);
         } else if (u.c(Const.yaR, sym) && u.c(Const.allligas, next1)) {
+        // } else if (true) {
             // 6.1.78 - ayadi
             // descr: 'diphthong followed by any vowel (e,o vow-a), including itself, changes to its semi-vowel equivalent - external - optional',
             // e,o+vow-a => ay,av+vow; E,O+vow => Ay,Av+vow
+            // log(1111)
             pattern = [sym, next1].join('');
             mark = {type: 'ayadi', pattern: pattern, idx: idx, pos: i};
             // log('M vow ayadi', i, 'mark', mark);
@@ -149,27 +151,47 @@ function mark2sandhi(marks) {
 }
 
 /*
+  FIXME: здесь нужно выделить слова, т.е. пробелы и спец. символы - конец строки
+  добавить outer после split или до? Имеет ли это значение?
+*/
+sandhi.prototype.split = function(str) {
+    var splits = {};
+    var samasas = str.split(' ');
+    samasas.forEach(function(samasa, idx) {
+        var next = samasas[idx+1];
+        if (next && u.endsaA(samasa) && u.startsaA(next)) {
+            // изменяю окончание самаса
+            log('HERE AA', str);
+        }
+        splits[samasa] = splitone(samasa);
+    });
+    return splits;
+}
+
+/*
   make test g=4.41.+7.+split
 */
-sandhi.prototype.split = function(samasa) {
+// sandhi.prototype.splitone = function(samasa) {
+function splitone(samasa) {
     var res = [];
     var marks = makeMarkerList(samasa);
     if (marks.length == 0) return log('==no_markers!!!=='); // FIXME: этого не должно быть
     // log('==marks==', marks.map(function(m) { return JSON.stringify(m)}));
     var list = mark2sandhi(marks);
     // log('==list==', list.map(function(m) { return JSON.stringify(m)}));
-    var combinations = u.combinator(list);
-    var cleans = []; // параллельные замены (одного маркера) не пермутируют между собой
-    combinations.forEach(function(comb) {
-        var idxs = comb.map(function(m) {
-            return m.idx;
-        });
-        // log('IDXS', idxs, 'uniq', _.uniq(idxs));
-        if (idxs.length == _.uniq(idxs).length) cleans.push(comb);
-    });
-    // log('==clean==', cleans.map(function(m) { return JSON.stringify(m)}));
-    // if (cleans.length > 100) log('==cleans.size== marks:', marks.length, 'list:', list.length, 'combs:', combinations.length, 'cleans:', cleans.length)
-    // log(cleans);
+    var cleans = u.combinator(list);
+    // var combinations = u.combinator(list);
+    // var cleans = []; // параллельные замены (одного маркера) не пермутируют между собой
+    // combinations.forEach(function(comb) {
+    //     var idxs = comb.map(function(m) {
+    //         return m.idx;
+    //     });
+    //     // log('IDXS', idxs, 'uniq', _.uniq(idxs));
+    //     if (idxs.length == _.uniq(idxs).length) cleans.push(comb);
+    // });
+    // // log('==clean==', cleans.map(function(m) { return JSON.stringify(m)}));
+    // // if (cleans.length > 100) log('==cleans.size== marks:', marks.length, 'list:', list.length, 'combs:', combinations.length, 'cleans:', cleans.length)
+    // // log(cleans);
     cleans.forEach(function(comb) {
         var result = samasa;
         // log('COMB', comb.length);
@@ -183,8 +205,7 @@ sandhi.prototype.split = function(samasa) {
         // log('result:', result);
         res.push(result);
     });
-    // как могут образоваться не uniq результы? не понимаю.
-    // Во-вторых, я могу отбросить слово без гласных только после замены - в комбинатор не поместить
+    // я могу отбросить слово без гласных только после замены - в комбинатор не поместить - но 2 позиции катят пока
     var uniq = _.uniq(res);
     if (res.length != uniq.length) log('NOT UNIQ! SPLIT RES:', res.length, 'uniq:', uniq.length, 'cleans:', cleans.length); // भानूदयः
     // log('RES', uniq.length);
