@@ -68,6 +68,12 @@ function makeMarkerList(samasa) {
             mark = {type: 'ayadi', pattern: pattern, idx: idx, pos: i};
             // log('M vow ayadi-guna-wo-a', i, 'mark', mark);
             marks.push(mark);
+        } else if (sym == Const.avagraha) {// "e" and "o" at the end of a word, when followed by "a" gives avagraha
+            // 6.1.109 - ayadi - e,o+a => avagraha
+            pattern = sym;
+            mark = {type: 'ayadi', pattern: pattern, idx: idx, pos: i};
+            // log('M vow ayadi-avagraha', i, 'mark:', mark);
+            marks.push(mark);
 
         } else if (next1 && next2 && u.c(Const.Jay, sym) && (next1 == Const.virama) && u.c(Const.hal, next2)) { // Jay = hard+soft
             if (sym == 'र') return; // FIXME: - д.б. список всех невозможных комбинаций, возможно, не здесь, а перед определителем маркера, вне if
@@ -124,6 +130,7 @@ function mark2sandhi(marks) {
             if (sutra.num == '') return; // FIXME:
             if (sutra.type != mark.type) return;
             var sandhis = sutra.split(mark);
+            log('sutra splits sandhi:', sutra.num, sandhis);
             if (!sandhis) return;
             if (mark.type == 'cons' && !sandhis) { // FIXME: до полного списка сутр, для комбинатора
                 mark.fake = true;
@@ -165,7 +172,7 @@ function splitone(samasa) {
     var res = [];
     var marks = makeMarkerList(samasa);
     if (marks.length == 0) return; // log('==no_markers!!!=='); // FIXME: этого не должно быть
-    // log('==marks==', marks.map(function(m) { return JSON.stringify(m)}));
+    log('==marks==', marks.map(function(m) { return JSON.stringify(m)}));
     var list = mark2sandhi(marks);
     // log('==list==', list.map(function(m) { return JSON.stringify(m)}));
     if (list.length == 0) return; // log('==no_markers!!!=='); // FIXME: этого не должно быть // 6.1.78.+_12_
@@ -174,7 +181,7 @@ function splitone(samasa) {
     cleans.forEach(function(comb) {
         var result = samasa;
         comb.forEach(function(mark) {
-            // log('M', mark.sandhi);
+            // log('M', mark);
             result = u.replaceByPos(result, mark.pattern, mark.sandhi, mark.pos);
         });
         // log('result:', result);
