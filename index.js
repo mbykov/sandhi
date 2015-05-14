@@ -111,7 +111,14 @@ function makeMarkerList(samasa) {
             marks.push(mark);
         } else {
             // log('can not mark');
-            return;
+            // return;
+        }
+        if (u.c(Const.hal, sym) && next1 == 'ो' && next2 == Const.avagraha) {
+            pattern = [next1, Const.avagraha].join('');
+            mark = {type: 'visarga-o', pattern: pattern, idx: idx, pos: i};
+            idx++;
+            // log('M visarga', i, 'mark', mark);
+            marks.push(mark);
         }
         // log('SYM', i, sym, next1, next2);
     });
@@ -123,6 +130,7 @@ function mark2sandhi(marks) {
     marks.forEach(function(mark) {
         var ftype;
         if (u.c(['dirgha', 'guna', 'vriddhi', 'yana', 'ayadi', 'vow'], mark.type)) ftype = 'vow';
+        else if (u.c(['visarga-o', 'visarga', 'visarga', 'visarga', 'visarga', 'visarga'], mark.type)) ftype = 'visarga';
         else return;
         var fn = ['./lib/', ftype, '_sutras'].join('');
         var sutras = require(fn);
@@ -130,7 +138,7 @@ function mark2sandhi(marks) {
             if (sutra.num == '') return; // FIXME:
             if (sutra.type != mark.type) return;
             var sandhis = sutra.split(mark);
-            log('sutra splits sandhi:', sutra.num, sandhis);
+            // log('sutra splits sandhi:', sutra.num, sandhis);
             if (!sandhis) return;
             if (mark.type == 'cons' && !sandhis) { // FIXME: до полного списка сутр, для комбинатора
                 mark.fake = true;
@@ -172,7 +180,7 @@ function splitone(samasa) {
     var res = [];
     var marks = makeMarkerList(samasa);
     if (marks.length == 0) return; // log('==no_markers!!!=='); // FIXME: этого не должно быть
-    log('==marks==', marks.map(function(m) { return JSON.stringify(m)}));
+    // log('==marks==', marks.map(function(m) { return JSON.stringify(m)}));
     var list = mark2sandhi(marks);
     // log('==list==', list.map(function(m) { return JSON.stringify(m)}));
     if (list.length == 0) return; // log('==no_markers!!!=='); // FIXME: этого не должно быть // 6.1.78.+_12_
@@ -199,9 +207,9 @@ sandhi.prototype.add = function(first, second) {
     var mark = makeMarker(first, second);
     var ftype;
     if (u.c(['dirgha', 'guna', 'vriddhi', 'yana', 'ayadi', 'vow'], mark.type)) ftype = 'vow';
+    else if (u.c(['visarga-o', 'visarga', 'visarga', 'visarga', 'visarga', 'visarga'], mark.type)) ftype = 'visarga';
     else return;
     var fn = ['./lib/', ftype, '_sutras'].join('');
-    // var fn = ['./lib/', mark.type, '_sutras'].join('');
     var sutras = require(fn);
     sutras.forEach(function(sutra) {
         if (sutra.num == '') return;
@@ -254,6 +262,8 @@ function makeMarker(f, s) {
         fin = u.liga(fin);
         marker = {type: 'vow', first: first, fin: fin, second: second, beg: beg};
         // log('VOW MARK ONE', marker);
+    } else if (fin == Const.visarga) {
+        marker = {type: 'visarga', first: first, fin: fin, second: second, beg: beg};
     }
     // log('MARKER', marker);
     return marker;

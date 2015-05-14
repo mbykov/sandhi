@@ -171,7 +171,8 @@ var tests = [
      ]
     },
 
-    {sutra: '6.1.109',
+    // {sutra: '6.1.109',
+     {sutra: '',
      descr: '"e" and "o" at the end of a word, when followed by "a" gives avagraha',
      only: 'ext',
      tests: [
