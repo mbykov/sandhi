@@ -39,12 +39,6 @@ function makeMarkerList(samasa) {
 
         if (sym == Const.virama && u.c(Const.yaR, next1) && next2 != Const.virama) { // simple vowel except Aa followed by a dissimilar simple vowel changes to its semi-vowel (+virama)
             // 6.1.77 yana = semi-vowels
-            if (u.c(Const.allligas, next2)) {
-                pattern = [Const.virama, next1, next2].join('');
-            } else {
-                pattern = [Const.virama, next1].join('');
-            }
-            mark = {type: 'yana', pattern: pattern, beg: next2, idx: idx, pos: i};
             // log('M vow yaNa', i, 'mark', mark); // योगि + अङ्ग - योग्यङ्ग
         } else if (sym == Const.A && u.c(Const.yava, next1)) { // diphthong-vridhi, beg: vow or cons-for-a - to only ya,va
             // TODO: засада - перебивает dirgha-type - देहाविष्ट - आविष्ट - TODO: убрать везде else?
@@ -95,17 +89,50 @@ function makeMarkerList(samasa) {
             // log('M vow guna', i, 'mark', mark);
         } else if ((u.c(Const.hal, sym) || sym == Const.A) && (next1 == 'र' || next1 == 'ल') && next2 == Const.virama) {
             pattern = [next1, Const.virama].join('');
-            mark = {num: '6.1.87', pattern: pattern, idx: idx, pos: i+1};
+            var mark = {num: '6.1.87', pattern: pattern, idx: idx, pos: i+1};
             marks.push(mark);
             // log('M vow guna RL', i, 'mark', mark);
         }
 
         // a or ā is followed by e, o, ai or au - vriddhi
         if (u.c(Const.vriddhis, u.vowel(sym))) {
-            mark = {num: '6.1.88', pattern: sym, idx: idx, pos: i};
+            var mark = {num: '6.1.88', pattern: sym, idx: idx, pos: i};
             marks.push(mark);
             // log('M vow 88 vriddhi', i, 'mark', mark);
         }
+
+        // simple vowel except Aa followed by a dissimilar simple vowel changes to its semi-vowel (+virama); yana-sandhi
+        if (sym == Const.virama && u.c(Const.yaR, next1) && next2 != Const.virama) {
+            // 6.1.77 yana = semi-vowels
+            if (u.c(Const.allligas, next2)) {
+                pattern = [Const.virama, next1, next2].join('');
+            } else {
+                pattern = [Const.virama, next1].join('');
+            }
+            var mark = {num: '6.1.77', pattern: pattern, beg: next2, idx: idx, pos: i};
+            marks.push(mark);
+            // log('M yana 77 ', i, 'mark', mark);
+        }
+
+        // TODO: засада - перебивает dirgha-type - देहाविष्ट - आविष्ट - TODO: убрать везде else?
+
+        // 6.1.78 - ayadi-guna - e,o+vow-a => ay,av+vow-a (comp. 6.1.109); - ayadi-vriddhi - E,O+vow => Ay,Av+vow, if vow=aA - next=cons
+        if (sym == Const.A && u.c(Const.yava, next1)) { // E,O
+            if (u.c(Const.allligas, next2)) {
+                pattern = [Const.A, next1, next2].join('');
+            } else {
+                pattern = [Const.A, next1].join('');     //
+            }
+            var mark = {num: '6.1.78', pattern: pattern, beg: next2, idx: idx, pos: i};
+            marks.push(mark);
+            // log('M ayadi-vriddhi 78 ', i, 'mark', mark);
+        } else if (sym != Const.A && sym != Const.virama && u.c(Const.yava, next1) && u.c(Const.allligas, next2)) {
+            pattern = [next1, next2].join('');
+            var mark = {num: '6.1.78', pattern: pattern, idx: idx, pos: i+1};
+            marks.push(mark);
+            // log('M ayadi-guna-wo-a 78', i, 'mark', mark, 'sym', sym, 1, next1, 2, next2, sym != Const.virama);
+        }
+
 
         // === VISARGA ===
 
@@ -230,10 +257,12 @@ function makeMarker(f, s) {
         if (u.similar(fin, beg) || u.c(Const.aAliga, fin) && u.c(Const.aA, beg)) marker.num = '6.1.101';
         if (u.c(Const.aAliga, fin) && u.c(Const.allsimples, beg)) marker.num = '6.1.87';
         if (u.c(Const.aAliga, fin) && u.c(Const.diphtongs, beg)) marker.num = '6.1.88';
+        if (u.c(Const.allsimpleligas, fin) && u.c(Const.allvowels, beg) && !u.similar(fin, beg)) marker.num = '6.1.77';
 
-        // if (u.c(Const.aAliga, test.fin) && u.c(Const.aA, test.beg))
+        // 6.1.78 - ayadi-guna - e,o+vow-a => ay,av+vow-a (comp. 6.1.109); - ayadi-vriddhi - E,O+vow => Ay,Av+vow, if vow=aA - next=cons
+        if (u.c(Const.diphtongs, u.vowel(fin)) && u.c(Const.allvowels, u.vowel(fin)) && !(u.c(Const.gunas, u.vowel(fin)) && beg =='अ')) marker.num = '6.1.78';
 
-        // log('ADD VOW MARK', marker.num, 'fin', fin, 'beg', beg);
+        // log('ADD VOW MARK', marker.num, 'fin', fin, 'beg', beg, 3, u.vowel(fin));
 
 
     // } else if ((first.length == 1) && u.c(Const.allvowels, fin) && u.c(Const.allvowels, beg)) {        // FIXME: случай first из одной гласной буквы.
