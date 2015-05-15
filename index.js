@@ -73,20 +73,11 @@ function makeMarkerList(samasa) {
             mark = {type: 'cons', pattern: pattern, fin: sym, beg: next2, idx: idx, pos: i};
             // log('M cons', i, sym, next1, next2);
             // } else if (u.c(Const.dirgha_ligas, sym) && sym != 'ॢ') {
-        } else if (u.c(Const.gunas, u.vowel(sym))) {
-            // 6.1.87
-            mark = {type: 'guna', pattern: sym, idx: idx, pos: i, size: i+1};
-            // log('M vow guna', i, 'mark', mark);
         } else if (u.c(Const.vriddhis, u.vowel(sym))) {
             // 6.1.88
             mark = {type: 'vriddhi', pattern: sym, idx: idx, pos: i};
-            // log('M vow guna', i, 'mark', mark);
+            // log('M vow vriddhi', i, 'mark', mark);
             // guna r,l ->
-        } else if ((u.c(Const.hal, sym) || sym == Const.A) && (next1 == 'र' || next1 == 'ल') && next2 == Const.virama) {
-            // 6.1.87 r,l
-            pattern = [next1, Const.virama].join('');
-            mark = {type: 'guna', pattern: pattern, idx: idx, pos: i+1};
-            // log('M vow guna special', i, 'mark', mark);
         }
         // === VOWEL ===
 
@@ -96,7 +87,7 @@ function makeMarkerList(samasa) {
             marks.push(mark);
             // log('M vow dirgha', i, 'mark', mark, 'size', samasa.length);
         }
-        // if (!u.c(Const.gunas, u.vowel(mark.pattern)) && mark.pattern != 'र्' && mark.pattern != 'ल्') return;
+
         // a or ā is followed by simple ->  guna
         if (u.c(Const.gunas, u.vowel(sym))) {
             var mark = {num: '6.1.87', pattern: sym, idx: idx, pos: i, size: i+1};
@@ -109,6 +100,12 @@ function makeMarkerList(samasa) {
             // log('M vow guna RL', i, 'mark', mark);
         }
 
+        // a or ā is followed by e, o, ai or au - vriddhi
+        if (u.c(Const.vriddhis, u.vowel(sym))) {
+            mark = {num: '6.1.88', pattern: sym, idx: idx, pos: i};
+            marks.push(mark);
+            // log('M vow 88 vriddhi', i, 'mark', mark);
+        }
 
         // === VISARGA ===
 
@@ -230,10 +227,13 @@ function makeMarker(f, s) {
         // === ADD VOWELS ===
     } else if ((u.c(Const.consonants, fin) || u.c(Const.allligas, fin)) && u.c(Const.allvowels, beg)) {
         marker = {type: 'vowel', first: first, fin: fin, second: second, beg: beg};
-        if (u.similar(fin, beg) || u.isaA(fin)) marker.num = '6.1.101';
+        if (u.similar(fin, beg) || u.c(Const.aAliga, fin) && u.c(Const.aA, beg)) marker.num = '6.1.101';
         if (u.c(Const.aAliga, fin) && u.c(Const.allsimples, beg)) marker.num = '6.1.87';
+        if (u.c(Const.aAliga, fin) && u.c(Const.diphtongs, beg)) marker.num = '6.1.88';
 
-        // log('VOW MARK', marker);
+        // if (u.c(Const.aAliga, test.fin) && u.c(Const.aA, test.beg))
+
+        // log('ADD VOW MARK', marker.num, 'fin', fin, 'beg', beg);
 
 
     // } else if ((first.length == 1) && u.c(Const.allvowels, fin) && u.c(Const.allvowels, beg)) {        // FIXME: случай first из одной гласной буквы.
