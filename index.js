@@ -36,6 +36,7 @@ function makeMarkerList(samasa) {
         var mark, pattern, size;
         var next1 = arr[i+1];
         var next2 = arr[i+2];
+        var next3 = arr[i+3];
 
         if (sym == Const.virama && u.c(Const.yaR, next1) && next2 != Const.virama) { // simple vowel except Aa followed by a dissimilar simple vowel changes to its semi-vowel (+virama)
             // 6.1.77 yana = semi-vowels
@@ -151,8 +152,27 @@ function makeMarkerList(samasa) {
             marks.push(mark);
             // log('M visarga', i, 'mark', mark);
         }
+
+        // visarga after simple changes to र् when followed by a vowel or soft consonant except र्
+        // if (u.c(Const.allsimpleligas, sym) && next1 == 'र' && (u.c(Const.allligas, next2) || ((u.c(Const.JaS, next2) || u.c(Const.yaR, next2)) && next2 != 'र') ) ) {
+        if (u.c(Const.allsimpleligas, sym) && next1 == 'र' ) {
+            var beg;
+            if (u.c(Const.allligas, next2)) {
+                pattern = [next1, next2].join('');
+                beg = next2;
+            } else if ((u.c(Const.JaS, next2) || u.c(Const.yaR, next2)) && next2 != 'र') {
+                pattern = next1;
+                beg = next2;
+            } else if (next2 == Const.virama && (u.c(Const.JaS, next3) || u.c(Const.yaR, next3)) && next3 != 'र') {
+                pattern = [next1, Const.virama].join('');
+                beg = next3;
+            } else return; // sic!
+            var mark = {type: 'visarga', num: '4.1.3', pattern: pattern, beg: beg, idx: idx, pos: i+1};
+            marks.push(mark);
+            // log('M visarga R soft', i, 'mark', mark, 'patt', pattern, 2, next2, 3, next3); // गुरुर्ब्रह्मा
+        }
         idx++;
-        // log('SYM', i, sym, next1, next2);
+        // log('SYM', i, sym, next1, next2, u.c(Const.JaS, next2), Const.JaS );
     });
     // log('marks', marks)
     return marks;
@@ -202,7 +222,7 @@ function splitone(samasa) {
     var list = mark2sandhi(marks);
     // log('==list==', list.map(function(m) { return JSON.stringify(m)}));
     var cleans = u.combinator(list);
-    if (cleans.length > 15) log('==cleans.size== list:', list.length, 'cleans:', cleans.length)
+    if (cleans.length > 25) log('==cleans.size== list:', list.length, 'cleans:', cleans.length)
     cleans.forEach(function(comb) {
         var result = samasa;
         comb.forEach(function(mark) {
@@ -228,7 +248,7 @@ sandhi.prototype.add = function(first, second) {
     if (!sutra) return; // FIXME: не должно быть
     var marks = sutra.add(mark);
     var res = marks.map(function(m) { return makeAddResult(m)});
-    // log('RES', res);
+    // log('ADD RES', res);
     return res;
 }
 
@@ -238,6 +258,7 @@ function makeMarker(f, s) {
     var second = s.split('');
     var fin = first.slice(-1)[0];
     if (u.c(Const.consonants, fin)) fin = '';
+    var pen = first.slice(-2)[0];
     var beg = second[0];
     var marker;
     // Const.special ? candra всегда после вирамы? Что остальные?
@@ -269,6 +290,7 @@ function makeMarker(f, s) {
         // 6.1.78 - ayadi-guna - e,o+vow-a => ay,av+vow-a (comp. 6.1.109); - ayadi-vriddhi - E,O+vow => Ay,Av+vow, if vow=aA - next=cons
         if (u.c(Const.diphtongs, u.vowel(fin)) && u.c(Const.allvowels, u.vowel(fin)) && !(u.c(Const.gunas, u.vowel(fin)) && beg =='अ')) marker.num = '6.1.78';
         if (u.c(Const.gunas, u.vowel(fin)) && beg =='अ') marker.num = '6.1.109';
+
         // log('ADD VOW MARK', marker.num, 'fin', fin, 'beg', beg, 3, u.vowel(fin));
 
 
@@ -282,6 +304,10 @@ function makeMarker(f, s) {
     } else if (fin == Const.visarga) {
         marker = {type: 'visarga', first: first, fin: fin, second: second, beg: beg};
         if (beg =='अ') marker.num = '4.1.2';
+        // visarga after simple changes to र् when followed by a vowel or soft consonant except र्
+        if (u.c(Const.allsimples, u.vowel(pen)) && (u.c(Const.allvowels, beg) || (u.c(Const.JaS, beg) && beg != 'र'))) marker.num = '4.1.3';
+
+        // log('ADD VISARGA MARK', marker.num, 'pen:', pen, 'fin:', fin, 'beg:', beg);
     }
     // log('MARKER', marker);
     return marker;
