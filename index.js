@@ -9,8 +9,9 @@ var util = require('util');
 // var shiva = require('shiva-sutras');
 var Const = require('./lib/const');
 var u = require('./lib/utils');
-// var vowRules = require('./lib/vowel_rule');
-// var consRules = require('./lib/cons_rules');
+var vowRules = require('./lib/vow_sutras');
+var visRules = require('./lib/visarga_sutras');
+var consRules = require('./lib/cons_sutras');
 // var delConsRules = require('./lib/del_cons_rules');
 var sutras = require('./lib/cons_sutras');
 var log = u.log;
@@ -113,9 +114,13 @@ function makeMarkerList(samasa) {
             // log('can not mark');
             // return;
         }
+
+        // === VISARGA ===
+
+        // अ & visarga changes to ओ+avagraha when followed by अ
         if (u.c(Const.hal, sym) && next1 == 'ो' && next2 == Const.avagraha) {
             pattern = [next1, Const.avagraha].join('');
-            mark = {type: 'visarga-o', pattern: pattern, idx: idx, pos: i};
+            mark = {type: 'visarga', num: '4.1.2', pattern: pattern, idx: idx, pos: i};
             idx++;
             // log('M visarga', i, 'mark', mark);
             marks.push(mark);
@@ -126,34 +131,15 @@ function makeMarkerList(samasa) {
 }
 
 function mark2sandhi(marks) {
-    var list = [];
     marks.forEach(function(mark) {
-        var ftype;
-        if (u.c(['dirgha', 'guna', 'vriddhi', 'yana', 'ayadi', 'vow'], mark.type)) ftype = 'vow';
-        else if (u.c(['visarga-o', 'visarga', 'visarga', 'visarga', 'visarga', 'visarga'], mark.type)) ftype = 'visarga';
-        else return;
-        var fn = ['./lib/', ftype, '_sutras'].join('');
-        var sutras = require(fn);
-        sutras.forEach(function(sutra) {
-            if (sutra.num == '') return; // FIXME:
-            if (sutra.type != mark.type) return;
-            var sandhis = sutra.split(mark);
-            // log('sutra splits sandhi:', sutra.num, sandhis);
-            if (!sandhis) return;
-            if (mark.type == 'cons' && !sandhis) { // FIXME: до полного списка сутр, для комбинатора
-                mark.fake = true;
-                sandhis = [[[mark.fin, Const.virama].join(''), mark.beg].join(' ')];
-            }
-            sandhis.forEach(function(sandhi) {
-                var m = JSON.parse(JSON.stringify(mark));
-                m.sandhi = sandhi;
-                list.push(m);
-            });
-        });
+        if (mark.type != 'visarga') return;
+        var sutra = vowRules[mark.num] || consRules[mark.num] || visRules[mark.num];
+        // log('SUTRA', sutra, mark.num);
+        if (!sutra) return; // FIXME: не должно быть
+        sutra.split(mark);
+        // log('MM', mark);
     });
-    return list;
 }
-
 /*
   FIXME: здесь нужно выделить слова, т.е. пробелы и спец. символы - конец строки
   добавить outer после split или до? Имеет ли это значение?
@@ -181,26 +167,31 @@ function splitone(samasa) {
     var marks = makeMarkerList(samasa);
     if (marks.length == 0) return; // log('==no_markers!!!=='); // FIXME: этого не должно быть
     // log('==marks==', marks.map(function(m) { return JSON.stringify(m)}));
-    var list = mark2sandhi(marks);
+    mark2sandhi(marks);
+    // log('==== marks:', marks);
     // log('==list==', list.map(function(m) { return JSON.stringify(m)}));
-    if (list.length == 0) return; // log('==no_markers!!!=='); // FIXME: этого не должно быть // 6.1.78.+_12_
-    var cleans = u.combinator(list);
-    if (cleans.length > 15) log('==cleans.size== marks:', marks.length, 'list:', list.length, 'cleans:', cleans.length)
+    // if (list.length == 0) return; // log('==no_markers!!!=='); // FIXME: этого не должно быть // 6.1.78.+_12_
+    var cleans = u.combinator(marks);
+    if (cleans.length > 15) log('==cleans.size== marks:', marks.length, 'cleans:', cleans.length)
     cleans.forEach(function(comb) {
         var result = samasa;
         comb.forEach(function(mark) {
-            // log('M', mark);
+            if (mark.type != 'visarga') return;
+            // log('=>M', mark);
             result = u.replaceByPos(result, mark.pattern, mark.sandhi, mark.pos);
         });
         // log('result:', result);
-        res.push(result);
+        if (result != samasa) res.push(result); // этого неравенства не должно быть, все маркеры должны давать замену
+        // res.push(result);
     });
-    // я могу отбросить слово без гласных только после замены - в комбинатор не поместить - но 2 позиции катят пока
+    // log('res:', res);
     var uniq = _.uniq(res);
     if (res.length != uniq.length) log('NOT UNIQ! SPLIT RES:', res.length, 'uniq:', uniq.length, 'cleans:', cleans.length); // भानूदयः
-    // log('RES', uniq.length);
+    // log('RES', uniq);
     return uniq;
 }
+
+// шмитовский проезд - кони - б.белое здание, по ул. 5=года - управа, мюллер, 916-917-42-22
 
 sandhi.prototype.add = function(first, second) {
     var res = [];
