@@ -61,6 +61,7 @@ function makeMarkerList(samasa) {
             mark = {type: 'ayadi', pattern: pattern, idx: idx, pos: i};
             // log('M vow ayadi-avagraha', i, 'mark:', mark);
 
+
         } else if (next1 && next2 && u.c(Const.Jay, sym) && (next1 == Const.virama) && u.c(Const.hal, next2)) { // Jay = hard+soft
             if (sym == 'र') return; // FIXME: - д.б. список всех невозможных комбинаций, возможно, не здесь, а перед определителем маркера, вне if
             pattern = [sym, Const.virama, next2].join('');
@@ -133,6 +134,13 @@ function makeMarkerList(samasa) {
             // log('M ayadi-guna-wo-a 78', i, 'mark', mark, 'sym', sym, 1, next1, 2, next2, sym != Const.virama);
         }
 
+        // 6.1.109 - ayadi - e,o+a => avagraha
+        if (sym == Const.avagraha) {
+            pattern = sym;
+            var mark = {num: '6.1.109', pattern: pattern, idx: idx, pos: i};
+            marks.push(mark);
+            // log('M vow ayadi-avagraha', i, 'mark:', mark);
+        }
 
         // === VISARGA ===
 
@@ -258,10 +266,9 @@ function makeMarker(f, s) {
         if (u.c(Const.aAliga, fin) && u.c(Const.allsimples, beg)) marker.num = '6.1.87';
         if (u.c(Const.aAliga, fin) && u.c(Const.diphtongs, beg)) marker.num = '6.1.88';
         if (u.c(Const.allsimpleligas, fin) && u.c(Const.allvowels, beg) && !u.similar(fin, beg)) marker.num = '6.1.77';
-
         // 6.1.78 - ayadi-guna - e,o+vow-a => ay,av+vow-a (comp. 6.1.109); - ayadi-vriddhi - E,O+vow => Ay,Av+vow, if vow=aA - next=cons
         if (u.c(Const.diphtongs, u.vowel(fin)) && u.c(Const.allvowels, u.vowel(fin)) && !(u.c(Const.gunas, u.vowel(fin)) && beg =='अ')) marker.num = '6.1.78';
-
+        if (u.c(Const.gunas, u.vowel(fin)) && beg =='अ') marker.num = '6.1.109';
         // log('ADD VOW MARK', marker.num, 'fin', fin, 'beg', beg, 3, u.vowel(fin));
 
 
