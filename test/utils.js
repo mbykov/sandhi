@@ -36,17 +36,18 @@ utils.prototype.test = function(test, idx) {
         var testStr = [first, second].join(' ');
         var hash = sandhi.split(compound);
         // пока что spaced-sandhi получаются всегда  true, потом организовать тест так, чтобы проверялось совпадение каждого слова теста из двух =>
-        // if (hash[compound]) {
-        //     splitted = hash[compound]
-        //     isIN(splitted, testStr).should.equal(true);
-        // } else {
-        //     splitted = hash[first];
-        //     isIN(splitted, first).should.equal(true);
-        //     splitted = hash[second];
-        //     isIN(splitted, second).should.equal(true);
-        // }
-        splitted = (hash[compound]) ? hash[compound] : testStr;
-        isIN(splitted, testStr).should.equal(true);
+        if (hash[compound]) {
+            log(222, compound);
+            splitted = hash[compound]
+            isIN(splitted, testStr).should.equal(true);
+        } else {
+            splitted = hash['नमो'];
+            isIN(splitted, first).should.equal(true);
+            // splitted = hash[second];
+            // isIN(splitted, second).should.equal(true);
+        }
+        // splitted = (hash[compound]) ? hash[compound] : testStr;
+        // isIN(splitted, testStr).should.equal(true);
     });
 }
 

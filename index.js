@@ -148,7 +148,16 @@ function makeMarkerList(samasa) {
         // अ & visarga changes to ओ+avagraha when followed by अ
         if (u.c(Const.hal, sym) && next1 == 'ो' && next2 == Const.avagraha) {
             pattern = [next1, Const.avagraha].join('');
-            var mark = {type: 'visarga', num: '4.1.2', pattern: pattern, idx: idx, pos: i};
+            var mark = {type: 'visarga', num: 'visarga-ah-a', pattern: pattern, idx: idx, pos: i};
+            marks.push(mark);
+            // log('M visarga', i, 'mark', mark);
+        }
+
+        // अ & visarga (standing for अस्) followed by a soft consonant -> changes to ओ
+        // नमो नारायणाय
+        if (u.c(Const.hal, sym) && next1 == 'ो' && next2 == Const.avagraha) {
+            pattern = [next1, Const.avagraha].join('');
+            var mark = {type: 'visarga', num: 'visarga-ah-soft', pattern: pattern, idx: idx, pos: i};
             marks.push(mark);
             // log('M visarga', i, 'mark', mark);
         }
@@ -193,19 +202,35 @@ function mark2sandhi(marks) {
     return list;
 }
 
-/*  FIXME: здесь нужно выделить слова, т.е. пробелы и спец. символы - конец строки
-  добавить outer после split или до? Имеет ли это значение?
+function spacedSandhi(samasa, next) {
+    var fin = samasa.slice(-1);
+    var penult = samasa.slice(-2);
+    var first = samasa.split('');
+    var beg = next[0];
+    var term;
+    if (u.vowel(fin) == 'ओ' && u.c(Const.haS, beg)) {
+        first.pop();
+        first.push(Const.visarga);
+    }
+
+    if (u.endsaA(samasa) && u.startsaA(next)) {
+    }
+    return first.join('');
+}
+
+/*
+    FIXME: здесь нужно выделить слова, т.е. пробелы и спец. символы - конец строки
 */
 sandhi.prototype.split = function(str) {
     var splits = {};
     var samasas = str.split(' ');
+    // log('HERE SPLIT', samasas);
     samasas.forEach(function(samasa, idx) {
         var next = samasas[idx+1];
-        if (next && u.endsaA(samasa) && u.startsaA(next)) {
-            // изменяю окончание самаса
-            // log('HERE AA', str);
-        }
-        splits[samasa] = splitone(samasa);
+        var spaced = (next) ? spacedSandhi(samasa, next) : samasa; // only for splitting
+        splits[samasa] = splitone(spaced);
+        if (splits[samasa].length == 0) splits[samasa].unshift(spaced);
+        // log(33, splits[samasa]);
     });
     return splits;
 }
@@ -217,7 +242,7 @@ sandhi.prototype.split = function(str) {
 function splitone(samasa) {
     var res = [];
     var marks = makeMarkerList(samasa);
-    if (marks.length == 0) return log('==no_markers!!!=='); // FIXME: этого не должно быть
+    if (marks.length == 0) return []; // log('==no_markers!!!=='); // FIXME: этого не должно быть
     // log('==marks==', marks.map(function(m) { return JSON.stringify(m)}));
     var list = mark2sandhi(marks);
     // log('==list==', list.map(function(m) { return JSON.stringify(m)}));
@@ -258,7 +283,7 @@ function makeMarker(f, s) {
     var second = s.split('');
     var fin = first.slice(-1)[0];
     if (u.c(Const.consonants, fin)) fin = '';
-    var pen = first.slice(-2)[0];
+    var penult = first.slice(-2)[0];
     var beg = second[0];
     var marker;
     // Const.special ? candra всегда после вирамы? Что остальные?
@@ -293,35 +318,35 @@ function makeMarker(f, s) {
 
         // log('ADD VOW MARK', marker.num, 'fin', fin, 'beg', beg, 3, u.vowel(fin));
 
-
-    // } else if ((first.length == 1) && u.c(Const.allvowels, fin) && u.c(Const.allvowels, beg)) {        // FIXME: случай first из одной гласной буквы.
-    //     fin = u.liga(fin);
-    //     marker = {type: 'vow', first: first, fin: fin, second: second, beg: beg};
-    //     // log('VOW MARK ONE', marker);
+    // . . . if ((first.length == 1) && u.c(Const.allvowels, fin) && u.c(Const.allvowels, beg)) {        // FIXME: случай first из одной гласной буквы.
 
 
         // === ADD VISARGA ===
     } else if (fin == Const.visarga) {
+        var ah = u.c(Const.hal, penult);
         marker = {type: 'visarga', first: first, fin: fin, second: second, beg: beg};
-        if (beg =='अ') marker.num = '4.1.2';
-        // visarga after simple changes to र् when followed by a vowel or soft consonant except र्
-        if (u.c(Const.allsimples, u.vowel(pen)) && (u.c(Const.allvowels, beg) || (u.c(Const.JaS, beg) && beg != 'र'))) marker.num = '4.1.3';
+        // -ah:
+        if (ah && beg =='अ') marker.num = 'visarga-ah-a';
+        if (ah && u.c(Const.haS, beg)) marker.num = 'visarga-ah-soft';
 
-        // log('ADD VISARGA MARK', marker.num, 'pen:', pen, 'fin:', fin, 'beg:', beg);
+        // visarga after simple changes to र् when followed by a vowel or soft consonant except र्
+        if (u.c(Const.allsimples, u.vowel(penult)) && (u.c(Const.allvowels, beg) || (u.c(Const.JaS, beg) && beg != 'र'))) marker.num = '4.1.3';
+
+        // log('ADD VISARGA MARK:', marker.num, 'fin:', fin, 'beg:', beg);
     }
     // log('MARKER', marker);
     return marker;
 }
 
-function makeAddResult(test) {
-    // if (test.type == 'cons' && u.c(Const.allvowels, test.beg)) {
-    //     test.second.shift();
-    //     liga = Const.vow2liga[test.beg];
-    //     test.second.unshift(liga);
-    //     test.vir = false;
+function makeAddResult(mark) {
+    // if (mark.type == 'cons' && u.c(Const.allvowels, mark.beg)) {
+    //     mark.second.shift();
+    //     liga = Const.vow2liga[mark.beg];
+    //     mark.second.unshift(liga);
+    //     mark.vir = false;
     // }
-    var conc = (test.conc) ? ' ' : '';
-    if (test.end) test.first.push(test.end);
-    if (test.vir) test.first.push(Const.virama);
-    return [test.first.join(''), test.second.join('')].join(conc);
+    var conc = (mark.conc) ? ' ' : '';
+    if (mark.end) mark.first.push(mark.end);
+    if (mark.vir) mark.first.push(Const.virama);
+    return [mark.first.join(''), mark.second.join('')].join(conc);
 }
