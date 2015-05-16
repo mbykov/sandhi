@@ -229,10 +229,10 @@ sandhi.prototype.split = function(str) {
         var next = samasas[idx+1];
         var spaced = (next) ? spacedSandhi(samasa, next) : samasa; // only for splitting
         splits[samasa] = splitone(spaced);
-        if (splits[samasa].length == 0) splits[samasa].unshift(spaced);
+        if (samasa != spaced) splits[samasa].unshift(spaced);
         // log(33, splits[samasa]);
     });
-    return splits;
+    return splits; //  'रा आमः', 'रा अमः', 'र आमः', 'र अमः'
 }
 
 /*
