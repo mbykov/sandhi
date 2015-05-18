@@ -317,8 +317,13 @@ function makeMarker(f, s) {
         marker = {type: 'cons', first: first, fin: fin, vir: vir, second: second, beg: beg};
         if (vir) marker.vir = true;
         if (candra) marker.candra = true;
+        // === ADD FILTER CONSONATS ===
+        if (u.c(Const.Jay, fin) && u.c(Const.nm, beg)) marker.num = '8.4.45';
 
-        // === ADD VOWELS ===
+
+        // log('CONS ADD MARKER:', marker.num, 'fin:', fin, 'beg:', beg);
+
+        // === ADD FILTER VOWELS ===
     } else if ((u.c(Const.consonants, fin) || u.c(Const.allligas, fin)) && u.c(Const.allvowels, beg)) {
         marker = {type: 'vowel', first: first, fin: fin, second: second, beg: beg};
         if (u.similar(fin, beg) || u.c(Const.aAliga, fin) && u.c(Const.aA, beg)) marker.num = '6.1.101';
@@ -334,7 +339,7 @@ function makeMarker(f, s) {
     // . . . if ((first.length == 1) && u.c(Const.allvowels, fin) && u.c(Const.allvowels, beg)) {        // FIXME: случай first из одной гласной буквы.
 
 
-        // === ADD VISARGA ===
+        // === ADD FILTER VISARGA ===
     } else if (fin == Const.visarga) {
         var ah = u.c(Const.hal, penult);
         var aah = Const.A == penult;
@@ -369,7 +374,7 @@ function makeMarker(f, s) {
         if (u.c(Const.allsimples, u.vowel(penult)) && (u.c(Const.allvowels, beg) || (u.c(Const.JaS, beg) && beg != 'र'))) marker.num = '4.1.3';
 
     }
-    // log('MARKER', marker);
+    // log('MARKER', marker, fin, beg);
     return marker;
 }
 

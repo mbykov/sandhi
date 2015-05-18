@@ -2,7 +2,7 @@ var utils = require('../utils');
 
 var tests = [
     {sutra: '8.2.39',
-     descr: 'hard consonant followed by a soft consonant or v. changes to the third of its class',
+     descr: 'hard consonant followed by a soft consonant or vow. changes to the third of its class',
      tests: [
          ['श्रीमद्भगवद्गीता', 'श्रीमत्', 'भगवद्गीता'],
          ['वनादागच्छामि', 'वनात्', 'आगच्छामि'],
@@ -86,7 +86,7 @@ var tests = [
     },
 
     {sutra: '8.4.45',
-     descr: ' (class consonant) followed by (nasal) optionally changes to the (nasal of class)',
+     descr: '(class consonant) followed by (nasal) optionally changes to the (nasal of class)',
      only: 'ext',
      tests: [
          ['एतन्मुरारि', 'एतद्', 'मुरारि'], // opt
