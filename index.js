@@ -153,12 +153,13 @@ function makeMarkerList(samasa) {
             // log('M visarga', i, 'mark', mark);
         }
 
-        if (u.vowsound(sym) && next1 == 'श' && next2 == Const.virama) {
+        if (u.vowsound(sym) && u.c(['श', 'ष', 'स'], next1) && next2 == Const.virama) {
             pattern = [next1, Const.virama].join('');
             var mark = {type: 'visarga', num: 'visarga-hard-cons', pattern: pattern, idx: idx, pos: i+1};
             marks.push(mark);
             // log('M visarga-Sc', i, 'mark', mark);
         }
+
 
 
         // TODO: R, видимо, пересмотреть
@@ -343,9 +344,12 @@ function makeMarker(f, s) {
         if (u.c(['च', 'छ', 'श'], beg)) {
             marker.num = 'visarga-hard-cons';
             marker.result = 'श्';
-        } else if (u.c(['च_', 'छ_'], beg)) {
+        } else if (u.c(['ट', 'ठ', 'ष'], beg)) {
             marker.num = 'visarga-hard-cons';
-            marker.result = 'श्';
+            marker.result = 'ष्';
+        } else if (u.c(['त', 'थ', 'स'], beg)) {
+            marker.num = 'visarga-hard-cons';
+            marker.result = 'स्';
         }
 
 
