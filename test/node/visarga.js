@@ -2,7 +2,7 @@ var utils = require('../utils');
 
 var tests = [
     {sutra: 'visarga-ah-a',
-     descr: 'अ & visarga changes to ओ+avagraha when followed by अ',
+     descr: 'अ & visarga followed  by अ (for अस्) -> changes to ओ+avagraha  - A.1; (for अर्) changes to अर् when followed by a (vowel or soft consonant except र्), so after अ, C2',
      only: 'ext',
      tests: [
          ['शिवोऽहम्', 'शिवः', 'अहम्'],
@@ -16,7 +16,7 @@ var tests = [
     },
 
     {sutra: 'visarga-ah-soft',
-     descr: 'अ & visarga (standing for अस्) followed by a soft consonant -> changes to ओ',
+     descr: 'अ & visarga (for अस्) followed by a soft consonant -> changes to ओ - A2',
      only: 'ext',
      tests: [
          ['नमो नारायणाय', 'नमः', 'नारायणाय'],
@@ -30,6 +30,42 @@ var tests = [
          ['', '', ''],
      ]
     },
+
+    {sutra: 'visarga-ah-other',
+     descr: 'अ & visarga (standing for अस्) followed by a vowel except अ -> visarga is dropped',
+     only: 'ext',
+     tests: [
+         ['राम इच्छति', 'रामः', 'इच्छति'],
+         ['राम उवाच', 'रामः', 'उवाच'],
+         ['नर इच्छति', 'नरः', 'इच्छति'],
+         ['शिव एति', 'शिवः', 'एति'],
+         // ['शिवयेति', 'शिवः', 'एति'], // optional y after diphtong - NOTE_1 in index.js
+         ['', '', ''],
+         ['', '', ''],
+     ]
+    },
+
+
+    {sutra: 'visarga-hard-cons',
+     descr: '(visarga) changes to (श्) (p sb) when followed by (च् or छ्) (p hc)',
+     only: 'ext',
+     tests: [
+         ['रामश्च', 'रामः', 'च'],
+         ['नरश्चरति', 'नरः', 'चरति'],
+         ['शिवश्छायः', 'शिवः', 'छायः'],
+         ['', '', ''],
+         ['', '', ''],
+         // optional श
+         ['नमश्शिवाय', 'नमः', 'शिवाय'],
+         ['', '', ''],
+     ]
+    },
+
+
+
+
+
+    // to R нужно переделать, чтобы охватить все
 
     {sutra: '4.1.3', // FIXME: !!!! номер 4.1.3 условный!!!
      descr: 'visarga after simple changes to र् when followed by a vowel or soft consonant except र्',

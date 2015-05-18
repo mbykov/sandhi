@@ -143,7 +143,7 @@ function makeMarkerList(samasa) {
             // log('M vow ayadi-avagraha', i, 'mark:', mark);
         }
 
-        // === VISARGA ===
+        // === VISARGA === only concatenated result
 
         // अ & visarga changes to ओ+avagraha when followed by अ
         if (u.c(Const.hal, sym) && next1 == 'ो' && next2 == Const.avagraha) {
@@ -153,15 +153,15 @@ function makeMarkerList(samasa) {
             // log('M visarga', i, 'mark', mark);
         }
 
-        // अ & visarga (standing for अस्) followed by a soft consonant -> changes to ओ
-        // नमो नारायणाय
-        if (u.c(Const.hal, sym) && next1 == 'ो' && next2 == Const.avagraha) {
-            pattern = [next1, Const.avagraha].join('');
-            var mark = {type: 'visarga', num: 'visarga-ah-soft', pattern: pattern, idx: idx, pos: i};
+        if (u.vowsound(sym) && next1 == 'श' && next2 == Const.virama) {
+            pattern = [next1, Const.virama].join('');
+            var mark = {type: 'visarga', num: 'visarga-hard-cons', pattern: pattern, idx: idx, pos: i+1};
             marks.push(mark);
-            // log('M visarga', i, 'mark', mark);
+            // log('M visarga-Sc', i, 'mark', mark);
         }
 
+
+        // TODO: R, видимо, пересмотреть
         // visarga after simple changes to र् when followed by a vowel or soft consonant except र्
         // if (u.c(Const.allsimpleligas, sym) && next1 == 'र' && (u.c(Const.allligas, next2) || ((u.c(Const.JaS, next2) || u.c(Const.yaR, next2)) && next2 != 'र') ) ) {
         if (u.c(Const.allsimpleligas, sym) && next1 == 'र' ) {
@@ -183,7 +183,7 @@ function makeMarkerList(samasa) {
         idx++;
         // log('SYM', i, sym, next1, next2, u.c(Const.JaS, next2), Const.JaS );
     });
-    // log('marks', marks)
+    // log('splitting marks', marks);
     return marks;
 }
 
@@ -202,14 +202,19 @@ function mark2sandhi(marks) {
     return list;
 }
 
-function spacedSandhi(samasa, next) {
+function spacedSplit(samasa, next) {
     var fin = samasa.slice(-1);
     var penult = samasa.slice(-2);
     var first = samasa.split('');
     var beg = next[0];
-    var term;
+    // अ & visarga (standing for अस्) followed by a soft consonant -> changes to ओ
     if (u.vowel(fin) == 'ओ' && u.c(Const.haS, beg)) {
         first.pop();
+        first.push(Const.visarga);
+    }
+
+    // अ & visarga (standing for अस्) followed by a vowel except अ -> visarga is dropped
+    if (u.c(Const.hal, fin) && u.c(Const.allexa, beg)) {
         first.push(Const.visarga);
     }
 
@@ -227,7 +232,7 @@ sandhi.prototype.split = function(str) {
     // log('HERE SPLIT', samasas);
     samasas.forEach(function(samasa, idx) {
         var next = samasas[idx+1];
-        var spaced = (next) ? spacedSandhi(samasa, next) : samasa; // only for splitting
+        var spaced = (next) ? spacedSplit(samasa, next) : samasa;
         splits[samasa] = splitone(spaced);
         if (samasa != spaced) splits[samasa].unshift(spaced);
         // log(33, splits[samasa]);
@@ -261,7 +266,7 @@ function splitone(samasa) {
     // log('res:', res);
     var uniq = _.uniq(res);
     if (res.length != uniq.length) log('NOT UNIQ! SPLIT RES:', res.length, 'uniq:', uniq.length, 'cleans:', cleans.length); // भानूदयः
-    // log('RES', uniq);
+    // log('=> RES', uniq);
     return uniq;
 }
 
@@ -273,6 +278,7 @@ sandhi.prototype.add = function(first, second) {
     if (!sutra) return; // FIXME: не должно быть
     var marks = sutra.add(mark);
     var res = marks.map(function(m) { return makeAddResult(m)});
+
     // log('ADD RES', res);
     return res;
 }
@@ -328,11 +334,27 @@ function makeMarker(f, s) {
         // -ah:
         if (ah && beg =='अ') marker.num = 'visarga-ah-a';
         if (ah && u.c(Const.haS, beg)) marker.num = 'visarga-ah-soft';
+        // अ & visarga (standing for अस्) followed by a vowel except अ -> visarga is dropped
+        // NOTE_1: FIXME: TODO: NB: ===> there is case with diphtongs, but not simple vowel, when visarga changes to y, but not space ->
+        // http://www.sanskrit-sanscrito.com.ar/en/learning-sanskrit-combination-4-1/431 -> Table 9
+        if (ah && u.c(Const.allexa, beg)) marker.num = 'visarga-ah-other';
+
+        // (visarga) changes to (श्) (p sb) when followed by (च् or छ्) (p hc)
+        if (u.c(['च', 'छ', 'श'], beg)) {
+            marker.num = 'visarga-hard-cons';
+            marker.result = 'श्';
+        } else if (u.c(['च_', 'छ_'], beg)) {
+            marker.num = 'visarga-hard-cons';
+            marker.result = 'श्';
+        }
+
+
+
+        // log('VISARGA ADD MARKER:', marker.num, 'fin:', fin, 'beg:', beg);
 
         // visarga after simple changes to र् when followed by a vowel or soft consonant except र्
         if (u.c(Const.allsimples, u.vowel(penult)) && (u.c(Const.allvowels, beg) || (u.c(Const.JaS, beg) && beg != 'र'))) marker.num = '4.1.3';
 
-        // log('ADD VISARGA MARK:', marker.num, 'fin:', fin, 'beg:', beg);
     }
     // log('MARKER', marker);
     return marker;
@@ -345,8 +367,8 @@ function makeAddResult(mark) {
     //     mark.second.unshift(liga);
     //     mark.vir = false;
     // }
-    var conc = (mark.conc) ? ' ' : '';
+    var space = (mark.space) ? ' ' : '';
     if (mark.end) mark.first.push(mark.end);
     if (mark.vir) mark.first.push(Const.virama);
-    return [mark.first.join(''), mark.second.join('')].join(conc);
+    return [mark.first.join(''), mark.second.join('')].join(space);
 }
