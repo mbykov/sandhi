@@ -219,6 +219,12 @@ function spacedSplit(samasa, next) {
         first.push(Const.visarga);
     }
 
+    // आ & visarga  (for आस्) is followed by a vowel or soft consonant - > dropped.
+    if ((fin == Const.A) && (u.c(Const.allvowels, beg) || u.c(Const.haS, beg))) {
+        first.push(Const.visarga);
+    }
+
+
     if (u.endsaA(samasa) && u.startsaA(next)) {
     }
     return first.join('');
@@ -331,6 +337,7 @@ function makeMarker(f, s) {
         // === ADD VISARGA ===
     } else if (fin == Const.visarga) {
         var ah = u.c(Const.hal, penult);
+        var aah = Const.A == penult;
         marker = {type: 'visarga', first: first, fin: fin, second: second, beg: beg};
         // -ah:
         if (ah && beg =='अ') marker.num = 'visarga-ah-a';
@@ -352,7 +359,9 @@ function makeMarker(f, s) {
             marker.result = 'स्';
         }
 
-
+        // -Ah
+        // आ & visarga (for आस्) is followed by a vowel or soft consonent - > dropped.
+        if (aah && (u.c(Const.allvowels, beg) || u.c(Const.haS, beg))) marker.num = 'visarga-aah-vow';
 
         // log('VISARGA ADD MARKER:', marker.num, 'fin:', fin, 'beg:', beg);
 
