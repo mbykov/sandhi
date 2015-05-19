@@ -35,7 +35,6 @@ utils.prototype.test = function(test, idx) {
         var splitted;
         var testStr = [first, second].join(' ');
         var hash = sandhi.split(compound);
-        // пока что spaced-sandhi получаются всегда  true, потом организовать тест так, чтобы проверялось совпадение каждого слова теста из двух =>
         if (hash[compound]) {
             splitted = hash[compound]
             isIN(splitted, testStr).should.equal(true);

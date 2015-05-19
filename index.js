@@ -77,16 +77,21 @@ function makeMarkerList(samasa) {
             // log('M cons L-candra', i, 'mark', mark);
         }
 
-        // m,n to anusvara
-        if (sym == Const.anusvara && u.c(Const.hal, next1) ) {
-            var pattern = Const.anusvara;
-            var mark = {num: '8.4.58', pattern: pattern, fin: sym, beg: next1, idx: idx, pos: i};
+        // m,n to anusvara or nasal + cons of class of that nasal
+        if (sym == Const.anusvara && u.c(Const.hal, next1) || u.c(Const.nasals, sym) && next1 == Const.virama && u.eqvarga(sym, next2)) {
+            if (next1 == Const.virama) {
+                var pattern = [sym, Const.virama].join('');
+                var beg = next2;
+            } else {
+                var pattern = sym;
+                var beg = next1;
+            }
+            var mark = {num: '8.4.58', pattern: pattern, fin: sym, beg: beg, idx: idx, pos: i};
             marks.push(mark);
-            log('M cons cerebral', i, 'mark', mark);
+            // log('M cons N,M', i, 'mark', mark);
         }
-        //  अहंव्‍ँवच्मि
 
-        // log('m consonants', i, 'sym', sym, 1, next1, 2, next2);
+        // log('m consonants', i, 'sym', sym, 1, next1, 2, next2, u.eqvarga(sym, next2));
 
 
         // === VOWEL ===
@@ -257,7 +262,7 @@ sandhi.prototype.split = function(str) {
         if (samasa != spaced) splits[samasa].unshift(spaced);
         // log(33, splits[samasa]);
     });
-    return splits; //  'रा आमः', 'रा अमः', 'र आमः', 'र अमः'
+    return splits; //
 }
 
 /*
@@ -339,6 +344,9 @@ function makeMarker(f, s) {
         if (u.c(u.dental(), fin) && u.c(u.cerebral(), beg)) marker.num = '8.4.41';
         // If n is followed by l, then n is replaced by nasal l. If a dental other than n and s is followed by l, then the dental is replaced by l.
         if (u.c(u.dental(), fin) && beg == 'ल') marker.num = '8.4.60';
+
+        // m,n to anusvara or nasal + cons of class of that nasal
+        if (fin == 'म' && u.c(Const.hal, beg)) marker.num = '8.4.58';
 
 
         // log('CONS ADD MARKER:', marker.num, 'fin:', fin, 'beg:', beg);
