@@ -64,6 +64,19 @@ function makeMarkerList(samasa) {
             // log('M cons cerebral', i, 'mark', mark);
         }
 
+        // If n is followed by l, then n is replaced by nasal l. If a dental other than n and s is followed by l, then the dental is replaced by l.
+        if ('ल' == sym && next1 == Const.virama && 'ल' == next2) {
+            var pattern = [sym, Const.virama, next2].join('');
+            var mark = {num: '8.4.60', pattern: pattern, fin: sym, beg: next2, idx: idx, pos: i};
+            marks.push(mark);
+            // log('M cons L', i, 'mark', mark);
+        } else if ('ल' == sym && next1 == Const.candra && next2 == Const.virama && 'ल' == next3) {
+            var pattern = [sym, Const.candra, Const.virama, next3].join('');
+            var mark = {num: '8.4.60', pattern: pattern, fin: sym, beg: next2, candra: true, idx: idx, pos: i};
+            marks.push(mark);
+            // log('M cons L-candra', i, 'mark', mark);
+        }
+
         // log('m consonants', i, 'sym', sym, 1, next1, 2, next2);
 
 
@@ -315,6 +328,8 @@ function makeMarker(f, s) {
         // dental class consonant followed by a palatal class consonant changes to the corresponding palatal
         if (u.c(u.dental(), fin) && u.c(u.palatal(), beg)) marker.num = '8.4.40';
         if (u.c(u.dental(), fin) && u.c(u.cerebral(), beg)) marker.num = '8.4.41';
+        // If n is followed by l, then n is replaced by nasal l. If a dental other than n and s is followed by l, then the dental is replaced by l.
+        if (u.c(u.dental(), fin) && beg == 'ल') marker.num = '8.4.60';
 
 
         // log('CONS ADD MARKER:', marker.num, 'fin:', fin, 'beg:', beg);
