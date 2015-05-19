@@ -38,50 +38,26 @@ function makeMarkerList(samasa) {
         var next2 = arr[i+2];
         var next3 = arr[i+3];
 
-        if (sym == Const.virama && u.c(Const.yaR, next1) && next2 != Const.virama) { // simple vowel except Aa followed by a dissimilar simple vowel changes to its semi-vowel (+virama)
-            // 6.1.77 yana = semi-vowels
-            // log('M vow yaNa', i, 'mark', mark); // योगि + अङ्ग - योग्यङ्ग
-        } else if (sym == Const.A && u.c(Const.yava, next1)) { // diphthong-vridhi, beg: vow or cons-for-a - to only ya,va
-            // TODO: засада - перебивает dirgha-type - देहाविष्ट - आविष्ट - TODO: убрать везде else?
-            // 6.1.78 - ayadi - e,o+vow-a => ay,av+vow; E,O+vow => Ay,Av+vow
-            if (u.c(Const.allligas, next2)) {
-                pattern = [Const.A, next1, next2].join('');
-            } else {
-                pattern = [Const.A, next1].join('');
-            }
-            mark = {type: 'ayadi', pattern: pattern, beg: next2, idx: idx, pos: i};
-            // log('M vow ayadi-vriddhi', i, 'mark', mark);
-        } else if (u.c(Const.yava, sym) && u.c(Const.allligas, next1)) { // diphthong followed by any vowel (e,o vow-a), including itself, changes to its semi-vowel equivalent - external - optional
-            // 6.1.78 - ayadi - e,o+vow-a => ay,av+vow; E,O+vow => Ay,Av+vow
-            pattern = [sym, next1].join('');
-            mark = {type: 'ayadi', pattern: pattern, idx: idx, pos: i};
-            // log('M vow ayadi-guna-wo-a', i, 'mark', mark);
-        } else if (sym == Const.avagraha) {// "e" and "o" at the end of a word, when followed by "a" gives avagraha
-            // 6.1.109 - ayadi - e,o+a => avagraha
-            pattern = sym;
-            mark = {type: 'ayadi', pattern: pattern, idx: idx, pos: i};
-            // log('M vow ayadi-avagraha', i, 'mark:', mark);
+        // === SPLIT FILTER CONSONANT ===
 
-
-        } else if (next1 && next2 && u.c(Const.Jay, sym) && (next1 == Const.virama) && u.c(Const.hal, next2)) { // Jay = hard+soft
-            if (sym == 'र') return; // FIXME: - д.б. список всех невозможных комбинаций, возможно, не здесь, а перед определителем маркера, вне if
-            pattern = [sym, Const.virama, next2].join('');
-            mark = {type: 'cons', pattern: pattern, fin: sym, beg: next2, idx: idx, pos: i};
-            // log('M cons', i, sym, next1, next2);
-            // } else if (u.c(Const.dirgha_ligas, sym) && sym != 'ॢ') {
-        } else if (u.c(Const.vriddhis, u.vowel(sym))) {
-            // 6.1.88
-            mark = {type: 'vriddhi', pattern: sym, idx: idx, pos: i};
-            // log('M vow vriddhi', i, 'mark', mark);
-            // guna r,l ->
+        // class consonant followed by (nasal) optionally changes to the nasal of class, or less commonly for class hard consonants, changes to 3rd consonant of class
+        if ((u.c(Const.nasals, sym) || u.c(Const.class3, sym))&& next1 == Const.virama && u.c(Const.nm, next2)) { // Nay - nas + hard+soft
+            var pattern = [sym, Const.virama, next2].join('');
+            var mark = {num: '8.4.45', pattern: pattern, fin: sym, beg: next2, idx: idx, pos: i};
+            marks.push(mark);
+            // log('M cons nasal', i, 'mark', mark);
         }
+
+        // log('m consonants', i, 'sym', sym, 1, next1, 2, next2);
+
+
         // === VOWEL ===
 
         // simple vowel, followed by a similar vowel => dirgha
         if (u.c(Const.dirgha_ligas, sym)) { // FIXME: проверить !la - на la-liga нет теста
             var mark = {type: 'vowel', num: '6.1.101', pattern: sym, idx: idx, pos: i};
             marks.push(mark);
-            // log('M vow dirgha', i, 'mark', mark, 'size', samasa.length);
+            // log('M vow dirgha', i, 'mark', mark);
         }
 
         // a or ā is followed by simple ->  guna
@@ -236,7 +212,6 @@ function spacedSplit(samasa, next) {
 sandhi.prototype.split = function(str) {
     var splits = {};
     var samasas = str.split(' ');
-    // log('HERE SPLIT', samasas);
     samasas.forEach(function(samasa, idx) {
         var next = samasas[idx+1];
         var spaced = (next) ? spacedSplit(samasa, next) : samasa;
@@ -272,8 +247,8 @@ function splitone(samasa) {
     });
     // log('res:', res);
     var uniq = _.uniq(res);
-    if (res.length != uniq.length) log('NOT UNIQ! SPLIT RES:', res.length, 'uniq:', uniq.length, 'cleans:', cleans.length); // भानूदयः
-    // log('=> RES', uniq);
+    if (res.length != uniq.length) log('NOT UNIQ! SPLIT results:', res.length, 'uniq:', uniq.length, 'cleans:', cleans.length); // भानूदयः
+    // log('SPL=> RES', uniq);
     return uniq;
 }
 
@@ -286,7 +261,7 @@ sandhi.prototype.add = function(first, second) {
     var marks = sutra.add(mark);
     var res = marks.map(function(m) { return makeAddResult(m)});
 
-    // log('ADD RES', res);
+    // log('ADD=> RES', res);
     return res;
 }
 

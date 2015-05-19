@@ -86,7 +86,7 @@ var tests = [
     },
 
     {sutra: '8.4.45',
-     descr: '(class consonant) followed by (nasal) optionally changes to the (nasal of class)',
+     descr: 'class consonant followed by (nasal) optionally changes to the nasal of class, or less commonly for class hard consonants, changes to 3rd consonant of class',
      only: 'ext',
      tests: [
          ['एतन्मुरारि', 'एतद्', 'मुरारि'], // opt
