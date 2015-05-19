@@ -62,7 +62,7 @@ test:
 		--grep $(g) \
 		--timeout 3000 \
 		$(TESTS) \
-#		2> /dev/null
+		2> /dev/null
 
 
 

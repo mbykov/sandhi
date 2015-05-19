@@ -48,12 +48,20 @@ function makeMarkerList(samasa) {
             // log('M cons nasal', i, 'mark', mark);
         }
 
-        // dental class consonant followed by a palatal class consonant changes to the corresponding palatal ===> so, doubled palatal
-        if (u.c(Const.palatal, sym) && next1 == Const.virama && u.c(Const.palatal, next2)) {
+        // dental class consonant followed by a palatal class consonant changes to the corresponding palatal ===> reverse: doubled palatal
+        if (u.c(u.palatal(), sym) && next1 == Const.virama && u.c(u.palatal(), next2)) {
             var pattern = [sym, Const.virama, next2].join('');
             var mark = {num: '8.4.40', pattern: pattern, fin: sym, beg: next2, idx: idx, pos: i};
             marks.push(mark);
             // log('M cons palatal', i, 'mark', mark);
+        }
+
+        // dental class consonant followed by a cerebral class consonant changes to the corresponding cerebral ===> reverse: doubled cerebral
+        if (u.c(Const.cerebral, sym) && next1 == Const.virama && u.c(Const.cerebral, next2)) {
+            var pattern = [sym, Const.virama, next2].join('');
+            var mark = {num: '8.4.41', pattern: pattern, fin: sym, beg: next2, idx: idx, pos: i};
+            marks.push(mark);
+            // log('M cons cerebral', i, 'mark', mark);
         }
 
         // log('m consonants', i, 'sym', sym, 1, next1, 2, next2);
@@ -305,7 +313,8 @@ function makeMarker(f, s) {
         // class consonant followed by (nasal) optionally changes to the nasal of class, or less commonly for class hard consonants, changes to 3rd consonant of class
         if (u.c(Const.Jay, fin) && u.c(Const.nm, beg)) marker.num = '8.4.45';
         // dental class consonant followed by a palatal class consonant changes to the corresponding palatal
-        if (u.c(Const.dental, fin) && u.c(Const.palatal, beg)) marker.num = '8.4.40';
+        if (u.c(u.dental(), fin) && u.c(u.palatal(), beg)) marker.num = '8.4.40';
+        if (u.c(u.dental(), fin) && u.c(u.cerebral(), beg)) marker.num = '8.4.41';
 
 
         // log('CONS ADD MARKER:', marker.num, 'fin:', fin, 'beg:', beg);
