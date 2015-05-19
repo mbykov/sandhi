@@ -77,6 +77,15 @@ function makeMarkerList(samasa) {
             // log('M cons L-candra', i, 'mark', mark);
         }
 
+        // m,n to anusvara
+        if (sym == Const.anusvara && u.c(Const.hal, next1) ) {
+            var pattern = Const.anusvara;
+            var mark = {num: '8.4.58', pattern: pattern, fin: sym, beg: next1, idx: idx, pos: i};
+            marks.push(mark);
+            log('M cons cerebral', i, 'mark', mark);
+        }
+        //  अहंव्‍ँवच्मि
+
         // log('m consonants', i, 'sym', sym, 1, next1, 2, next2);
 
 

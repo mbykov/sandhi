@@ -17,6 +17,24 @@ var tests = [
      ]
     },
 
+    {sutra: '8.4.58',
+     descr: 'm,n to anusvara',
+     only: 'ext',
+     tests: [
+         ['तंस', 'तम्', 'स'],
+         ['', '', ''],
+         ['', '', ''],
+         ['', '', ''],
+         ['', '', ''],
+         ['', '', ''],
+         ['', '', ''],
+         ['', '', ''],
+         ['', '', ''],
+     ]
+    },
+
+
+
     {sutra: '8.3.23',
      descr: 'In place of the "m" ending in an inflected word , the substitution is to be the "anusvara" if a consonant follows',
      only: 'ext',
