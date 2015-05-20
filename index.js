@@ -116,7 +116,7 @@ function makeMarkerList(samasa) {
             marks.push(mark);
             // log('M hard before soft cons', i, 'mark', sym, next1, next2);
         } else if (u.c(Const.jaS, sym) && u.c(Const.allligas, next1)) {
-            var pattern = sym;
+            var pattern = [sym, next1].join('');
             var mark = {num: '8.2.39', pattern: pattern, fin: sym, beg: next1, idx: idx, pos: i};
             marks.push(mark);
             // log('M hard before vows', i, 'mark', sym, next1, next2);
