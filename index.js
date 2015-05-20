@@ -93,13 +93,19 @@ function makeMarkerList(samasa) {
         }
 
         //ङ्, ण्, न् at the end of a word after a short vowel doubles itself when followed by a vowel',
-        // if (u.c(Const.Nam, fin) && u.vowshort(penult) && u.c(Const.allvowels, beg)) marker.num = 'cons-nasal-doubled';
         if (next1 && next4 && next1 == next3 && u.vowshort(sym) && u.c(Const.Nam, next1) && next2 == Const.virama && u.c(Const.allligas, next4)) {
-        // if (next1 && next1 == next3) {
             var pattern = [next1, Const.virama, next3, next4].join('');
             var mark = {num: 'cons-nasal-doubled', pattern: pattern, fin: next1, beg: next4, idx: idx, pos: i+1};
             marks.push(mark);
             // log('M cons cerebral', i, 'mark', mark, 0, sym, 1, next1, 3, next3, 4, next4, Const.Nam, samasa); // प्रत्यङ्ङात्मा
+        }
+
+        // soft consonant except nasal, followed by a hard consonant changes to 1st consonant of class = > reverse: class1+hard
+        if (u.c(Const.cay, sym) && next1 == Const.virama && u.c(Const.Kar, next2) ) {
+            var pattern = [sym, Const.virama].join('');
+            var mark = {num: '8.4.55', pattern: pattern, fin: sym, beg: next2, idx: idx, pos: i};
+            marks.push(mark);
+            // log('M soft after hard', i, 'mark', sym);
         }
 
         // log('m consonants', i, 'sym', sym, 1, next1, 2, next2, u.eqvarga(sym, next2));
