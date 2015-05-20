@@ -101,14 +101,28 @@ function makeMarkerList(samasa) {
         }
 
         // soft consonant except nasal, followed by a hard consonant changes to 1st consonant of class = > reverse: class1+hard
+        // однако, тут в словаре-то м.б. только ट,त,क,प - k t ṭ p - 1st class ex. c.
         if (u.c(Const.cay, sym) && next1 == Const.virama && u.c(Const.Kar, next2) ) {
             var pattern = [sym, Const.virama].join('');
             var mark = {num: '8.4.55', pattern: pattern, fin: sym, beg: next2, idx: idx, pos: i};
             marks.push(mark);
-            // log('M soft after hard', i, 'mark', sym);
+            // log('M soft before hard', i, 'mark', sym);
         }
 
-        // log('m consonants', i, 'sym', sym, 1, next1, 2, next2, u.eqvarga(sym, next2));
+        // hard consonant followed by a soft consonant but nasal or vow. changes to the third of its class => reverse: class3 + soft but nasal or vowels
+        if (u.c(Const.jaS, sym) && next1 == Const.virama && u.c(Const.haS, next2) && !u.c(Const.Yam, next2) ) {
+            var pattern = [sym, Const.virama].join('');
+            var mark = {num: '8.2.39', pattern: pattern, fin: sym, beg: next2, idx: idx, pos: i};
+            marks.push(mark);
+            // log('M hard before soft cons', i, 'mark', sym, next1, next2);
+        } else if (u.c(Const.jaS, sym) && u.c(Const.allligas, next1)) {
+            var pattern = sym;
+            var mark = {num: '8.2.39', pattern: pattern, fin: sym, beg: next1, idx: idx, pos: i};
+            marks.push(mark);
+            // log('M hard before vows', i, 'mark', sym, next1, next2);
+        }
+
+        // log('m consonants', i, 'sym', sym, 1, next1, 2, next2);
 
 
         // === VOWEL ===
@@ -366,8 +380,13 @@ function makeMarker(f, s) {
         if (fin == 'म' && u.c(Const.hal, beg)) marker.num = '8.4.58';
         //ङ्, ण्, न् at the end of a word after a short vowel doubles itself when followed by a vowel',
         if (u.c(Const.Nam, fin) && u.vowshort(penult) && u.c(Const.allvowels, beg)) marker.num = 'cons-nasal-doubled';
+        // soft consonant except nasal, followed by a hard consonant changes to 1st consonant of class = > reverse: class1+hard
+        if (u.c(Const.haS, fin) && !u.c(Const.nasals, fin) && u.c(Const.Kar, beg)) marker.num = '8.4.55';
 
-        // log('CONS ADD MARKER:', marker.num, 'fin:', fin, 'beg:', beg, u.vowshort(penult));
+        // hard consonant followed by a soft consonant or vow. changes to the third of its class
+        if (u.c(Const.Kay, fin) && (u.c(Const.allvowels, beg) || (u.c(Const.haS, beg) && !u.c(Const.Yam, beg)))) marker.num = '8.2.39';
+
+        // log('CONS ADD MARKER:', marker.num, 'fin:', fin, 'beg:', beg, Const.Yam);
 
         // === ADD FILTER VOWELS ===
     } else if ((u.c(Const.consonants, fin) || u.c(Const.allligas, fin)) && u.c(Const.allvowels, beg)) {

@@ -1,21 +1,21 @@
 var utils = require('../utils');
 
 var tests = [
-    // {sutra: '8.2.39',
-    //  descr: 'hard consonant followed by a soft consonant or vow. changes to the third of its class',
-    //  tests: [
-    //      ['श्रीमद्भगवद्गीता', 'श्रीमत्', 'भगवद्गीता'],
-    //      ['वनादागच्छामि', 'वनात्', 'आगच्छामि'],
-    //      ['सद्भडति', 'सत्', 'भडति'],
-    //      ['प्रागूध', 'प्राक्', 'ऊध'], // 4.40 ?
-    //      ['नगरादागच्छति', 'नगरात्', 'आगच्छति'],
-    //      ['भगवद्गीता', 'भगवत्', 'गीता'],
-    //      ['वधाद्विना', 'वधात्', 'विना'],
-    //      // ['वनात्पिता', 'वनात्', 'पिता'], // failed in this very sutra
-    //      ['', '', ''],
-    //      ['', '', ''],
-    //  ]
-    // },
+    {sutra: '8.2.39',
+     descr: 'hard consonant followed by a soft consonant but nasal or vow. changes to the third of its class',
+     tests: [
+         ['श्रीमद्भगवद्गीता', 'श्रीमत्', 'भगवद्गीता'],
+         ['वनादागच्छामि', 'वनात्', 'आगच्छामि'],
+         ['सद्भडति', 'सत्', 'भडति'],
+         ['प्रागूध', 'प्राक्', 'ऊध'], // 4.40 ?
+         ['नगरादागच्छति', 'नगरात्', 'आगच्छति'],
+         ['भगवद्गीता', 'भगवत्', 'गीता'],
+         ['वधाद्विना', 'वधात्', 'विना'],
+         // ['वनात्पिता', 'वनात्', 'पिता'], // failed in this very sutra
+         ['', '', ''],
+         ['', '', ''],
+     ]
+    },
 
     // In place of the "m" ending in an inflected word , the substitution is to be the "anusvara" if a consonant follows',
     {sutra: '8.4.58',
