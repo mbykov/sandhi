@@ -17,6 +17,7 @@ var tests = [
      ]
     },
 
+    // In place of the "m" ending in an inflected word , the substitution is to be the "anusvara" if a consonant follows',
     {sutra: '8.4.58',
      descr: 'm,n to anusvara',
      only: 'ext',
@@ -26,25 +27,16 @@ var tests = [
          ['अहञ्च', 'अहम्', 'च'],
          ['अहंतिष्ठामि', 'अहम्', 'तिष्ठामि'],
          ['अहन्तिष्ठामि', 'अहम्', 'तिष्ठामि'],
-         ['', '', ''],
-         ['', '', ''],
+         ['शिवंनमः', 'शिवम्', 'नमः'],
+         ['नरंपृच्छामि', 'नरम्', 'पृच्छामि'],
+         ['नरंयच्छति', 'नरम्', 'यच्छति'],
+         ['पुष्पंदत्तम्', 'पुष्पम्', 'दत्तम्'],
          ['', '', ''],
          ['', '', ''],
      ]
     },
 
 
-    {sutra: '8.3.23',
-     descr: 'In place of the "m" ending in an inflected word , the substitution is to be the "anusvara" if a consonant follows',
-     only: 'ext',
-     tests: [
-         ['शिवं नमः', 'शिवम्', 'नमः'],
-         ['नरं पृच्छामि', 'नरम्', 'पृच्छामि'],
-         ['नरं यच्छति', 'नरम्', 'यच्छति'],
-         ['पुष्पं दत्तम्', 'पुष्पम्', 'दत्तम्'],
-         ['', '', ''],
-     ]
-    },
 
     {sutra: '8.4.40',
      descr: 'Dental + Palatal / Palatal (ex S) + Dental -> Palatal',
@@ -120,7 +112,7 @@ var tests = [
 
     {sutra: '8.4.55',
      descr: 'soft consonant except nasal, followed by a hard consonant changes to 1st consonant of class',
-     // only: 'ext',
+     only: 'ext',
      tests: [
          ['एतत्पतति', 'एतद्', 'पतति'],
          ['सुहृत्सु', 'सुहृद्', 'सु'],
@@ -137,9 +129,23 @@ var tests = [
      ]
     },
 
+    {sutra: 'cons-nasal-doubled',
+     descr: 'ङ्, ण्, न् at the end of a word after a short vowel doubles itself when followed by a vowel',
+     only: 'ext',
+     tests: [
+         ['प्रत्यङ्ङात्मा', 'प्रत्यङ्', 'आत्मा'],
+         ['सुगण्णिति', 'सुगण्', 'इति'],
+         ['तस्मिन्नेव', 'तस्मिन्', 'एव'],
+         ['विषीदन्निदम्', 'विषीदन्', 'इदम्'],
+         ['', '', ''],
+     ]
+    },
+
+
+
     {sutra: '',
      descr: '',
-     only: 'int',
+     only: 'ext',
      tests: [
          ['', '', ''],
          ['', '', ''],

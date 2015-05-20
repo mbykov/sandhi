@@ -37,6 +37,7 @@ function makeMarkerList(samasa) {
         var next1 = arr[i+1];
         var next2 = arr[i+2];
         var next3 = arr[i+3];
+        var next4 = arr[i+4];
 
         // === SPLIT FILTER CONSONANT ===
 
@@ -89,6 +90,16 @@ function makeMarkerList(samasa) {
             var mark = {num: '8.4.58', pattern: pattern, fin: sym, beg: beg, idx: idx, pos: i};
             marks.push(mark);
             // log('M cons N,M', i, 'mark', mark);
+        }
+
+        //ङ्, ण्, न् at the end of a word after a short vowel doubles itself when followed by a vowel',
+        // if (u.c(Const.Nam, fin) && u.vowshort(penult) && u.c(Const.allvowels, beg)) marker.num = 'cons-nasal-doubled';
+        if (next1 && next4 && next1 == next3 && u.vowshort(sym) && u.c(Const.Nam, next1) && next2 == Const.virama && u.c(Const.allligas, next4)) {
+        // if (next1 && next1 == next3) {
+            var pattern = [next1, Const.virama, next3, next4].join('');
+            var mark = {num: 'cons-nasal-doubled', pattern: pattern, fin: next1, beg: next4, idx: idx, pos: i+1};
+            marks.push(mark);
+            // log('M cons cerebral', i, 'mark', mark, 0, sym, 1, next1, 3, next3, 4, next4, Const.Nam, samasa); // प्रत्यङ्ङात्मा
         }
 
         // log('m consonants', i, 'sym', sym, 1, next1, 2, next2, u.eqvarga(sym, next2));
@@ -318,13 +329,14 @@ function makeMarker(f, s) {
     var beg = second[0];
     var marker;
     // Const.special ? candra всегда после вирамы? Что остальные?
-    // сейчас cons_sutras - только согласная, вирама, согласная
-    if (fin == Const.virama && u.c(Const.hal, beg)) {
+
+    if (fin == Const.virama) { //  && u.c(Const.hal, beg)
         var vir = false;
         var candra = false;
         if (fin == Const.virama) {
             first.pop();
             fin = first.slice(-1)[0];
+            penult = first.slice(-2)[0];
             vir = true;
         }
         if (fin == Const.candra) {
@@ -344,12 +356,12 @@ function makeMarker(f, s) {
         if (u.c(u.dental(), fin) && u.c(u.cerebral(), beg)) marker.num = '8.4.41';
         // If n is followed by l, then n is replaced by nasal l. If a dental other than n and s is followed by l, then the dental is replaced by l.
         if (u.c(u.dental(), fin) && beg == 'ल') marker.num = '8.4.60';
-
         // m,n to anusvara or nasal + cons of class of that nasal
         if (fin == 'म' && u.c(Const.hal, beg)) marker.num = '8.4.58';
+        //ङ्, ण्, न् at the end of a word after a short vowel doubles itself when followed by a vowel',
+        if (u.c(Const.Nam, fin) && u.vowshort(penult) && u.c(Const.allvowels, beg)) marker.num = 'cons-nasal-doubled';
 
-
-        // log('CONS ADD MARKER:', marker.num, 'fin:', fin, 'beg:', beg);
+        // log('CONS ADD MARKER:', marker.num, 'fin:', fin, 'beg:', beg, u.vowshort(penult));
 
         // === ADD FILTER VOWELS ===
     } else if ((u.c(Const.consonants, fin) || u.c(Const.allligas, fin)) && u.c(Const.allvowels, beg)) {
@@ -401,18 +413,20 @@ function makeMarker(f, s) {
         // visarga after simple changes to र् when followed by a vowel or soft consonant except र्
         if (u.c(Const.allsimples, u.vowel(penult)) && (u.c(Const.allvowels, beg) || (u.c(Const.JaS, beg) && beg != 'र'))) marker.num = '4.1.3';
 
+    } else {
+      marker = 'can not be'
     }
     // log('MARKER', marker, fin, beg);
     return marker;
 }
 
 function makeAddResult(mark) {
-    // if (mark.type == 'cons' && u.c(Const.allvowels, mark.beg)) {
-    //     mark.second.shift();
-    //     liga = Const.vow2liga[mark.beg];
-    //     mark.second.unshift(liga);
-    //     mark.vir = false;
-    // }
+    if (mark.type == 'cons' && u.c(Const.allvowels, mark.beg)) {
+        mark.second.shift();
+        var liga = u.liga(mark.beg);
+        mark.second.unshift(liga);
+        mark.vir = false;
+    }
     var space = (mark.space) ? ' ' : '';
     if (mark.end) mark.first.push(mark.end);
     if (mark.vir) mark.first.push(Const.virama);
