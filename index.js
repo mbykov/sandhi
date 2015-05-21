@@ -369,10 +369,15 @@ function makeMarker(f, s) {
         if (candra) marker.candra = true;
 
         // === ADD FILTER CONSONATS ===
+        // hard consonant followed by a soft consonant or vow. changes to the third of its class
+        if (u.c(Const.Kay, fin) && (u.c(Const.allvowels, beg) || (u.c(Const.haS, beg) && !u.c(Const.Yam, beg)))) marker.num = '8.2.39';
+        // soft consonant except nasal, followed by a hard consonant changes to 1st consonant of class = > reverse: class1+hard
+        if (u.c(Const.haS, fin) && !u.c(Const.nasals, fin) && u.c(Const.Kar, beg)) marker.num = '8.4.55';
         // class consonant followed by (nasal) optionally changes to the nasal of class, or less commonly for class hard consonants, changes to 3rd consonant of class
         if (u.c(Const.Jay, fin) && u.c(Const.nm, beg)) marker.num = '8.4.45';
         // dental class consonant followed by a palatal class consonant changes to the corresponding palatal
         if (u.c(u.dental(), fin) && u.c(u.palatal(), beg)) marker.num = '8.4.40';
+        // dental class consonant followed by a cerebral class consonant changes to the corresponding cerebral
         if (u.c(u.dental(), fin) && u.c(u.cerebral(), beg)) marker.num = '8.4.41';
         // If n is followed by l, then n is replaced by nasal l. If a dental other than n and s is followed by l, then the dental is replaced by l.
         if (u.c(u.dental(), fin) && beg == 'ल') marker.num = '8.4.60';
@@ -380,11 +385,9 @@ function makeMarker(f, s) {
         if (fin == 'म' && u.c(Const.hal, beg)) marker.num = '8.4.58';
         //ङ्, ण्, न् at the end of a word after a short vowel doubles itself when followed by a vowel',
         if (u.c(Const.Nam, fin) && u.vowshort(penult) && u.c(Const.allvowels, beg)) marker.num = 'cons-nasal-doubled';
-        // soft consonant except nasal, followed by a hard consonant changes to 1st consonant of class = > reverse: class1+hard
-        if (u.c(Const.haS, fin) && !u.c(Const.nasals, fin) && u.c(Const.Kar, beg)) marker.num = '8.4.55';
 
-        // hard consonant followed by a soft consonant or vow. changes to the third of its class
-        if (u.c(Const.Kay, fin) && (u.c(Const.allvowels, beg) || (u.c(Const.haS, beg) && !u.c(Const.Yam, beg)))) marker.num = '8.2.39';
+
+        // FIXME: порядок имеет значение - 8.2.39 д.б. раньше 8.4.40
 
         // log('CONS ADD MARKER:', marker.num, 'fin:', fin, 'beg:', beg, Const.Yam);
 
