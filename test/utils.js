@@ -53,8 +53,8 @@ utils.prototype.test = function(test, idx) {
 utils.prototype.gita = function(descr, s, v, idx, idy) {
     it(descr, function() {
         // isIN(splitted, second).should.equal(true);
-        var s = test2string(v);
-        log(v.length, 3, s)
+        var s = JSON.stringify(v);
+        // log(v.length, 'samasa', s);
         true.should.equal(true);
     });
 }

@@ -3414,15 +3414,15 @@ describe('gita splitter', function() {
         test.forEach(function(t, idy) {
             var samasa = t[0];
             var vigraha = t[1].split(' ');
-            if (samasa == vigraha[0]) return;
-            if (vigraha.length > 1) return;
-            log(1, idx, idy, samasa, 2, vigraha.length, vigraha);
+            // if (samasa == vigraha[0]) return;
+            // if (vigraha.length > 1) return;
+            // log(1, idx, idy, samasa, 2, vigraha.length, vigraha);
             var sam = salita.sa2slp(samasa);
-            var descr = [idx, idy].join('-');
+            var descr = ['', idx, idy].join('-');
             // if (idx > 50) return;
             // log(descr);
             describe(descr, function() {
-                descr = [idx, idy, sam, samasa].join('-');
+                descr = ['', idx, idy, sam, samasa].join('-');
                 utils.gita(descr, samasa, vigraha, idx, idy);
                 // t.tests.forEach(function(test, idx) {
                 //     if (t.only) test.push(t.only);
