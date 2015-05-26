@@ -7,6 +7,7 @@ DUO := $(BIN)/duo
 g = _
 REPORTER = spec
 TESTS = test/node/*.js
+GITA = test/gita/*.js
 SAMASA = test/samasa/*.js
 
 #
@@ -63,6 +64,16 @@ test:
 		--timeout 3000 \
 		$(TESTS) \
 		2> /dev/null
+
+gita:
+	@NODE_ENV=test ./node_modules/.bin/mocha \
+		--require should \
+		--reporter $(REPORTER) \
+		--slow 500 \
+		--grep $(g) \
+		--timeout 3000 \
+		$(GITA) \
+#		2> /dev/null
 
 
 

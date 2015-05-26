@@ -460,3 +460,46 @@ function makeAddResult(mark) {
     if (mark.vir) mark.first.push(Const.virama);
     return [mark.first.join(''), mark.second.join('')].join(space);
 }
+
+
+// Rules for syllables
+// A syllable is a sound that has exactly one vowel.
+// A syllable can start with a vowel only when:
+// The syllable is at the beginning of a line.
+// The syllable follows a consonant that is removed due to a special rule. (Ignore this for the time being.)
+// A syllable can end in any number of consonants; but when a stop appears, it ends the syllable.
+// Syllables that end in short vowels are light. All other syllables are heavy.
+// As we read a line, we should make each syllable as large as possible. But we cannot break the rules above.
+
+/*
+  я хочу: выяснить, можно ли разбить сегмент на слоги. И только.
+  - гласные: первая в начале, первая согласная из двух, лига или висарга или анусвара
+  - первую пропустили пока
+  - слог открыт, syllable: true
+
+  - sym, next
+  - vow: false => before vow => onset
+  - sym: cons
+  - next:virama, - nnn
+  - next:liga, - vow:true
+  - next:cons, - vow:a:true
+
+  - sym:virama & next = cons, - nnn
+  - sym:liga & next = cons, - nnn
+
+  - vow: true => after vow => coda
+  - sym = cons && sym != stop -> nnn
+  - sym = cons && sym = stop -> syllable: false, vow: false - закрыть
+  - if next = isVow i.e. liga or next1 = cons && next2 !=virama -> закрыть
+  -
+  - если первая vow
+  - vow + cons (а что еще после vow?) vow:true, syllable: true
+  -
+  - если конец строки, а слог открыт, то нельзя разбить на слоги
+  == очень сложно ==
+
+*/
+
+function isSyllable(str) {
+
+}

@@ -50,7 +50,23 @@ utils.prototype.test = function(test, idx) {
     });
 }
 
+utils.prototype.gita = function(descr, s, v, idx, idy) {
+    it(descr, function() {
+        // isIN(splitted, second).should.equal(true);
+        var s = test2string(v);
+        log(v.length, 3, s)
+        true.should.equal(true);
+    });
+}
 
+function test2string(v) {
+    // if (typeof(obj) == 'string') obj = [obj];
+    return JSON.stringify(v);
+    // var str = v.map(function(s) {
+    //     return JSON.stringify(s);
+    // });
+    // return str;
+}
 
 function isIN(arr, item) {
     return (arr.indexOf(item) > -1) ? true : false;
