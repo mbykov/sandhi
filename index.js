@@ -11,6 +11,8 @@ var visRules = require('./lib/visarga_sutras');
 var consRules = require('./lib/cons_sutras');
 var sutras = require('./lib/cons_sutras');
 var log = u.log;
+var salita = require('salita-component'); // FIXME: это нужно убрать
+
 
 var debug = (process.env.debug == 'true') ? true : false;
 
@@ -230,6 +232,8 @@ function makeMarkerList(samasa) {
             var mark = {type: 'visarga', num: '4.1.3', pattern: pattern, beg: beg, idx: idx, pos: i+1};
             marks.push(mark);
             // log('M visarga R soft', i, 'mark', mark, 'patt', pattern, 2, next2, 3, next3); // गुरुर्ब्रह्मा
+        } else {
+            log('no sandhi->', i, idx);
         }
         idx++;
         // log('SYM', i, sym, next1, next2, u.c(Const.JaS, next2), Const.JaS );

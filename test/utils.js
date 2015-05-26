@@ -50,22 +50,27 @@ utils.prototype.test = function(test, idx) {
     });
 }
 
-utils.prototype.gita = function(descr, s, v, idx, idy) {
+utils.prototype.gita = function(descr, sa, v, idx, idy) {
     it(descr, function() {
         // isIN(splitted, second).should.equal(true);
-        var s = JSON.stringify(v);
-        // log(v.length, 'samasa', s);
-        true.should.equal(true);
+        // var vistr = JSON.stringify(v);
+        var vistr = v.join(' ');
+        // log(v.length, 'vi-str', vistr);
+        var hash = sandhi.split(sa);
+        // log(1, idx, idy, v);
+        // log('hash', hash);
+        var splitted = hash[sa];
+        log('size', splitted.length);
+        // log('hash', arr2string(res)); // '"भीरुः अयम्"'
+
+        isIN(splitted, vistr).should.equal(true);
+        // true.should.equal(true);
     });
 }
 
-function test2string(v) {
+function arr2string(v) {
     // if (typeof(obj) == 'string') obj = [obj];
-    return JSON.stringify(v);
-    // var str = v.map(function(s) {
-    //     return JSON.stringify(s);
-    // });
-    // return str;
+    return v.map(function(str) {return JSON.stringify(str) });
 }
 
 function isIN(arr, item) {
