@@ -138,7 +138,7 @@ function makeMarkerList(samasa) {
 
         // a or ā is followed by simple ->  guna
         if (u.c(Const.gunas, u.vowel(sym))) {
-            var mark = {num: '6.1.87', pattern: sym, idx: idx, pos: i, size: i+1};
+            var mark = {num: '6.1.87', pattern: sym, idx: idx, pos: i};
             marks.push(mark);
             // log('M vow guna', i, 'mark', mark);
         } else if ((u.c(Const.hal, sym) || sym == Const.A) && (next1 == 'र' || next1 == 'ल') && next2 == Const.virama) {
@@ -212,8 +212,6 @@ function makeMarkerList(samasa) {
             // log('M visarga-Sc', i, 'mark', mark);
         }
 
-
-
         // TODO: R, видимо, пересмотреть
         // visarga after simple changes to र् when followed by a vowel or soft consonant except र्
         // if (u.c(Const.allsimpleligas, sym) && next1 == 'र' && (u.c(Const.allligas, next2) || ((u.c(Const.JaS, next2) || u.c(Const.yaR, next2)) && next2 != 'र') ) ) {
@@ -233,28 +231,15 @@ function makeMarkerList(samasa) {
             marks.push(mark);
             // log('M visarga R soft', i, 'mark', mark, 'patt', pattern, 2, next2, 3, next3); // गुरुर्ब्रह्मा
         } else {
-            log('no sandhi->', i, idx);
+            var mark = {type: 'common', pattern: '', num: '0', idx: idx, pos: i};
+            marks.push(mark);
+            // log('no sandhi->', i, idx);
         }
         idx++;
         // log('SYM', i, sym, next1, next2, u.c(Const.JaS, next2), Const.JaS );
     });
     // log('splitting marks', marks);
     return marks;
-}
-
-function mark2sandhi(marks) {
-    var list = [];
-    marks.forEach(function(mark) {
-        var sutra = vowRules[mark.num] || consRules[mark.num] || visRules[mark.num];
-        if (!sutra) return; // FIXME: не должно быть
-        var sandhis = sutra.split(mark);
-        sandhis.forEach(function(sandhi) {
-            var m = JSON.parse(JSON.stringify(mark));
-            m.sandhi = sandhi;
-            list.push(m);
-        });
-    });
-    return list;
 }
 
 function spacedSplit(samasa, next) {
@@ -300,6 +285,26 @@ sandhi.prototype.split = function(str) {
     return splits; //
 }
 
+function mark2sandhi(marks) {
+    var list = [];
+    marks.forEach(function(mark) {
+        var sutra = vowRules[mark.num] || consRules[mark.num] || visRules[mark.num];
+        if (!sutra) {
+            var m = JSON.parse(JSON.stringify(mark));
+            m.sandhi = ' ';
+            list.push(m);
+            return; // common method, zero sandhi
+        }
+        var sandhis = sutra.split(mark);
+        sandhis.forEach(function(sandhi) {
+            var m = JSON.parse(JSON.stringify(mark));
+            m.sandhi = sandhi;
+            list.push(m);
+        });
+    });
+    return list;
+}
+
 /*
   make test g=4.41.+7.+split // देह + आविष्ट - देहाविष्ट
 */
@@ -311,9 +316,9 @@ function splitone(samasa) {
     // log('==marks==', marks.map(function(m) { return JSON.stringify(m)}));
     var list = mark2sandhi(marks);
     // log('==list==', list.map(function(m) { return JSON.stringify(m)}));
-    var cleans = u.combinator(list);
-    if (cleans.length > 25) log('==cleans.size== list:', list.length, 'cleans:', cleans.length)
-    cleans.forEach(function(comb) {
+    var combs = u.combinator(list);
+    if (combs.length > 100) log('==combs.size== list:', list.length, 'combs:', combs.length)
+    combs.forEach(function(comb) {
         var result = samasa;
         comb.forEach(function(mark) {
             // log('=>M', mark);
@@ -325,7 +330,7 @@ function splitone(samasa) {
     });
     // log('res:', res);
     var uniq = _.uniq(res);
-    if (res.length != uniq.length) log('NOT UNIQ! SPLIT results:', res.length, 'uniq:', uniq.length, 'cleans:', cleans.length); // भानूदयः
+    if (res.length != uniq.length) log('NOT UNIQ! SPLIT results:', res.length, 'uniq:', uniq.length, 'combs:', combs.length); // भानूदयः
     // log('SPL=> RES', uniq);
     return uniq;
 }

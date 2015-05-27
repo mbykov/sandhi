@@ -60,7 +60,7 @@ utils.prototype.gita = function(descr, sa, v, idx, idy) {
         // log(1, idx, idy, v);
         // log('hash', hash);
         var splitted = hash[sa];
-        log('size', splitted.length);
+        // log('test-gita splitted size', splitted.length);
         // log('hash', arr2string(res)); // '"भीरुः अयम्"'
 
         isIN(splitted, vistr).should.equal(true);
