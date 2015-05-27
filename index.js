@@ -235,18 +235,24 @@ function makeMarkerList(samasa) {
 
         // отсутствие маркера - тем не менее, разбиение м.б. - FIXME: сразу здесь прописать ВСЕ условия
         if (!mark) {
-            if (sym == Const.virama) return;
+            if (sym == Const.virama || !next1) return;
             // var next = (next1 == Const.virama) ? next2 : next1; // TODO: кажется, это спсоб упростить все
             var mark = {num: '0', idx: i, pos: i};
             if (next1 == Const.virama) {
                 mark.pattern = [sym, Const.virama, next2].join('');
                 mark.sandhi = [sym, Const.virama, ' ', next2].join('');
-            } else {
+            } else if (u.c(Const.allligas, next1)) {
                 mark.pattern = [sym, next1].join('');
-                // if (next1 - лига) . . .
-                mark.sandhi = [sym, next1].join(' ');
+                mark.sandhi = [sym, Const.virama, ' ', u.vowel(next1)].join('');
+            } else if (u.c(Const.hal, next1)) {
+                mark.pattern = [sym, next1].join('');
+                mark.sandhi = [sym, ' ', next1].join('');
+            } else if (next1 == Const.visarga) {
+                log('VISARGA?', i, sym, next1, next2); // FIXME:
+            } else {
+                log('WHAT?', i, sym, next1, next2); // FIXME:
             }
-            marks.push(mark);
+            if (mark.pattern) marks.push(mark);
 
             // // old
             // // if (i == 5) return;
@@ -293,7 +299,7 @@ function spacedSplit(samasa, next) {
         first.push(Const.visarga);
     }
 
-
+    // FIXME: WTF:?
     if (u.endsaA(samasa) && u.startsaA(next)) {
     }
     return first.join('');
@@ -343,8 +349,6 @@ function splitone(samasa) {
     var marks = makeMarkerList(samasa);
     if (marks.length == 0) return []; // log('==no_markers!!!=='); // FIXME: этого не должно быть
     // marks = _.select(marks, function(m) { return m.num != '6.1.87'}); // FIXME: ==FILTER==
-    // marks = _.select(marks, function(m) { return m.num != '8.4.55'}); // FIXME: ==FILTER==
-    // marks = _.select(marks, function(m) { return m.num != 0}); // FIXME: ==FILTER==
     // log('==marks==', marks.map(function(m) { return JSON.stringify(m).split('"').join('')}));
     var list = mark2sandhi(marks);
     // log('==list==', list.map(function(m) { return JSON.stringify(m)}));
@@ -352,14 +356,15 @@ function splitone(samasa) {
     if (combs.length > 100) log('==combs.size== list:', list.length, 'combs:', combs.length)
     combs.forEach(function(comb, idx) {
         var result = samasa;
-        // короче: если .87 делает замену одного символа на два, то pos сдвигается и common не находит место для замены
-        var shift = 0;
+        // короче: если .87 делает замену одного символа на два, то pos сдвигается и простой сплит может не найти не то, что нужно?, ex. n-vir-n-vir-n, n-lga-n-liga ?
+        // с этим нужно разобраться, оно еще может аукнуться
+        // var shift = 0;
         comb.forEach(function(mark) {
             // log('SH', shift)
             // mark.pos += shift;
             result = u.replaceByPos(result, mark.pattern, mark.sandhi, mark.pos); // योक् युत्तम
             // if (mark.num == 0) log('SH: idx', idx, 'sh', shift, 'pos', mark.pos, result, 'pat', mark.pattern, mark.pattern.length, 'sand', mark.sandhi, mark.sandhi.length); // या उग्युत्त
-            shift = mark.sandhi.length - mark.pattern.length;
+            // shift = mark.sandhi.length - mark.pattern.length;
         });
         if (result != samasa) res.push(result); // FIXME: этого неравенства не должно быть, все маркеры должны давать замену, причем уникальную
         // log('=R=', (res.length == _.uniq(res).length), result);
