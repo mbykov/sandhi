@@ -137,7 +137,7 @@ function makeMarkerList(samasa) {
             // log('M vow dirgha', i, 'mark', mark);
         }
 
-        // a or ā is followed by simple ->  guna
+        // a or ā is followed by simple ->  guna; reverse: guna = a+simple
         if (u.c(Const.gunas, u.vowel(sym))) {
             var mark = {num: '6.1.87', pattern: sym, idx: i, pos: i};
             marks.push(mark);
@@ -235,15 +235,35 @@ function makeMarkerList(samasa) {
 
         // отсутствие маркера - тем не менее, разбиение м.б. - FIXME: сразу здесь прописать ВСЕ условия
         if (!mark) {
-            var fin = samasa[i];
-            var beg = samasa[i+1];
-            if (samasa[i+1] == Const.virama) return; // FIXME: это прообраз условий
-            // odd - non uniq - позиция другая, но 8.4.58 также попросту раздвигает символы в этой позиции - FIXME: м.б. еще случаи - отдельный метод?
-            var odd = _.find(marks, function(m) { return m.pos == i-1 && m.num == '8.4.58'});
-            if (odd) return;
-            var mark = {type: 'common', pattern: beg, num: 0, idx: i, pos: i};
+            if (sym == Const.virama) return;
+            // var next = (next1 == Const.virama) ? next2 : next1; // TODO: кажется, это спсоб упростить все
+            var mark = {num: '0', idx: i, pos: i};
+            if (next1 == Const.virama) {
+                mark.pattern = [sym, Const.virama, next2].join('');
+                mark.sandhi = [sym, Const.virama, ' ', next2].join('');
+            } else {
+                mark.pattern = [sym, next1].join('');
+                // if (next1 - лига) . . .
+                mark.sandhi = [sym, next1].join(' ');
+            }
             marks.push(mark);
-            // log('no sandhi->', i, idx);
+
+            // // old
+            // // if (i == 5) return;
+            // var fin = samasa[i];
+            // var beg = samasa[i+1];
+            // // log('i', i, fin, beg)
+            // if (samasa[i+1] == Const.virama) return; // FIXME: это прообраз полных условий
+            // // odd - non uniq - позиция другая, но 8.4.58 также попросту раздвигает символы в этой позиции - FIXME: м.б. еще случаи - отдельный метод?
+            // // 8.4.45 при 3-d class consonant followed by nasal действует так же
+            // // FIXME: поправить уродство:
+            // var odd = _.find(marks, function(m) { return m.pos == i-1 && m.num == '8.4.58'});
+            // if (odd) return;
+            // odd = _.find(marks, function(m) { return m.pos == i-1 && m.num == '8.4.45'});
+            // if (odd) return;
+            // var mark = {type: 'common', pattern: beg, num: 0, idx: i, pos: i+1};
+            // marks.push(mark);
+            // // log('no sandhi->', i, idx);
         }
         idx++;
         // log('SYM', i, sym, next1, next2, u.c(Const.JaS, next2), Const.JaS );
@@ -301,8 +321,6 @@ function mark2sandhi(marks) {
         var sutra = vowRules[mark.num] || consRules[mark.num] || visRules[mark.num];
         if (!sutra) {
             var m = JSON.parse(JSON.stringify(mark));
-            m.sandhi = [' ', mark.pattern].join('');
-            // log('Z', m.pos, m.pattern, m.sandhi);
             list.push(m);
             return; // common method, zero sandhi
         }
@@ -324,21 +342,27 @@ function splitone(samasa) {
     var res = [];
     var marks = makeMarkerList(samasa);
     if (marks.length == 0) return []; // log('==no_markers!!!=='); // FIXME: этого не должно быть
-    // marks = _.select(marks, function(m) { return m.num != '8.4.58'}); // FIXME: ==FILTER==
+    // marks = _.select(marks, function(m) { return m.num != '6.1.87'}); // FIXME: ==FILTER==
+    // marks = _.select(marks, function(m) { return m.num != '8.4.55'}); // FIXME: ==FILTER==
+    // marks = _.select(marks, function(m) { return m.num != 0}); // FIXME: ==FILTER==
     // log('==marks==', marks.map(function(m) { return JSON.stringify(m).split('"').join('')}));
     var list = mark2sandhi(marks);
     // log('==list==', list.map(function(m) { return JSON.stringify(m)}));
     var combs = u.combinator(list);
     if (combs.length > 100) log('==combs.size== list:', list.length, 'combs:', combs.length)
-    combs.forEach(function(comb) {
+    combs.forEach(function(comb, idx) {
         var result = samasa;
+        // короче: если .87 делает замену одного символа на два, то pos сдвигается и common не находит место для замены
+        var shift = 0;
         comb.forEach(function(mark) {
-            // log('=>M', mark, samasa[mark.pos]);
-            result = u.replaceByPos(result, mark.pattern, mark.sandhi, mark.pos);
+            // log('SH', shift)
+            // mark.pos += shift;
+            result = u.replaceByPos(result, mark.pattern, mark.sandhi, mark.pos); // योक् युत्तम
+            // if (mark.num == 0) log('SH: idx', idx, 'sh', shift, 'pos', mark.pos, result, 'pat', mark.pattern, mark.pattern.length, 'sand', mark.sandhi, mark.sandhi.length); // या उग्युत्त
+            shift = mark.sandhi.length - mark.pattern.length;
         });
-        // log('result:', result);
-        if (result != samasa) res.push(result); // этого неравенства не должно быть, все маркеры должны давать замену
-        // res.push(result);
+        if (result != samasa) res.push(result); // FIXME: этого неравенства не должно быть, все маркеры должны давать замену, причем уникальную
+        // log('=R=', (res.length == _.uniq(res).length), result);
     });
     // log('res:', res);
     var uniq = _.uniq(res);
