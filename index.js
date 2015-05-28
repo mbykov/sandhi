@@ -83,7 +83,7 @@ function makeMarkerList(samasa) {
         // m,n to anusvara or nasal + cons of class of that nasal; reverse: anusvara or nasal to m,n
         // 8.3.23 AND 8.4.58 for splitting
         // if (sym == Const.anusvara && u.c(Const.hal, next1) || u.c(Const.nasals, sym) && next1 == Const.virama && u.eqvarga(sym, next2)) {
-        if ((sym == Const.anusvara && u.c(Const.yay, next1)) || u.c(Const.nasals, sym) && next1 == Const.virama && u.eqvarga(sym, next2)) {
+        if ((sym == Const.anusvara && u.c(Const.hal, next1)) || u.c(Const.nasals, sym) && next1 == Const.virama && u.eqvarga(sym, next2)) {
             if (next1 == Const.virama) {
                 // 8.3.23 пересекается с common - split при i+2 - просто раздвигает в месте pos=i
                 var pattern = [sym, Const.virama].join('');
@@ -250,7 +250,9 @@ function makeMarkerList(samasa) {
                 mark.pattern = [sym, next1].join('');
                 mark.sandhi = [sym, ' ', next1].join('');
             } else if (next1 == Const.visarga) {
-                log('VISARGA?', i, sym, next1, next2); // FIXME:
+                // log('VISARGA?', i, sym, next1, next2); // FIXME:
+            } else if (next1 == Const.anusvara) {
+                // log('ANUSVARA?', i, sym, next1, next2); // FIXME:
             } else {
                 log('WHAT?', i, sym, next1, next2); // FIXME:
             }
@@ -371,15 +373,21 @@ function splitone(samasa) {
             var second = result.slice(pos);
             // log('SEC', second);
             // log('result1', result, mark.sandhi.length, mark.pattern.length);
+            var old = result;
             result = u.replaceByPos(result, mark.pattern, mark.sandhi, pos); // योक् युत्तम
             // log('result2', result, mark.sandhi.length, mark.pattern.length);
 
             // log('SH0', shift);
             shift = mark.sandhi.length - mark.pattern.length;
             // log('SH1', shift);
+            // if (old == result && mark.num != '8.3.23') { //  old == result ; idx == 27
+            //     // log('==comb==', idx, comb.map(function(m) { return JSON.stringify(m)})); // गुरोऽङ्ग्ध //
+            //     log('M', idx, 'M', mark);
+            //     log('old', old == result, idx, old, result);
+            // }
         });
         if (result != samasa) res.push(result); // FIXME: этого неравенства не должно быть, все маркеры должны давать замену, причем уникальную
-        // log('=R=', (res.length == _.uniq(res).length), result);
+        // log('=R=', (res.length == _.uniq(res).length), idx);
     });
     // log('res:', res); // 'संदर' == 'संदर'
     var uniq = _.uniq(res);

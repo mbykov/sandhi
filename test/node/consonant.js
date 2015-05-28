@@ -22,7 +22,8 @@ var tests = [
 
     // In place of the "m" ending in an inflected word , the substitution is to be the "anusvara" if a consonant follows
     // reverse: anusvara to m
-    {sutra: '8.3.23',
+    // {sutra: '8.3.23',
+     {sutra: '8.3.23',
      descr: 'm,n to anusvara',
      only: 'ext',
      tests: [
