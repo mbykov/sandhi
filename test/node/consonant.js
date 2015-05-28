@@ -20,8 +20,9 @@ var tests = [
      ]
     },
 
-    // In place of the "m" ending in an inflected word , the substitution is to be the "anusvara" if a consonant follows',
-    {sutra: '8.4.58',
+    // In place of the "m" ending in an inflected word , the substitution is to be the "anusvara" if a consonant follows
+    // reverse: anusvara to m
+    {sutra: '8.3.23',
      descr: 'm,n to anusvara',
      only: 'ext',
      tests: [
@@ -34,6 +35,23 @@ var tests = [
          ['नरंपृच्छामि', 'नरम्', 'पृच्छामि'],
          ['नरंयच्छति', 'नरम्', 'यच्छति'],
          ['पुष्पंदत्तम्', 'पुष्पम्', 'दत्तम्'],
+     ]
+    },
+
+    // G2. Consonant to nasal of class:
+    // anusvara at the middle of word followed by consonant except र्, sibilants or ह् mandatorily changes to nasal of the class
+    // anusvara at the end of word followed by consonant except र्, sibilants or ह् optionally changes to nasal of the class
+    // reverse: nasal to anusvara to in the middle of a word
+    // reverse: or anusvara or nasal to anusvara at end of a word
+    {sutra: '8.4.58',
+     descr: 'anusvara at mow, eow to nasal',
+     only: 'ext',
+     tests: [
+         ['शङ्कर', 'शंकर', 'च'], // च has no sense, only for test
+         ['', '', ''],
+         ['', '', ''],
+         ['', '', ''],
+         ['', '', ''],
          ['', '', ''],
          ['', '', ''],
      ]

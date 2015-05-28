@@ -81,16 +81,18 @@ function makeMarkerList(samasa) {
         }
 
         // m,n to anusvara or nasal + cons of class of that nasal; reverse: anusvara or nasal to m,n
-        if (sym == Const.anusvara && u.c(Const.hal, next1) || u.c(Const.nasals, sym) && next1 == Const.virama && u.eqvarga(sym, next2)) {
+        // 8.3.23 AND 8.4.58 for splitting
+        // if (sym == Const.anusvara && u.c(Const.hal, next1) || u.c(Const.nasals, sym) && next1 == Const.virama && u.eqvarga(sym, next2)) {
+        if ((sym == Const.anusvara && u.c(Const.yay, next1)) || u.c(Const.nasals, sym) && next1 == Const.virama && u.eqvarga(sym, next2)) {
             if (next1 == Const.virama) {
-                // 8.4.58 пересекается с common - split при i+2 - просто раздвигает в месте pos=i
+                // 8.3.23 пересекается с common - split при i+2 - просто раздвигает в месте pos=i
                 var pattern = [sym, Const.virama].join('');
                 var beg = next2;
             } else {
                 var pattern = sym;
                 var beg = next1;
             }
-            var mark = {num: '8.4.58', pattern: pattern, fin: sym, beg: beg, idx: i, pos: i};
+            var mark = {num: '8.3.23', pattern: pattern, fin: sym, beg: beg, idx: i, pos: i};
             marks.push(mark);
             // log('M cons N,M', i, 'mark', mark);
         }
@@ -260,10 +262,10 @@ function makeMarkerList(samasa) {
             // var beg = samasa[i+1];
             // // log('i', i, fin, beg)
             // if (samasa[i+1] == Const.virama) return; // FIXME: это прообраз полных условий
-            // // odd - non uniq - позиция другая, но 8.4.58 также попросту раздвигает символы в этой позиции - FIXME: м.б. еще случаи - отдельный метод?
+            // // odd - non uniq - позиция другая, но 8.3.23 также попросту раздвигает символы в этой позиции - FIXME: м.б. еще случаи - отдельный метод?
             // // 8.4.45 при 3-d class consonant followed by nasal действует так же
             // // FIXME: поправить уродство:
-            // var odd = _.find(marks, function(m) { return m.pos == i-1 && m.num == '8.4.58'});
+            // var odd = _.find(marks, function(m) { return m.pos == i-1 && m.num == '8.3.23'});
             // if (odd) return;
             // odd = _.find(marks, function(m) { return m.pos == i-1 && m.num == '8.4.45'});
             // if (odd) return;
@@ -299,9 +301,9 @@ function spacedSplit(samasa, next) {
         first.push(Const.visarga);
     }
 
-    // FIXME: WTF:?
-    if (u.endsaA(samasa) && u.startsaA(next)) {
-    }
+    // // FIXME: WTF:?
+    // if (u.endsaA(samasa) && u.startsaA(next)) {
+    // }
     return first.join('');
 }
 
@@ -358,21 +360,31 @@ function splitone(samasa) {
         var result = samasa;
         // короче: если .87 делает замену одного символа на два, то pos сдвигается и простой сплит может не найти не то, что нужно?, ex. n-vir-n-vir-n, n-lga-n-liga ?
         // с этим нужно разобраться, оно еще может аукнуться
-        // var shift = 0;
+        var shift = 0;
+        // log('==comb==', idx, comb.map(function(m) { return JSON.stringify(m)}));
         comb.forEach(function(mark) {
-            // log('SH', shift)
-            // mark.pos += shift;
-            result = u.replaceByPos(result, mark.pattern, mark.sandhi, mark.pos); // योक् युत्तम
-            // if (mark.num == 0) log('SH: idx', idx, 'sh', shift, 'pos', mark.pos, result, 'pat', mark.pattern, mark.pattern.length, 'sand', mark.sandhi, mark.sandhi.length); // या उग्युत्त
-            // shift = mark.sandhi.length - mark.pattern.length;
+            // log('M', idx, 'M', mark);
+            // log('MARK.POS', mark.pos);
+            // log('SHIFT', shift);
+            var pos = mark.pos + shift;
+            // log('POS', pos);
+            var second = result.slice(pos);
+            // log('SEC', second);
+            // log('result1', result, mark.sandhi.length, mark.pattern.length);
+            result = u.replaceByPos(result, mark.pattern, mark.sandhi, pos); // योक् युत्तम
+            // log('result2', result, mark.sandhi.length, mark.pattern.length);
+
+            // log('SH0', shift);
+            shift = mark.sandhi.length - mark.pattern.length;
+            // log('SH1', shift);
         });
         if (result != samasa) res.push(result); // FIXME: этого неравенства не должно быть, все маркеры должны давать замену, причем уникальную
         // log('=R=', (res.length == _.uniq(res).length), result);
     });
-    // log('res:', res);
+    // log('res:', res); // 'संदर' == 'संदर'
     var uniq = _.uniq(res);
     if (res.length != uniq.length) log('NOT UNIQ! SPLIT results:', res.length, 'uniq:', uniq.length, 'combs:', combs.length); // भानूदयः
-    // log('SPL=> RES', uniq);
+    // log('SPL=> URES', uniq);
     return uniq;
 }
 
@@ -432,7 +444,7 @@ function makeMarker(f, s) {
         // If n is followed by l, then n is replaced by nasal l. If a dental other than n and s is followed by l, then the dental is replaced by l.
         if (u.c(u.dental(), fin) && beg == 'ल') marker.num = '8.4.60';
         // m,n to anusvara or nasal + cons of class of that nasal
-        if (fin == 'म' && u.c(Const.hal, beg)) marker.num = '8.4.58';
+        if (fin == 'म' && u.c(Const.hal, beg)) marker.num = '8.3.23';
         //ङ्, ण्, न् at the end of a word after a short vowel doubles itself when followed by a vowel',
         if (u.c(Const.Nam, fin) && u.vowshort(penult) && u.c(Const.allvowels, beg)) marker.num = 'cons-nasal-doubled';
 
