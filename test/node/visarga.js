@@ -86,14 +86,23 @@ var tests = [
      ]
     },
 
-
-
-
-
     // to R нужно переделать, чтобы охватить все
 
     {sutra: '4.1.3', // FIXME: !!!! номер 4.1.3 условный!!!
      descr: 'visarga after simple changes to र् when followed by a vowel or soft consonant except र्',
+     only: 'ext',
+     tests: [
+         ['गणपतिरवतु', 'गणपतिः', 'अवतु'],
+         ['रविरुदेति', 'रविः', 'उदेति'],
+         ['गुरुर्ब्रह्मा', 'गुरुः', 'ब्रह्मा'],
+         ['मनुर्गच्छति', 'मनुः', 'गच्छति'],
+         ['', '', ''],
+         ['', '', ''],
+     ]
+    },
+
+    {sutra: 'visarga-simple-2-r-soft',
+     descr: 'visarga after any vowel except अ or आ changes to र् when followed by a vowel or soft consonant except र्',
      only: 'ext',
      tests: [
          ['गणपतिरवतु', 'गणपतिः', 'अवतु'],

@@ -246,21 +246,31 @@ function makeMarkerList(samasa) {
         // TODO: R, видимо, пересмотреть
         // visarga after simple changes to र् when followed by a vowel or soft consonant except र्
         // if (u.c(Const.allsimpleligas, sym) && next1 == 'र' && (u.c(Const.allligas, next2) || ((u.c(Const.JaS, next2) || u.c(Const.yaR, next2)) && next2 != 'र') ) ) {
-        if (u.c(Const.allsimpleligas, sym) && next1 == 'र' ) {
-            var beg;
-            if (u.c(Const.allligas, next2)) {
-                pattern = [next1, next2].join('');
-                beg = next2;
-            } else if ((u.c(Const.JaS, next2) || u.c(Const.yaR, next2)) && next2 != 'र') {
-                pattern = next1;
-                beg = next2;
-            } else if (next2 == Const.virama && (u.c(Const.JaS, next3) || u.c(Const.yaR, next3)) && next3 != 'र') {
-                pattern = [next1, Const.virama].join('');
-                beg = next3;
-            } else return; // sic!
-            var mark = {type: 'visarga', num: '4.1.3', pattern: pattern, beg: beg, idx: i, pos: i+1};
+        // if (u.c(Const.allsimpleligas, sym) && next1 == 'र' ) {
+        //     var beg;
+        //     if (u.c(Const.allligas, next2)) {
+        //         pattern = [next1, next2].join('');
+        //         beg = next2;
+        //     } else if ((u.c(Const.JaS, next2) || u.c(Const.yaR, next2)) && next2 != 'र') {
+        //         pattern = next1;
+        //         beg = next2;
+        //     } else if (next2 == Const.virama && (u.c(Const.JaS, next3) || u.c(Const.yaR, next3)) && next3 != 'र') {
+        //         pattern = [next1, Const.virama].join('');
+        //         beg = next3;
+        //     } else return; // sic!
+        //     var mark = {type: 'visarga', num: '4.1.3', pattern: pattern, beg: beg, idx: i, pos: i+1};
+        //     marks.push(mark);
+        //     // log('M visarga R soft', i, 'mark', mark, 'patt', pattern, 2, next2, 3, next3); // गुरुर्ब्रह्मा
+        // }
+
+
+        //  R visarga after any vowel except अ or आ changes to र् when followed by a vowel or soft consonant except र्; reverse: simple-r-soft-r 2 visarga + vow or soft
+        if (u.c(Const.allsimpleligas, prev) && sym == 'र') {
+            pattern = ['र', next1].join('');
+            beg = next1;
+            var mark = {num: 'visarga-simple-2-r-soft', pattern: pattern, beg: beg, idx: i, pos: i};
             marks.push(mark);
-            // log('M visarga R soft', i, 'mark', mark, 'patt', pattern, 2, next2, 3, next3); // गुरुर्ब्रह्मा
+            // log('M visarga-simple-2-r-soft', i, 'mark', mark, 'patt', pattern);
         }
 
         // zero: отсутствие маркера - тем не менее, разбиение м.б. - FIXME: сразу здесь прописать ВСЕ условия
@@ -365,7 +375,7 @@ sandhi.prototype.split = function(str) {
         var next = samasas[idx+1] || '';
         // var spaced = (next) ? spacedSplit(samasa, next) : samasa;
         var spaced = spacedSplit(samasa, next);
-        // log(1, spaced, 2, next);
+        // log(1, spaced, 'next', next);
         splits[samasa] = splitone(spaced);
         if (samasa != spaced) splits[samasa].unshift(spaced);
     });
@@ -382,6 +392,7 @@ function mark2sandhi(marks) {
             return; // common method, zero sandhi
         }
         var sandhis = sutra.split(mark);
+        // log('S', sandhis, mark.num);
         sandhis.forEach(function(sandhi) {
             var m = JSON.parse(JSON.stringify(mark));
             m.sandhi = sandhi;
@@ -399,7 +410,7 @@ function splitone(samasa) {
     var res = [];
     var marks = makeMarkerList(samasa);
     if (marks.length == 0) return []; // log('==no_markers!!!=='); // FIXME: этого не должно быть
-    // marks = _.select(marks, function(m) { return m.num != '6.1.87'}); // FIXME: ==FILTER== // धृतवानसि
+    marks = _.select(marks, function(m) { return m.num != '6.1.87'}); // FIXME: ==FILTER== // रविरुदेति
     // log('==marks==', marks.map(function(m) { return JSON.stringify(m).split('"').join('')}));
     var list = mark2sandhi(marks);
     // log('==list==', list.map(function(m) { return JSON.stringify(m)}));
