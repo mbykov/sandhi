@@ -36,6 +36,7 @@ function makeMarkerList(samasa) {
         if (i < 1) return;
         if (i > samasa.length - 2) return;
         var mark, pattern, size;
+        var prev = arr[i-1];
         var next1 = arr[i+1];
         var next2 = arr[i+2];
         var next3 = arr[i+3];
@@ -171,24 +172,42 @@ function makeMarkerList(samasa) {
             // log('M yana 77 ', i, 'mark', mark);
         }
 
-        // TODO: засада - перебивает dirgha-type - देहाविष्ट - आविष्ट - TODO: убрать везде else?
-
         // 6.1.78 - ayadi-guna - e,o+vow-a => ay,av+vow-a (comp. 6.1.109); - ayadi-vriddhi - E,O+vow => Ay,Av+vow, if vow=aA - next=cons
-        if (sym == Const.A && u.c(Const.yava, next1)) { // E,O
-            if (u.c(Const.allligas, next2)) {
-                pattern = [Const.A, next1, next2].join('');
+        // reverse:
+        if (prev == Const.A && u.c(Const.yava, sym)) { // E,O
+            if (u.c(Const.allligas, next1)) {
+                pattern = [Const.A, sym, next1].join('');
             } else {
-                pattern = [Const.A, next1].join('');     //
+                pattern = [Const.A, sym].join('');
             }
-            var mark = {num: '6.1.78', pattern: pattern, beg: next2, idx: i, pos: i};
+            var mark = {num: '6.1.78', pattern: pattern, beg: next1, idx: i, pos: i-1};
             marks.push(mark);
             // log('M ayadi-vriddhi 78 ', i, 'mark', mark);
-        } else if (sym != Const.A && sym != Const.virama && u.c(Const.yava, next1) && u.c(Const.allligas, next2)) {
-            pattern = [next1, next2].join('');
-            var mark = {num: '6.1.78', pattern: pattern, idx: i, pos: i+1};
+            // FIXME: TODO va-na - может крыться с common ?
+        } else if (prev != Const.A && prev != Const.virama && u.c(Const.yava, sym) && u.c(Const.allligas, next1)) {
+            pattern = [sym, next1].join('');
+            var mark = {num: '6.1.78', pattern: pattern, idx: i, pos: i};
             marks.push(mark);
             // log('M ayadi-guna-wo-a 78', i, 'mark', mark, 'sym', sym, 1, next1, 2, next2, sym != Const.virama);
         }
+
+        // // 6.1.78 - ayadi-guna - e,o+vow-a => ay,av+vow-a (comp. 6.1.109); - ayadi-vriddhi - E,O+vow => Ay,Av+vow, if vow=aA - next=cons
+        // // reverse:
+        // if (sym == Const.A && u.c(Const.yava, next1)) { // E,O
+        //     if (u.c(Const.allligas, next2)) {
+        //         pattern = [Const.A, next1, next2].join('');
+        //     } else {
+        //         pattern = [Const.A, next1].join('');     //
+        //     }
+        //     var mark = {num: '6.1.78', pattern: pattern, beg: next2, idx: i, pos: i};
+        //     marks.push(mark);
+        //     // log('M ayadi-vriddhi 78 ', i, 'mark', mark);
+        // } else if (sym != Const.A && sym != Const.virama && u.c(Const.yava, next1) && u.c(Const.allligas, next2)) {
+        //     pattern = [next1, next2].join('');
+        //     var mark = {num: '6.1.78', pattern: pattern, idx: i, pos: i+1};
+        //     marks.push(mark);
+        //     // log('M ayadi-guna-wo-a 78', i, 'mark', mark, 'sym', sym, 1, next1, 2, next2, sym != Const.virama);
+        // }
 
         // 6.1.109 - ayadi - e,o+a => avagraha
         if (sym == Const.avagraha) {
@@ -208,12 +227,21 @@ function makeMarkerList(samasa) {
             // log('M visarga', i, 'mark', mark);
         }
 
-        if (u.vowsound(sym) && u.c(['श', 'ष', 'स'], next1) && next2 == Const.virama) {
-            pattern = [next1, Const.virama].join('');
-            var mark = {type: 'visarga', num: 'visarga-hard-cons', pattern: pattern, idx: i, pos: i+1};
+        // D1. (visarga) changes to (श्) (p sb) when followed by (च् or छ्) (p hc).
+        if (u.vowsound(prev) && u.c(['श', 'ष', 'स'], sym) && next1 == Const.virama) {
+            pattern = [sym, Const.virama].join('');
+            var mark = {type: 'visarga', num: 'visarga-hard-cons', pattern: pattern, idx: i, pos: i};
             marks.push(mark);
             // log('M visarga-Sc', i, 'mark', mark);
         }
+
+        // // D1. (visarga) changes to (श्) (p sb) when followed by (च् or छ्) (p hc).
+        // if (u.vowsound(sym) && u.c(['श', 'ष', 'स'], next1) && next2 == Const.virama) {
+        //     pattern = [next1, Const.virama].join('');
+        //     var mark = {type: 'visarga', num: 'visarga-hard-cons', pattern: pattern, idx: i, pos: i+1};
+        //     marks.push(mark);
+        //     // log('M visarga-Sc', i, 'mark', mark);
+        // }
 
         // TODO: R, видимо, пересмотреть
         // visarga after simple changes to र् when followed by a vowel or soft consonant except र्
@@ -235,10 +263,11 @@ function makeMarkerList(samasa) {
             // log('M visarga R soft', i, 'mark', mark, 'patt', pattern, 2, next2, 3, next3); // गुरुर्ब्रह्मा
         }
 
-        // отсутствие маркера - тем не менее, разбиение м.б. - FIXME: сразу здесь прописать ВСЕ условия
+        // zero: отсутствие маркера - тем не менее, разбиение м.б. - FIXME: сразу здесь прописать ВСЕ условия
         if (!mark) {
             if (sym == Const.virama || !next1) return;
             // var next = (next1 == Const.virama) ? next2 : next1; // TODO: кажется, это спсоб упростить все
+            // FIXME: а sym тут, что, любой?
             var mark = {num: '0', idx: i, pos: i};
             if (next1 == Const.virama) {
                 mark.pattern = [sym, Const.virama, next2].join('');
@@ -247,8 +276,19 @@ function makeMarkerList(samasa) {
                 mark.pattern = [sym, next1].join('');
                 mark.sandhi = [sym, Const.virama, ' ', u.vowel(next1)].join('');
             } else if (u.c(Const.hal, next1)) {
+                // вот тут sym не любой, и везде - array
                 mark.pattern = [sym, next1].join('');
                 mark.sandhi = [sym, ' ', next1].join('');
+                if (u.c(Const.hal, sym)) {
+                    var odd = JSON.parse(JSON.stringify(mark));
+                    odd.sandhi = [sym, Const.virama, ' अ', next1].join('');
+                    odd.type = 'odd cons';
+                    marks.push(odd);
+                    // log('============= two const zero sandhi ?', i, sym, next1);
+                    // ЭТО: НЕ НУЖНО, на пред. шаге - конс+лига
+                    // } else if (u.c(Const.allligas, sym)) {
+                    // return; ???
+                }
             } else if (next1 == Const.visarga) {
                 // log('VISARGA?', i, sym, next1, next2); // FIXME:
             } else if (next1 == Const.anusvara) {
@@ -303,6 +343,12 @@ function spacedSplit(samasa, next) {
         first.push(Const.visarga);
     }
 
+    // FIXME: NOW: spaced нужно проверять и в gita-test, но там нет next
+    if (u.vowel(fin) == 'ओ' && !next) {
+        first.pop();
+        first.push(Const.visarga);
+    }
+
     // // FIXME: WTF:?
     // if (u.endsaA(samasa) && u.startsaA(next)) {
     // }
@@ -316,13 +362,14 @@ sandhi.prototype.split = function(str) {
     var splits = {};
     var samasas = str.split(' ');
     samasas.forEach(function(samasa, idx) {
-        var next = samasas[idx+1];
-        var spaced = (next) ? spacedSplit(samasa, next) : samasa;
+        var next = samasas[idx+1] || '';
+        // var spaced = (next) ? spacedSplit(samasa, next) : samasa;
+        var spaced = spacedSplit(samasa, next);
+        // log(1, spaced, 2, next);
         splits[samasa] = splitone(spaced);
         if (samasa != spaced) splits[samasa].unshift(spaced);
-        // log(33, splits[samasa]);
     });
-    return splits; //
+    return splits;
 }
 
 function mark2sandhi(marks) {
@@ -352,12 +399,12 @@ function splitone(samasa) {
     var res = [];
     var marks = makeMarkerList(samasa);
     if (marks.length == 0) return []; // log('==no_markers!!!=='); // FIXME: этого не должно быть
-    // marks = _.select(marks, function(m) { return m.num != '6.1.87'}); // FIXME: ==FILTER==
+    // marks = _.select(marks, function(m) { return m.num != '6.1.87'}); // FIXME: ==FILTER== // धृतवानसि
     // log('==marks==', marks.map(function(m) { return JSON.stringify(m).split('"').join('')}));
     var list = mark2sandhi(marks);
     // log('==list==', list.map(function(m) { return JSON.stringify(m)}));
-    var combs = u.combinator(list);
-    if (combs.length > 100) log('==combs.size== list:', list.length, 'combs:', combs.length)
+    var combs = u.combinator(list, samasa.length);
+    if (combs.length > 500) log('==combs.size== list:', list.length, 'combs:', combs.length)
     combs.forEach(function(comb, idx) {
         var result = samasa;
         // короче: если .87 делает замену одного символа на два, то pos сдвигается и простой сплит может не найти не то, что нужно?, ex. n-vir-n-vir-n, n-lga-n-liga ?
@@ -379,6 +426,7 @@ function splitone(samasa) {
 
             // log('SH0', shift);
             shift = mark.sandhi.length - mark.pattern.length;
+
             // log('SH1', shift);
             // if (old == result && mark.num != '8.3.23') { //  old == result ; idx == 27
             //     // log('==comb==', idx, comb.map(function(m) { return JSON.stringify(m)})); // गुरोऽङ्ग्ध //

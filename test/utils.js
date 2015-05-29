@@ -50,6 +50,20 @@ utils.prototype.test = function(test, idx) {
     });
 }
 
+// utils.prototype.gita = function(str, res, idx) {
+//     var hash = sandhi.split(str);
+//     var i = 1;
+//     log(res)
+//     for (var samasa in hash) {
+//         var vigraha = hash[samasa];
+//         if (samasa == vigraha[0]) return;
+//         if (samasa.length > 10) res = ['long'];
+//         log(1, idx, i, samasa, vigraha, '=', res[i]);
+//         true.should.equal(true);
+//         i++;
+//     }
+// }
+
 utils.prototype.gita = function(descr, sa, v, idx, idy) {
     it(descr, function() {
         // isIN(splitted, second).should.equal(true);
