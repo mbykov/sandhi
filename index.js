@@ -265,12 +265,15 @@ function makeMarkerList(samasa) {
 
 
         //  R visarga after any vowel except अ or आ changes to र् when followed by a vowel or soft consonant except र्; reverse: simple-r-soft-r 2 visarga + vow or soft
-        if (u.c(Const.allsimpleligas, prev) && sym == 'र') {
+        // C2. (अ & visarga) standing for अर् changes to अर् when followed by a (vowel or soft consonant except र्)
+        // if (u.c(Const.allsimpleligas, prev) && sym == 'र') {
+        // ====================================== SOFT-r OR VOWEL
+        if (u.vowsound(prev) && sym == 'र' && false) {
             pattern = ['र', next1].join('');
             beg = next1;
             var mark = {num: 'visarga-simple-2-r-soft', pattern: pattern, beg: beg, idx: i, pos: i};
             marks.push(mark);
-            // log('M visarga-simple-2-r-soft', i, 'mark', mark, 'patt', pattern);
+            log('M visarga-simple-2-r-soft', i, 'mark', mark, 'patt', pattern);
         }
 
         // zero: отсутствие маркера - тем не менее, разбиение м.б. - FIXME: сразу здесь прописать ВСЕ условия
