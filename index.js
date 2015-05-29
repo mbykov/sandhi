@@ -146,7 +146,7 @@ function makeMarkerList(samasa) {
             marks.push(mark);
             // log('M vow guna', i, 'mark', mark);
         } else if ((u.c(Const.hal, sym) || sym == Const.A) && (next1 == 'र' || next1 == 'ल') && next2 == Const.virama) {
-            pattern = [next1, Const.virama].join('');
+            var pattern = [next1, Const.virama].join('');
             var mark = {num: '6.1.87', pattern: pattern, idx: i, pos: i+1};
             marks.push(mark);
             // log('M vow guna RL', i, 'mark', mark);
@@ -163,9 +163,9 @@ function makeMarkerList(samasa) {
         if (sym == Const.virama && u.c(Const.yaR, next1) && next2 != Const.virama) {
             // 6.1.77 yana = semi-vowels
             if (u.c(Const.allligas, next2)) {
-                pattern = [Const.virama, next1, next2].join('');
+                var pattern = [Const.virama, next1, next2].join('');
             } else {
-                pattern = [Const.virama, next1].join('');
+                var pattern = [Const.virama, next1].join('');
             }
             var mark = {num: '6.1.77', pattern: pattern, beg: next2, idx: i, pos: i, comm: 'semi = simple + diss'};
             marks.push(mark);
@@ -176,16 +176,16 @@ function makeMarkerList(samasa) {
         // reverse:
         if (prev == Const.A && u.c(Const.yava, sym)) { // E,O
             if (u.c(Const.allligas, next1)) {
-                pattern = [Const.A, sym, next1].join('');
+                var pattern = [Const.A, sym, next1].join('');
             } else {
-                pattern = [Const.A, sym].join('');
+                var pattern = [Const.A, sym].join('');
             }
             var mark = {num: '6.1.78', pattern: pattern, beg: next1, idx: i, pos: i-1};
             marks.push(mark);
             // log('M ayadi-vriddhi 78 ', i, 'mark', mark);
             // FIXME: TODO va-na - может крыться с common ?
         } else if (prev != Const.A && prev != Const.virama && u.c(Const.yava, sym) && u.c(Const.allligas, next1)) {
-            pattern = [sym, next1].join('');
+            var pattern = [sym, next1].join('');
             var mark = {num: '6.1.78', pattern: pattern, idx: i, pos: i};
             marks.push(mark);
             // log('M ayadi-guna-wo-a 78', i, 'mark', mark, 'sym', sym, 1, next1, 2, next2, sym != Const.virama);
@@ -195,15 +195,15 @@ function makeMarkerList(samasa) {
         // // reverse:
         // if (sym == Const.A && u.c(Const.yava, next1)) { // E,O
         //     if (u.c(Const.allligas, next2)) {
-        //         pattern = [Const.A, next1, next2].join('');
+        //         var pattern = [Const.A, next1, next2].join('');
         //     } else {
-        //         pattern = [Const.A, next1].join('');     //
+        //         var pattern = [Const.A, next1].join('');     //
         //     }
         //     var mark = {num: '6.1.78', pattern: pattern, beg: next2, idx: i, pos: i};
         //     marks.push(mark);
         //     // log('M ayadi-vriddhi 78 ', i, 'mark', mark);
         // } else if (sym != Const.A && sym != Const.virama && u.c(Const.yava, next1) && u.c(Const.allligas, next2)) {
-        //     pattern = [next1, next2].join('');
+        //     var pattern = [next1, next2].join('');
         //     var mark = {num: '6.1.78', pattern: pattern, idx: i, pos: i+1};
         //     marks.push(mark);
         //     // log('M ayadi-guna-wo-a 78', i, 'mark', mark, 'sym', sym, 1, next1, 2, next2, sym != Const.virama);
@@ -211,7 +211,7 @@ function makeMarkerList(samasa) {
 
         // 6.1.109 - ayadi - e,o+a => avagraha
         if (sym == Const.avagraha) {
-            pattern = sym;
+            var pattern = sym;
             var mark = {num: '6.1.109', pattern: pattern, idx: i, pos: i};
             marks.push(mark);
             // log('M vow ayadi-avagraha', i, 'mark:', mark);
@@ -229,7 +229,7 @@ function makeMarkerList(samasa) {
 
         // D1. (visarga) changes to (श्) (p sb) when followed by (च् or छ्) (p hc).
         if (u.vowsound(prev) && u.c(['श', 'ष', 'स'], sym) && next1 == Const.virama) {
-            pattern = [sym, Const.virama].join('');
+            var pattern = [sym, Const.virama].join('');
             var mark = {type: 'visarga', num: 'visarga-hard-cons', pattern: pattern, idx: i, pos: i};
             marks.push(mark);
             // log('M visarga-Sc', i, 'mark', mark);
@@ -237,7 +237,7 @@ function makeMarkerList(samasa) {
 
         // // D1. (visarga) changes to (श्) (p sb) when followed by (च् or छ्) (p hc).
         // if (u.vowsound(sym) && u.c(['श', 'ष', 'स'], next1) && next2 == Const.virama) {
-        //     pattern = [next1, Const.virama].join('');
+        //     var pattern = [next1, Const.virama].join('');
         //     var mark = {type: 'visarga', num: 'visarga-hard-cons', pattern: pattern, idx: i, pos: i+1};
         //     marks.push(mark);
         //     // log('M visarga-Sc', i, 'mark', mark);
@@ -249,13 +249,13 @@ function makeMarkerList(samasa) {
         // if (u.c(Const.allsimpleligas, sym) && next1 == 'र' ) {
         //     var beg;
         //     if (u.c(Const.allligas, next2)) {
-        //         pattern = [next1, next2].join('');
+        //         var pattern = [next1, next2].join('');
         //         beg = next2;
         //     } else if ((u.c(Const.JaS, next2) || u.c(Const.yaR, next2)) && next2 != 'र') {
-        //         pattern = next1;
+        //         var pattern = next1;
         //         beg = next2;
         //     } else if (next2 == Const.virama && (u.c(Const.JaS, next3) || u.c(Const.yaR, next3)) && next3 != 'र') {
-        //         pattern = [next1, Const.virama].join('');
+        //         var pattern = [next1, Const.virama].join('');
         //         beg = next3;
         //     } else return; // sic!
         //     var mark = {type: 'visarga', num: '4.1.3', pattern: pattern, beg: beg, idx: i, pos: i+1};
@@ -271,15 +271,16 @@ function makeMarkerList(samasa) {
         // if (u.vowsound(prev) && sym == 'र' && (u.c(Const.allligas, next1) || next1 == Const.virama &&  (u.c(Const.yaS, next2) && next2 != 'र') )) {
         if (u.vowsound(prev) && sym == 'र') {
             if (u.c(Const.allligas, next1)) {
-                pattern = ['र', next1].join('');
-                beg = next1;
+                var pattern = ['र', next1].join('');
+                var beg = next1;
             } else if (next1 == Const.virama && (u.c(Const.yaS, next2) && next2 != 'र')) {
-                pattern = ['र', Const.virama].join('');
-                beg = next2;
+                var pattern = ['र', Const.virama].join('');
+                var beg = next2;
             } else if (u.c(Const.yaS, next1) && next1 != 'र') {
-                pattern = sym; // 'र'
-                beg = next1;
-            }
+                log(2, i)
+                var pattern = sym; // 'र'
+                var beg = next1;
+            } else return; // sic!
             var mark = {num: 'visarga-simple-2-r-soft', pattern: pattern, beg: beg, idx: i, pos: i};
             marks.push(mark);
             // log('M visarga-simple-2-r-soft', i, 'mark', mark, 'patt', pattern);
@@ -423,7 +424,7 @@ function splitone(samasa) {
     var res = [];
     var marks = makeMarkerList(samasa);
     if (marks.length == 0) return []; // log('==no_markers!!!=='); // FIXME: этого не должно быть
-    marks = _.select(marks, function(m) { return m.num != '6.1.87'}); // FIXME: ==FILTER== // रविरुदेति
+    // marks = _.select(marks, function(m) { return m.num != '6.1.87'}); // FIXME: ==FILTER== // रविरुदेति
     // log('==marks==', marks.map(function(m) { return JSON.stringify(m).split('"').join('')}));
     var list = mark2sandhi(marks);
     // log('==list==', list.map(function(m) { return JSON.stringify(m)}));
