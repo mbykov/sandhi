@@ -464,7 +464,7 @@ function splitone(samasa) {
     });
     // log('res:', res); // 'संदर' == 'संदर'
     var uniq = _.uniq(res);
-    if (res.length != uniq.length) log('NOT UNIQ! SPLIT results:', res.length, 'uniq:', uniq.length, 'combs:', combs.length); // भानूदयः
+    // if (res.length != uniq.length) log('NOT UNIQ! SPLIT results:', res.length, 'uniq:', uniq.length, 'combs:', combs.length); // भानूदयः
     // log('SPL=> URES', uniq);
     return uniq;
 }
