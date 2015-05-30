@@ -34,7 +34,7 @@ function makeMarkerList(samasa) {
         // if (u.c(Const.special, sym)) return;
         // FIXME: здесь как-то нужно установить пределы аккуратнее, а не просто - со второй до предпоследней
         if (i < 1) return;
-        if (i > samasa.length - 2) return;
+        // if (i > samasa.length - 0) return;
         var mark, pattern, size;
         var prev = arr[i-1];
         var next1 = arr[i+1];
@@ -81,22 +81,21 @@ function makeMarkerList(samasa) {
             // log('M cons L-candra', i, 'mark', mark);
         }
 
-        // m,n to anusvara or nasal + cons of class of that nasal; reverse: anusvara or nasal to m,n
-        // 8.3.23 AND 8.4.58 for splitting
-        // if (sym == Const.anusvara && u.c(Const.hal, next1) || u.c(Const.nasals, sym) && next1 == Const.virama && u.eqvarga(sym, next2)) {
-        if ((sym == Const.anusvara && u.c(Const.hal, next1)) || u.c(Const.nasals, sym) && next1 == Const.virama && u.eqvarga(sym, next2)) {
-            if (next1 == Const.virama) {
-                // 8.3.23 пересекается с common - split при i+2 - просто раздвигает в месте pos=i
-                var pattern = [sym, Const.virama].join('');
-                var beg = next2;
-            } else {
-                var pattern = sym;
-                var beg = next1;
-            }
-            var mark = {num: '8.3.23', pattern: pattern, fin: sym, beg: beg, idx: i, pos: i};
-            marks.push(mark);
-            // log('M cons N,M', i, 'mark', mark);
-        }
+        // // m,n to anusvara or nasal + cons of class of that nasal; reverse: anusvara or nasal to anusvara or n,n ??????
+        // // 8.3.23 AND 8.4.58 for splitting
+        // if ((sym == Const.anusvara && u.c(Const.hal, next1)) || u.c(Const.nasals, sym) && next1 == Const.virama && u.eqvarga(sym, next2)) {
+        //     if (next1 == Const.virama) {
+        //         // 8.3.23 пересекается с common - split при i+2 - просто раздвигает в месте pos=i
+        //         var pattern = [sym, Const.virama].join('');
+        //         var beg = next2;
+        //     } else {
+        //         var pattern = sym;
+        //         var beg = next1;
+        //     }
+        //     var mark = {num: '8.3.23', pattern: pattern, fin: sym, beg: beg, idx: i, pos: i};
+        //     marks.push(mark);
+        //     // log('M cons N,M', i, 'mark', mark);
+        // }
 
         //ङ्, ण्, न् at the end of a word after a short vowel doubles itself when followed by a vowel',
         if (next1 && next4 && next1 == next3 && u.vowshort(sym) && u.c(Const.Nam, next1) && next2 == Const.virama && u.c(Const.allligas, next4)) {
@@ -132,7 +131,6 @@ function makeMarkerList(samasa) {
 
 
         // === VOWEL ===
-
         // simple vowel, followed by a similar vowel => dirgha
         if (u.c(Const.dirgha_ligas, sym)) { // FIXME: проверить !la - на la-liga нет теста
             var mark = {type: 'vowel', num: '6.1.101', pattern: sym, idx: i, pos: i};
@@ -280,17 +278,19 @@ function makeMarkerList(samasa) {
                 log(2, i)
                 var pattern = sym; // 'र'
                 var beg = next1;
-            } else return; // sic!
-            var mark = {num: 'visarga-simple-2-r-soft', pattern: pattern, beg: beg, idx: i, pos: i};
-            marks.push(mark);
+            }
+            if (pattern) {
+                var mark = {num: 'visarga-simple-2-r-soft', pattern: pattern, beg: beg, idx: i, pos: i};
+                marks.push(mark);
+            }
             // log('M visarga-simple-2-r-soft', i, 'mark', mark, 'patt', pattern);
             // log(22, i, sym, next1, next2, pattern)
         }
 
+        // var next = (next1 == Const.virama) ? next2 : next1; // TODO: кажется, это спсоб упростить все
         // zero: отсутствие маркера - тем не менее, разбиение м.б. - FIXME: сразу здесь прописать ВСЕ условия
         if (!mark) {
             if (sym == Const.virama || !next1) return;
-            // var next = (next1 == Const.virama) ? next2 : next1; // TODO: кажется, это спсоб упростить все
             // FIXME: а sym тут, что, любой?
             var mark = {num: '0', idx: i, pos: i};
             if (next1 == Const.virama) {
@@ -301,9 +301,9 @@ function makeMarkerList(samasa) {
                 mark.sandhi = [sym, Const.virama, ' ', u.vowel(next1)].join('');
                 // log('============= vow zero sandhi ?', i, sym, next1);
             } else if (u.c(Const.hal, next1)) {
-                // вот тут sym не любой, и везде - array
                 mark.pattern = [sym, next1].join('');
                 mark.sandhi = [sym, ' ', next1].join('');
+                // log('============= cons zero sandhi ?', i, sym, next1);
                 if (u.c(Const.hal, sym)) {
                     // log('HA', i, sym, u.soft2hard(sym));
                     // FIXME: всегда оглушать попросту, или 4-cons?
@@ -324,23 +324,6 @@ function makeMarkerList(samasa) {
                 log('WHAT?', i, sym, next1, next2); // FIXME:
             }
             if (mark.pattern) marks.push(mark);
-
-            // // old
-            // // if (i == 5) return;
-            // var fin = samasa[i];
-            // var beg = samasa[i+1];
-            // // log('i', i, fin, beg)
-            // if (samasa[i+1] == Const.virama) return; // FIXME: это прообраз полных условий
-            // // odd - non uniq - позиция другая, но 8.3.23 также попросту раздвигает символы в этой позиции - FIXME: м.б. еще случаи - отдельный метод?
-            // // 8.4.45 при 3-d class consonant followed by nasal действует так же
-            // // FIXME: поправить уродство:
-            // var odd = _.find(marks, function(m) { return m.pos == i-1 && m.num == '8.3.23'});
-            // if (odd) return;
-            // odd = _.find(marks, function(m) { return m.pos == i-1 && m.num == '8.4.45'});
-            // if (odd) return;
-            // var mark = {type: 'common', pattern: beg, num: 0, idx: i, pos: i+1};
-            // marks.push(mark);
-            // // log('no sandhi->', i, idx);
         }
         idx++;
         // log('SYM', i, sym, next1, next2, u.c(Const.JaS, next2), Const.JaS );
@@ -379,8 +362,29 @@ function spacedSplit(samasa, next) {
     // // FIXME: WTF:?
     // if (u.endsaA(samasa) && u.startsaA(next)) {
     // }
-    return first.join('');
+
+    // anusvara - повторение большого цикла перед обработкой.
+    // nasal в середине слова заменяется на анусвару. Но мои тесты этому не следуют. Д.б. opt? Но в начале нельзя сделать опт
+    // Перенести в самый конец, обработать все результаты - добавить анусвару опционально?
+    // пока закрыть эти тесты?
+    // это плохо тем, что символов - и вариантов становится больше. Правильный вариант можно узнать только в K8.
+    //
+    var result = first.join('');
+    // first.forEach(function(sym, i) {
+    //     var next1 = first[i+1];
+    //     var next2 = first[i+2];
+    //     if (u.c(Const.nasals, sym) && next1 == Const.virama && u.eqvarga(sym, next2)) {
+    //         log(1, sym, next1, next2)
+    //         var pattern = [sym, Const.virama].join('');
+    //         result = samasa.replace(pattern, Const.anusvara);
+    //     }
+    // });
+    // log('R', result)
+    return result;
 }
+
+
+
 
 /*
     FIXME: здесь нужно выделить слова, т.е. пробелы и спец. символы - конец строки
@@ -465,12 +469,34 @@ function splitone(samasa) {
         if (result != samasa) res.push(result); // FIXME: этого неравенства не должно быть, все маркеры должны давать замену, причем уникальную
         // log('=R=', (res.length == _.uniq(res).length), idx);
     });
-    // log('res:', res); // 'संदर' == 'संदर'
+    // log('res:', res); //
     var uniq = _.uniq(res);
     // if (res.length != uniq.length) log('NOT UNIQ! SPLIT results:', res.length, 'uniq:', uniq.length, 'combs:', combs.length); // भानूदयः
-    // log('SPL=> URES', uniq);
-    return uniq;
+    // log('SPLIT=> UNIQ RES', uniq);
+    res = anusvaraMiddle(uniq);
+    return res;
 }
+
+function anusvaraMiddle(arr) {
+    var res = [];
+    arr.forEach(function(samasa) {
+        res.push(samasa);
+        var odd = samasa.split('');
+        odd.forEach(function(sym, i) {
+            var next1 = odd[i+1];
+            var next2 = odd[i+2];
+            if (u.c(Const.nasals, sym) && next1 == Const.virama && u.eqvarga(sym, next2)) {
+                // log('ANU', sym, next1, next2)
+                var pattern = [sym, Const.virama].join('');
+                var result = samasa.replace(pattern, Const.anusvara);
+                res.push(result);
+            }
+        });
+    });
+    return res;
+}
+
+
 
 // шмитовский проезд - кони - б.белое здание, по ул. 5=года - управа, мюллер, 916-917-42-22
 

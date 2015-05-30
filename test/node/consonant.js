@@ -42,13 +42,13 @@ var tests = [
     // G2. Consonant to nasal of class:
     // anusvara at the middle of word followed by consonant except र्, sibilants or ह् mandatorily changes to nasal of the class
     // anusvara at the end of word followed by consonant except र्, sibilants or ह् optionally changes to nasal of the class
-    // reverse: nasal to anusvara to in the middle of a word
+    // reverse: nasal to anusvara anusvara in a middle of a splitted segment
     // reverse: or anusvara or nasal to anusvara at end of a word
     {sutra: '8.4.58',
-     descr: 'anusvara at mow, eow to nasal',
+     descr: 'anusvara at mow, eow to nasal - nasal to anusvara anusvara in a middle of a splitted segment',
      only: 'ext',
      tests: [
-         ['शङ्कर', 'शंकर', 'च'], // च has no sense, only for test
+         ['शङ्करच', 'शंकर', 'च'], // च has no sense, only for test // 'शंकर' == 'शंकर'
          ['', '', ''],
          ['', '', ''],
          ['', '', ''],
