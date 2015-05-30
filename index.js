@@ -479,20 +479,24 @@ function splitone(samasa) {
 
 function anusvaraMiddle(arr) {
     var res = [];
+    // FIXME: тут подумать - samasa - строка с пробелами. А целого слова как раз нет
     arr.forEach(function(samasa) {
         res.push(samasa);
-        var odd = samasa.split('');
+        var odd = samasa.split(' ');
         odd.forEach(function(sym, i) {
             var next1 = odd[i+1];
             var next2 = odd[i+2];
+            // if (next2 == ' ') return;
             if (u.c(Const.nasals, sym) && next1 == Const.virama && u.eqvarga(sym, next2)) {
-                // log('ANU', sym, next1, next2)
+                log('ANU', sym, 1, next1, 2, next2);
                 var pattern = [sym, Const.virama].join('');
                 var result = samasa.replace(pattern, Const.anusvara);
+                // log(1, result);
                 res.push(result);
             }
         });
     });
+    // log(1, res)
     return res;
 }
 
