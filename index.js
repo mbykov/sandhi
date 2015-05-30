@@ -299,13 +299,16 @@ function makeMarkerList(samasa) {
             } else if (u.c(Const.allligas, next1)) {
                 mark.pattern = [sym, next1].join('');
                 mark.sandhi = [sym, Const.virama, ' ', u.vowel(next1)].join('');
+                // log('============= vow zero sandhi ?', i, sym, next1);
             } else if (u.c(Const.hal, next1)) {
                 // вот тут sym не любой, и везде - array
                 mark.pattern = [sym, next1].join('');
                 mark.sandhi = [sym, ' ', next1].join('');
                 if (u.c(Const.hal, sym)) {
+                    // log('HA', i, sym, u.soft2hard(sym));
+                    // FIXME: всегда оглушать попросту, или 4-cons?
                     var odd = JSON.parse(JSON.stringify(mark));
-                    odd.sandhi = [sym, Const.virama, ' अ', next1].join('');
+                    odd.sandhi = [u.soft2hard(sym), Const.virama, ' अ', next1].join('');
                     odd.type = 'odd cons';
                     marks.push(odd);
                     // log('============= two const zero sandhi ?', i, sym, next1);
