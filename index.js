@@ -368,6 +368,8 @@ function spacedSplit(samasa, next) {
     // Перенести в самый конец, обработать все результаты - добавить анусвару опционально?
     // пока закрыть эти тесты?
     // это плохо тем, что символов - и вариантов становится больше. Правильный вариант можно узнать только в K8.
+    // это плохо также тем, что в конце обрабатываются сегменты - а все слово целиком пропускается.
+    // следовательно, нужно поправить короткие тесты и обработать анусвару здесь до остальных сандхи?
     //
     var result = first.join('');
     // first.forEach(function(sym, i) {
@@ -473,33 +475,30 @@ function splitone(samasa) {
     var uniq = _.uniq(res);
     // if (res.length != uniq.length) log('NOT UNIQ! SPLIT results:', res.length, 'uniq:', uniq.length, 'combs:', combs.length); // भानूदयः
     // log('SPLIT=> UNIQ RES', uniq);
-    res = anusvaraMiddle(uniq);
+    res = anusvaraInMiddle(uniq);
     return res;
 }
 
-function anusvaraMiddle(arr) {
+function anusvaraInMiddle(arr) {
     var res = [];
-    // FIXME: тут подумать - samasa - строка с пробелами. А целого слова как раз нет
-    arr.forEach(function(samasa) {
-        res.push(samasa);
-        var odd = samasa.split(' ');
-        odd.forEach(function(sym, i) {
-            var next1 = odd[i+1];
-            var next2 = odd[i+2];
-            // if (next2 == ' ') return;
-            if (u.c(Const.nasals, sym) && next1 == Const.virama && u.eqvarga(sym, next2)) {
-                log('ANU', sym, 1, next1, 2, next2);
-                var pattern = [sym, Const.virama].join('');
-                var result = samasa.replace(pattern, Const.anusvara);
-                // log(1, result);
-                res.push(result);
-            }
+    arr.forEach(function(vigraha) {
+        Const.nasals.forEach(function(n) {
+            var re = new RegExp(n + Const.virama);
+            var replaced = vigraha.replace(re, Const.anusvara);
+            if (replaced != vigraha) arr.push(replaced) ;
+            // if (replaced != vigraha) log(1, replaced, 2, vigraha);
         });
     });
-    // log(1, res)
-    return res;
+    return arr;
 }
 
+// FIXME: тут должна быть рекурсия, но не получилось пока
+function replaceN(str, re) {
+    var replaced = str.replace(/re/, Const.anusvara);
+    // log(1, replaced);
+    if (replaced == str) return str;
+    return replaceN(str, n);
+}
 
 
 // шмитовский проезд - кони - б.белое здание, по ул. 5=года - управа, мюллер, 916-917-42-22
