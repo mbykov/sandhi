@@ -33,7 +33,7 @@ function makeMarkerList(samasa) {
     arr.forEach(function(sym, i) {
         // if (u.c(Const.special, sym)) return;
         // FIXME: здесь как-то нужно установить пределы аккуратнее, а не просто - со второй до предпоследней
-        if (i < 1) return;
+        // if (i < 1) return;
         // if (i > samasa.length - 0) return;
         var mark, pattern, size;
         var prev = arr[i-1];
@@ -226,7 +226,7 @@ function makeMarkerList(samasa) {
         }
 
         // D1. (visarga) changes to (श्) (p sb) when followed by (च् or छ्) (p hc).
-        if (u.vowsound(prev) && u.c(['श', 'ष', 'स'], sym) && next1 == Const.virama) {
+        if (prev && u.vowsound(prev) && u.c(['श', 'ष', 'स'], sym) && next1 == Const.virama) {
             var pattern = [sym, Const.virama].join('');
             var mark = {type: 'visarga', num: 'visarga-hard-cons', pattern: pattern, idx: i, pos: i};
             marks.push(mark);
@@ -267,7 +267,7 @@ function makeMarkerList(samasa) {
         // if (u.c(Const.allsimpleligas, prev) && sym == 'र') {
         // ====================================== SOFT-r OR VOWEL
         // if (u.vowsound(prev) && sym == 'र' && (u.c(Const.allligas, next1) || next1 == Const.virama &&  (u.c(Const.yaS, next2) && next2 != 'र') )) {
-        if (u.vowsound(prev) && sym == 'र') {
+        if (prev && u.vowsound(prev) && sym == 'र') {
             if (u.c(Const.allligas, next1)) {
                 var pattern = ['र', next1].join('');
                 var beg = next1;
@@ -289,7 +289,7 @@ function makeMarkerList(samasa) {
 
         // var next = (next1 == Const.virama) ? next2 : next1; // TODO: кажется, это спсоб упростить все
         // zero: отсутствие маркера - тем не менее, разбиение м.б. - FIXME: сразу здесь прописать ВСЕ условия
-        if (!mark) {
+        if (!mark || mark.num == '6.1.87' || mark.num == 'visarga-simple-2-r-soft') {
             if (sym == Const.virama || !next1) return;
             // FIXME: а sym тут, что, любой?
             var mark = {num: '0', idx: i, pos: i};
@@ -433,7 +433,7 @@ function splitone(samasa) {
     var res = [];
     var marks = makeMarkerList(samasa);
     if (marks.length == 0) return []; // log('==no_markers!!!=='); // FIXME: этого не должно быть
-    // marks = _.select(marks, function(m) { return m.num != '6.1.87'}); // FIXME: ==FILTER== // रविरुदेति
+    // marks = XX_.select(marks, function(m) { return m.num != '6.1.87'}); // FIXME: ==FILTER== // रविरुदेति
     // log('==marks==', marks.map(function(m) { return JSON.stringify(m).split('"').join('')}));
     var list = mark2sandhi(marks);
     // log('==list==', list.map(function(m) { return JSON.stringify(m)}));
@@ -441,8 +441,7 @@ function splitone(samasa) {
     if (combs.length > 500) log('==combs.size== list:', list.length, 'combs:', combs.length)
     combs.forEach(function(comb, idx) {
         var result = samasa;
-        // короче: если .87 делает замену одного символа на два, то pos сдвигается и простой сплит может не найти не то, что нужно?, ex. n-vir-n-vir-n, n-lga-n-liga ?
-        // с этим нужно разобраться, оно еще может аукнуться
+        // с shift нужно разобраться, оно еще может аукнуться
         var shift = 0;
         // log('==comb==', idx, comb.map(function(m) { return JSON.stringify(m)}));
         comb.forEach(function(mark) {
@@ -475,6 +474,9 @@ function splitone(samasa) {
     var uniq = _.uniq(res);
     // if (res.length != uniq.length) log('NOT UNIQ! SPLIT results:', res.length, 'uniq:', uniq.length, 'combs:', combs.length); // भानूदयः
     // log('SPLIT=> UNIQ RES', uniq);
+
+    // FIXME: это выбросить после исправления коротких тестов на анусвару в середине слова - если исправлять
+    // нужно посмотреть, что в словаре MW - есть там n-in-a-middle, или всегда анусвара?
     res = anusvaraInMiddle(uniq);
     return res;
 }
