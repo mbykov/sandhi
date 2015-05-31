@@ -81,24 +81,25 @@ function makeMarkerList(samasa) {
             // log('M cons L-candra', i, 'mark', mark);
         }
 
-        // // m,n to anusvara or nasal + cons of class of that nasal; reverse: anusvara or nasal to anusvara or n,n ??????
-        // // 8.3.23 AND 8.4.58 for splitting
-        // if ((sym == Const.anusvara && u.c(Const.hal, next1)) || u.c(Const.nasals, sym) && next1 == Const.virama && u.eqvarga(sym, next2)) {
-        //     if (next1 == Const.virama) {
-        //         // 8.3.23 пересекается с common - split при i+2 - просто раздвигает в месте pos=i
-        //         var pattern = [sym, Const.virama].join('');
-        //         var beg = next2;
-        //     } else {
-        //         var pattern = sym;
-        //         var beg = next1;
-        //     }
-        //     var mark = {num: '8.3.23', pattern: pattern, fin: sym, beg: beg, idx: i, pos: i};
-        //     marks.push(mark);
-        //     // log('M cons N,M', i, 'mark', mark);
-        // }
+        // m,n to anusvara or nasal + cons of class of that nasal; reverse: anusvara to nasal
+        // 8.3.23 AND 8.4.58 for splitting
+        // .58 - middle of a word - INTERNAL
+        if ((sym == Const.anusvara && u.c(Const.hal, next1)) || u.c(Const.nasals, sym) && next1 == Const.virama && u.eqvarga(sym, next2)) {
+            if (next1 == Const.virama) {
+                // 8.3.23 пересекается с common - split при i+2 - просто раздвигает в месте pos=i
+                var pattern = [sym, Const.virama].join('');
+                var beg = next2;
+            } else {
+                var pattern = sym;
+                var beg = next1;
+            }
+            var mark = {num: '8.3.23', pattern: pattern, fin: sym, beg: beg, idx: i, pos: i};
+            marks.push(mark);
+            // log('M cons N,M', i, 'mark', mark);
+        }
 
         //ङ्, ण्, न् at the end of a word after a short vowel doubles itself when followed by a vowel',
-        if (sym == next2 && u.vowshort(prev) && u.c(Const.Nam, sym) && next1 == Const.virama && u.vowsound(next3)) {
+        if (prev && sym == next2 && u.vowshort(prev) && u.c(Const.Nam, sym) && next1 == Const.virama && u.vowsound(next3)) {
             var pattern = [sym, Const.virama, sym, next3].join('');
             var mark = {num: 'nasals-doubled', pattern: pattern, fin: sym, beg: next3, idx: i, pos: i};
             marks.push(mark);
@@ -245,35 +246,6 @@ function makeMarkerList(samasa) {
             // log('M visarga-Sc', i, 'mark', mark);
         }
 
-        // // D1. (visarga) changes to (श्) (p sb) when followed by (च् or छ्) (p hc).
-        // if (u.vowsound(sym) && u.c(['श', 'ष', 'स'], next1) && next2 == Const.virama) {
-        //     var pattern = [next1, Const.virama].join('');
-        //     var mark = {type: 'visarga', num: 'visarga-hard-cons', pattern: pattern, idx: i, pos: i+1};
-        //     marks.push(mark);
-        //     // log('M visarga-Sc', i, 'mark', mark);
-        // }
-
-        // TODO: R, видимо, пересмотреть
-        // visarga after simple changes to र् when followed by a vowel or soft consonant except र्
-        // if (u.c(Const.allsimpleligas, sym) && next1 == 'र' && (u.c(Const.allligas, next2) || ((u.c(Const.JaS, next2) || u.c(Const.yaR, next2)) && next2 != 'र') ) ) {
-        // if (u.c(Const.allsimpleligas, sym) && next1 == 'र' ) {
-        //     var beg;
-        //     if (u.c(Const.allligas, next2)) {
-        //         var pattern = [next1, next2].join('');
-        //         beg = next2;
-        //     } else if ((u.c(Const.JaS, next2) || u.c(Const.yaR, next2)) && next2 != 'र') {
-        //         var pattern = next1;
-        //         beg = next2;
-        //     } else if (next2 == Const.virama && (u.c(Const.JaS, next3) || u.c(Const.yaR, next3)) && next3 != 'र') {
-        //         var pattern = [next1, Const.virama].join('');
-        //         beg = next3;
-        //     } else return; // sic!
-        //     var mark = {type: 'visarga', num: '4.1.3', pattern: pattern, beg: beg, idx: i, pos: i+1};
-        //     marks.push(mark);
-        //     // log('M visarga R soft', i, 'mark', mark, 'patt', pattern, 2, next2, 3, next3); // गुरुर्ब्रह्मा
-        // }
-
-
         //  =R= visarga after any vowel except अ or आ changes to र् when followed by a vowel or soft consonant except र्; reverse: simple-r-soft-r 2 visarga + vow or soft
         // C2. (अ & visarga) standing for अर् changes to अर् when followed by a (vowel or soft consonant except र्)
         // if (u.c(Const.allsimpleligas, prev) && sym == 'र') {
@@ -286,7 +258,7 @@ function makeMarkerList(samasa) {
             } else if (next1 == Const.virama && (u.c(Const.yaS, next2) && next2 != 'र')) {
                 var pattern = ['र', Const.virama].join('');
                 var beg = next2;
-            } else if (u.c(Const.haS, next1) && next1 != 'र') {
+            } else if (u.c(Const.hal, next1)) { // a-vowel
                 var pattern = sym; // 'र'
                 var beg = next1;
             }
@@ -295,7 +267,6 @@ function makeMarkerList(samasa) {
                 marks.push(mark);
             }
             // log('M visarga-r', i, 'mark', mark, 'patt', pattern);
-            // log(22, i, sym, next1, next2, pattern)
         }
 
         // var next = (next1 == Const.virama) ? next2 : next1; // TODO: кажется, это спсоб упростить все
@@ -304,7 +275,7 @@ function makeMarkerList(samasa) {
             if (sym == Const.virama || !next1) return;
             // FIXME: а sym тут, что, любой?
             var mark = {num: '0', idx: i, pos: i};
-            if (next1 == Const.virama) {
+            if (next2 && next1 == Const.virama) {
                 mark.pattern = [sym, Const.virama, next2].join('');
                 mark.sandhi = [sym, Const.virama, ' ', next2].join('');
             } else if (u.c(Const.allligas, next1)) {
@@ -330,9 +301,9 @@ function makeMarkerList(samasa) {
             } else if (next1 == Const.visarga) {
                 // log('VISARGA?', i, sym, next1, next2); // FIXME:
             } else if (next1 == Const.anusvara) {
-                // log('ANUSVARA?', i, sym, next1, next2); // FIXME:
+                log('ANUSVARA?', i, sym, next1, next2); // FIXME:
             } else {
-                log('WHAT?', i, sym, next1, next2); // FIXME:
+                // log('WHAT?', i, sym, 1, next1, 2, next2); // FIXME:
             }
             if (mark.pattern) marks.push(mark);
         }
@@ -380,14 +351,13 @@ function spacedSplit(samasa, next) {
     // if (u.endsaA(samasa) && u.startsaA(next)) {
     // }
 
-    // anusvara - повторение большого цикла перед обработкой.
-    // nasal в середине слова заменяется на анусвару. Но мои тесты этому не следуют. Д.б. opt? Но в начале нельзя сделать опт
-    // Перенести в самый конец, обработать все результаты - добавить анусвару опционально?
-    // пока закрыть эти тесты?
-    // это плохо тем, что символов - и вариантов становится больше. Правильный вариант можно узнать только в K8.
-    // это плохо также тем, что в конце обрабатываются сегменты - а все слово целиком пропускается.
-    // следовательно, нужно поправить короткие тесты и обработать анусвару здесь до остальных сандхи?
+    // =before=
+    // anusvara - см. .23
     //
+    // анусвара в конце слова - заменяется на m в before-filtre?
+    // а это вообще может быть в реальном тексте?
+    //
+
     var result = first.join('');
     // first.forEach(function(sym, i) {
     //     var next1 = first[i+1];
@@ -475,7 +445,7 @@ function splitone(samasa) {
             var old = result;
             result = u.replaceByPos(result, mark.pattern, mark.sandhi, pos); // योक् युत्तम
             // log('result2', result, mark.sandhi.length, mark.pattern.length);
-
+            // if (result.slice(-1) == ' ') log('ZERO', mark); 'm_'
             // log('SH0', shift);
             shift = mark.sandhi.length - mark.pattern.length;
 
@@ -496,11 +466,14 @@ function splitone(samasa) {
 
     // FIXME: это выбросить после исправления коротких тестов на анусвару в середине слова - если исправлять
     // нужно посмотреть, что в словаре MW - есть там n-in-a-middle, или всегда анусвара?
-    res = anusvaraInMiddle(uniq);
+    // m,n на анусвару - в начале, а здесь - заменить анусвару на m? <==============
+
+    res = anusvaraInMiddle(samasa, uniq);
     return res;
 }
 
-function anusvaraInMiddle(arr) {
+// after-split anusvara-optional
+function anusvaraInMiddle(samasa, arr) {
     var res = [];
     arr.forEach(function(vigraha) {
         Const.nasals.forEach(function(n) {
@@ -509,6 +482,12 @@ function anusvaraInMiddle(arr) {
             if (replaced != vigraha) arr.push(replaced) ;
             // if (replaced != vigraha) log(1, replaced, 2, vigraha);
         });
+    });
+    // odd method only for gita-govindam tests:
+    Const.nasals.forEach(function(n) {
+        var re = new RegExp(n + Const.virama);
+        var replaced = samasa.replace(re, Const.anusvara);
+        if (replaced != samasa) arr.push(replaced) ;
     });
     return arr;
 }
