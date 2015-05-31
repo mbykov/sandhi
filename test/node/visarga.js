@@ -88,7 +88,7 @@ var tests = [
 
     // to R нужно переделать, чтобы охватить все
 
-    {sutra: 'visarga-simple-2-r-soft',
+    {sutra: 'visarga-r',
      descr: 'visarga after any vowel except अ or आ changes to र् when followed by a vowel or soft consonant except र्',
      only: 'ext',
      tests: [

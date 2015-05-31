@@ -132,20 +132,21 @@ var tests = [
      ]
     },
 
-    {sutra: '8.4.55',
-     descr: 'soft consonant except nasal, followed by a hard consonant changes to 1st consonant of class',
-     only: 'ext',
-     tests: [
-         ['एतत्पतति', 'एतद्', 'पतति'],
-         ['सुहृत्सु', 'सुहृद्', 'सु'],
-         ['', '', ''],
-         ['', '', ''],
-         ['', '', ''],
-         ['', '', ''],
-     ]
-    },
+    // {sutra: '8.4.55',
+    //  descr: 'soft consonant except nasal, followed by a hard consonant changes to 1st consonant of class',
+    //  only: 'ext',
+    // эта сутра работает только на add, когда есть звонкая в конце изменяемого слова
+    //  tests: [
+    //      ['एतत्पतति', 'एतद्', 'पतति'], // तत्क एतत् vs. एतद्
+    //      ['सुहृत्सु', 'सुहृद्', 'सु'],
+    //      ['', '', ''],
+    //      ['', '', ''],
+    //      ['', '', ''],
+    //      ['', '', ''],
+    //  ]
+    // },
 
-    {sutra: 'cons-nasal-doubled',
+    {sutra: 'nasals-doubled',
      descr: 'ङ्, ण्, न् at the end of a word after a short vowel doubles itself when followed by a vowel',
      only: 'ext',
      tests: [

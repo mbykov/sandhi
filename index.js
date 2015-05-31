@@ -98,21 +98,33 @@ function makeMarkerList(samasa) {
         // }
 
         //ङ्, ण्, न् at the end of a word after a short vowel doubles itself when followed by a vowel',
-        if (next1 && next4 && next1 == next3 && u.vowshort(sym) && u.c(Const.Nam, next1) && next2 == Const.virama && u.c(Const.allligas, next4)) {
-            var pattern = [next1, Const.virama, next3, next4].join('');
-            var mark = {num: 'cons-nasal-doubled', pattern: pattern, fin: next1, beg: next4, idx: i, pos: i+1};
+        if (sym == next2 && u.vowshort(prev) && u.c(Const.Nam, sym) && next1 == Const.virama && u.vowsound(next3)) {
+            var pattern = [sym, Const.virama, sym, next3].join('');
+            var mark = {num: 'nasals-doubled', pattern: pattern, fin: sym, beg: next3, idx: i, pos: i};
             marks.push(mark);
             // log('M cons cerebral', i, 'mark', mark, 0, sym, 1, next1, 3, next3, 4, next4, Const.Nam, samasa); // प्रत्यङ्ङात्मा
         }
 
+        // //ङ्, ण्, न् at the end of a word after a short vowel doubles itself when followed by a vowel',
+        // if (next1 && next4 && next1 == next3 && u.vowshort(sym) && u.c(Const.Nam, next1) && next2 == Const.virama && u.c(Const.allligas, next4)) {
+        //     var pattern = [next1, Const.virama, next3, next4].join('');
+        //     var mark = {num: 'nasals-doubled', pattern: pattern, fin: next1, beg: next4, idx: i, pos: i+1};
+        //     marks.push(mark);
+        //     // log('M cons cerebral', i, 'mark', mark, 0, sym, 1, next1, 3, next3, 4, next4, Const.Nam, samasa); // प्रत्यङ्ङात्मा
+        // }
+
+
         // soft consonant except nasal, followed by a hard consonant changes to 1st consonant of class = > reverse: class1+hard
         // однако, тут в словаре-то м.б. только ट,त,क,प - k t ṭ p - 1st class ex. c.
-        if (u.c(Const.cay, sym) && next1 == Const.virama && u.c(Const.Kar, next2) ) {
-            var pattern = [sym, Const.virama].join('');
-            var mark = {num: '8.4.55', pattern: pattern, fin: sym, beg: next2, idx: i, pos: i};
-            marks.push(mark);
-            // log('M soft before hard', i, 'mark', sym);
-        }
+        // следовательно, просто не преобразовывать
+        // звонкие - только в результате склонения / спряжения
+        // но правило для add, есст., должно быть
+        // if (u.c(Const.cay, sym) && next1 == Const.virama && u.c(Const.Kar, next2) ) {
+        //     var pattern = [sym, Const.virama].join('');
+        //     var mark = {num: '8.4.55', pattern: pattern, fin: sym, beg: next2, idx: i, pos: i};
+        //     marks.push(mark);
+        //     // log('M soft before hard', i, 'mark', sym);
+        // }
 
         // hard consonant followed by a soft consonant but nasal or vow. changes to the third of its class => reverse: class3 + soft but nasal or vowels
         if (u.c(Const.jaS, sym) && next1 == Const.virama && u.c(Const.haS, next2) && !u.c(Const.Yam, next2) ) {
@@ -262,7 +274,7 @@ function makeMarkerList(samasa) {
         // }
 
 
-        //  R visarga after any vowel except अ or आ changes to र् when followed by a vowel or soft consonant except र्; reverse: simple-r-soft-r 2 visarga + vow or soft
+        //  =R= visarga after any vowel except अ or आ changes to र् when followed by a vowel or soft consonant except र्; reverse: simple-r-soft-r 2 visarga + vow or soft
         // C2. (अ & visarga) standing for अर् changes to अर् when followed by a (vowel or soft consonant except र्)
         // if (u.c(Const.allsimpleligas, prev) && sym == 'र') {
         // ====================================== SOFT-r OR VOWEL
@@ -274,22 +286,21 @@ function makeMarkerList(samasa) {
             } else if (next1 == Const.virama && (u.c(Const.yaS, next2) && next2 != 'र')) {
                 var pattern = ['र', Const.virama].join('');
                 var beg = next2;
-            } else if (u.c(Const.yaS, next1) && next1 != 'र') {
-                log(2, i)
+            } else if (u.c(Const.haS, next1) && next1 != 'र') {
                 var pattern = sym; // 'र'
                 var beg = next1;
             }
             if (pattern) {
-                var mark = {num: 'visarga-simple-2-r-soft', pattern: pattern, beg: beg, idx: i, pos: i};
+                var mark = {num: 'visarga-r', pattern: pattern, beg: beg, idx: i, pos: i};
                 marks.push(mark);
             }
-            // log('M visarga-simple-2-r-soft', i, 'mark', mark, 'patt', pattern);
+            // log('M visarga-r', i, 'mark', mark, 'patt', pattern);
             // log(22, i, sym, next1, next2, pattern)
         }
 
         // var next = (next1 == Const.virama) ? next2 : next1; // TODO: кажется, это спсоб упростить все
         // zero: отсутствие маркера - тем не менее, разбиение м.б. - FIXME: сразу здесь прописать ВСЕ условия
-        if (!mark || mark.num == '6.1.87' || mark.num == 'visarga-simple-2-r-soft') {
+        if (!mark || mark.num == '6.1.87' || mark.num == 'visarga-r') {
             if (sym == Const.virama || !next1) return;
             // FIXME: а sym тут, что, любой?
             var mark = {num: '0', idx: i, pos: i};
@@ -354,9 +365,15 @@ function spacedSplit(samasa, next) {
     }
 
     // FIXME: NOW: spaced нужно проверять и в gita-test, но там нет next
+    // или это правило final-sandhi попросту работает всегда?
     if (u.vowel(fin) == 'ओ' && !next) {
         first.pop();
         first.push(Const.visarga);
+    }
+
+    if (fin == Const.anusvara) {
+        first.pop();
+        first.push('म्');
     }
 
     // // FIXME: WTF:?
@@ -434,7 +451,9 @@ function splitone(samasa) {
     var marks = makeMarkerList(samasa);
     if (marks.length == 0) return []; // log('==no_markers!!!=='); // FIXME: этого не должно быть
     // marks = XX_.select(marks, function(m) { return m.num != '6.1.87'}); // FIXME: ==FILTER== // रविरुदेति
+
     // log('==marks==', marks.map(function(m) { return JSON.stringify(m).split('"').join('')}));
+
     var list = mark2sandhi(marks);
     // log('==list==', list.map(function(m) { return JSON.stringify(m)}));
     var combs = u.combinator(list, samasa.length);
