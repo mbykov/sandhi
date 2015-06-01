@@ -305,14 +305,70 @@ function makeMarkerList(samasa) {
             } else {
                 // log('WHAT?', i, sym, 1, next1, 2, next2); // FIXME:
             }
-            if (mark.pattern) marks.push(mark);
+            // log(1, i, mark.sandhi);
+            if (checkResult(mark)) marks.push(mark);
+            // if (mark.pattern) marks.push(mark);
         }
         idx++;
+
+        // check
+        // if (mark && u.c(['ॠ', 'ऌ', 'ङ', 'ञ', 'ण'].concat(Const.special), sym)) {
+        //     log('============');
+        //     log('============', i, samasa, mark);
+        //     log('============');
+        // }
+
         // log('SYM', i, sym, next1, next2, u.c(Const.JaS, next2), Const.JaS );
     });
     // log('splitting marks', marks);
     return marks;
 }
+
+/*
+  A complete word may begin with any vowels or consonants except ॠ, ऌ, ङ्, ञ्, ण्, anusvara and visarga.
+  A complete word may end with any vowel except ॠ and ऌ.
+  A complete word should end in one of the consonants - क्, ट्, त्, प्, ङ्, ण्, न्, म्, ल् or visarga.
+*/
+function checkResult(mark) {
+    if (!mark.pattern) return false;
+    var result = true;
+    var words = mark.sandhi.split(' ');
+    var fin = words[0][0];
+    var vir = (words[0][1] && words[0][1] == Const.virama) ? true : false;
+    var beg = words[1];
+
+    if (u.c(['ॠ', 'ऌ', 'ङ', 'ञ', 'ण'].concat(Const.special), beg)) {
+        // log('== ERROR_BEG ==========', 'f:', fin, 'b:', 'm:', beg, mark);
+        result = false;
+    }
+
+    if (u.c(Const.allligas, fin)) {
+        if (u.c(['ॠ', 'ऌ'], u.vowel(fin))) {
+            // log('== ERROR_VOW_FIN ==========', 'f:', fin, 'b:', 'm:', beg, mark);
+            result = false;
+        }
+    } else {
+        if (vir && !u.c(['क', 'ट', 'त', 'प', 'ङ', 'ण', 'न', 'म', 'ल', Const.visarga], fin)) {
+            // log('== ERROR_CONS_FIN==========', 'f:', fin, 'b:', 'm:', beg, mark);
+            result = false;
+        }
+    }
+    // log(1, first, 2, last);
+    return result;
+}
+
+// function checkResultSTR_(result) {
+//     var words = result.split(' ');
+//     words.forEach(function(word) {
+//         var first = word[0];
+//         var last = word.slice(-1);
+//         if (last == Const.virama) last = word.slice(-2,-1);
+//         if (u.c(['ॠ', 'ऌ', 'ङ', 'ञ', 'ण'].concat(Const.special), first)) {
+//             log('== ERROR ==========', first, last);
+//         }
+//         // log(1, first, 2, last);
+//     });
+// }
 
 function spacedSplit(samasa, next) {
     var fin = samasa.slice(-1);
@@ -442,11 +498,11 @@ function splitone(samasa) {
             var second = result.slice(pos);
             // log('SEC', second);
             // log('result1', result, mark.sandhi.length, mark.pattern.length);
-            var old = result;
+            // var old = result;
             result = u.replaceByPos(result, mark.pattern, mark.sandhi, pos); // योक् युत्तम
             // log('result2', result, mark.sandhi.length, mark.pattern.length);
             // if (result.slice(-1) == ' ') log('ZERO', mark); 'm_'
-            // log('SH0', shift);
+            // log('R', result);
             shift = mark.sandhi.length - mark.pattern.length;
 
             // log('SH1', shift);
@@ -457,6 +513,10 @@ function splitone(samasa) {
             // }
         });
         if (result != samasa) res.push(result); // FIXME: этого неравенства не должно быть, все маркеры должны давать замену, причем уникальную
+
+        // checkResult(result);
+        // if (result != samasa) log(result);
+
         // log('=R=', (res.length == _.uniq(res).length), idx);
     });
     // log('res:', res); //
@@ -471,6 +531,7 @@ function splitone(samasa) {
     res = anusvaraInMiddle(samasa, uniq);
     return res;
 }
+
 
 // after-split anusvara-optional
 function anusvaraInMiddle(samasa, arr) {
