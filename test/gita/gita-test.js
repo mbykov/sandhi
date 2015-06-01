@@ -2133,7 +2133,7 @@ var tests = [
     // 186
     [
         [ 'प्रातर्नीलनिचोलमच्युतमुरस्संवीतपीतांबरम्',  'प्रातः नील निचोलम् अच्युतम् उरः संवीत पीत अंबरम्' ],
-        [ 'रधायाश्कितम्', 'रधायाः चकितम्' ],
+        [ 'रधायाश्चकितम्', 'रधायाः चकितम्' ], // ERR ? 'रधायाश्कितम्'
         [ 'विलोक्य', 'विलोक्य' ],
         [ 'हसति', 'हसति' ],
         [ 'स्वैरम्', 'स्वैरम्' ],
@@ -3442,8 +3442,8 @@ describe('gita splitter', function() {
             // log('next', idx, idy, next);
             if (samasa == vigraha[0]) return;
 
-            if (vigraha.length > 2) return;
-            // if (vigraha.length !=3) return;
+            // if (vigraha.length > 2) return;
+            if (vigraha.length !=3) return;
 
             // log(1, idx, idy, samasa, 2, vigraha.length, vigraha);
             var sam = salita.sa2slp(samasa);

@@ -239,6 +239,7 @@ function makeMarkerList(samasa) {
         }
 
         // D1. (visarga) changes to (श्) (p sb) when followed by (च् or छ्) (p hc).
+        // ? vowsound обязательно?
         if (prev && u.vowsound(prev) && u.c(['श', 'ष', 'स'], sym) && next1 == Const.virama) {
             var pattern = [sym, Const.virama].join('');
             var mark = {type: 'visarga', num: 'visarga-hard-cons', pattern: pattern, idx: i, pos: i};
@@ -310,13 +311,6 @@ function makeMarkerList(samasa) {
             // if (mark.pattern) marks.push(mark);
         }
         idx++;
-
-        // check
-        // if (mark && u.c(['ॠ', 'ऌ', 'ङ', 'ञ', 'ण'].concat(Const.special), sym)) {
-        //     log('============');
-        //     log('============', i, samasa, mark);
-        //     log('============');
-        // }
 
         // log('SYM', i, sym, next1, next2, u.c(Const.JaS, next2), Const.JaS );
     });
@@ -478,7 +472,7 @@ function splitone(samasa) {
     if (marks.length == 0) return []; // log('==no_markers!!!=='); // FIXME: этого не должно быть
     // marks = XX_.select(marks, function(m) { return m.num != '6.1.87'}); // FIXME: ==FILTER== // रविरुदेति
 
-    // log('==marks==', marks.map(function(m) { return JSON.stringify(m).split('"').join('')}));
+    log('==marks==', marks.map(function(m) { return JSON.stringify(m).split('"').join('')}));
 
     var list = mark2sandhi(marks);
     // log('==list==', list.map(function(m) { return JSON.stringify(m)}));
@@ -529,6 +523,16 @@ function splitone(samasa) {
     // m,n на анусвару - в начале, а здесь - заменить анусвару на m? <==============
 
     res = anusvaraInMiddle(samasa, uniq);
+    // log(111, uniq);
+
+    // ======================================================================================<<<
+    // отладка скрипта, убрать:
+    // var x = 'अंबरम्';
+    var x = 'अम्बरम्';
+    var conc = uniq.join(' ').split(' ');
+    // log(1, conc);
+    log('FIX:', u.c(conc, x));
+
     return res;
 }
 
@@ -539,7 +543,16 @@ function anusvaraInMiddle(samasa, arr) {
     arr.forEach(function(vigraha) {
         Const.nasals.forEach(function(n) {
             var re = new RegExp(n + Const.virama);
-            var replaced = vigraha.replace(re, Const.anusvara);
+            var replaced = vigraha.split(re).join(Const.anusvara);
+
+
+            // ======================================================================================<<<
+            // var x = 'अंबरम्';
+            var x = 'अम्बरम्';
+            if (u.c(vigraha.split(' '), x)) log('=====================', vigraha, 2, replaced)
+
+
+
             if (replaced != vigraha) arr.push(replaced) ;
             // if (replaced != vigraha) log(1, replaced, 2, vigraha);
         });
