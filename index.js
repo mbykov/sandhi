@@ -456,10 +456,20 @@ function mark2sandhi(marks) {
         sandhis.forEach(function(sandhi) {
             var m = JSON.parse(JSON.stringify(mark));
             m.sandhi = sandhi;
+            // if (checkResult(m)) list.push(m); // похоже, не нужно, здесь все ок по-образованию sandhi-замены, впрочем хз пока
             list.push(m);
         });
     });
     return list;
+}
+
+function correct(combs, samasa) {
+    var cleans = [];
+    // log(combs);
+    combs.forEach(function(comb, idx) {
+        if (comb.length < 3) cleans.push(comb);
+    });
+    return cleans;
 }
 
 /*
@@ -472,24 +482,29 @@ function splitone(samasa) {
     if (marks.length == 0) return []; // log('==no_markers!!!=='); // FIXME: этого не должно быть
     // marks = XX_.select(marks, function(m) { return m.num != '6.1.87'}); // FIXME: ==FILTER== // रविरुदेति
 
-    log('==marks==', marks.map(function(m) { return JSON.stringify(m).split('"').join('')}));
+    // log('==marks==', marks.map(function(m) { return JSON.stringify(m).split('"').join('')}));
 
     var list = mark2sandhi(marks);
     // log('==list==', list.map(function(m) { return JSON.stringify(m)}));
-    var combs = u.combinator(list, samasa.length);
-    if (combs.length > 500) log('==combs.size== list:', list.length, 'combs:', combs.length)
+    var combs = u.combinator(list, samasa);
+
+    // combs = correct(combs, samasa);
+    if (combs.length > 5) log('==combs.size== marks:', marks.length, 'list:', list.length, 'combs:', combs.length)
+
     combs.forEach(function(comb, idx) {
         var result = samasa;
         // с shift нужно разобраться, оно еще может аукнуться
         var shift = 0;
+        // log(comb.length);
         // log('==comb==', idx, comb.map(function(m) { return JSON.stringify(m)}));
+        // FIXME: это можно сделать эффективнее, если запоминать регионы и потом их только складывать для каждой комбинации, но не делать одинаковые замены
         comb.forEach(function(mark) {
             // log('M', idx, 'M', mark);
             // log('MARK.POS', mark.pos);
             // log('SHIFT', shift);
             var pos = mark.pos + shift;
             // log('POS', pos);
-            var second = result.slice(pos);
+            // var second = result.slice(pos);
             // log('SEC', second);
             // log('result1', result, mark.sandhi.length, mark.pattern.length);
             // var old = result;
@@ -521,18 +536,9 @@ function splitone(samasa) {
     // FIXME: это выбросить после исправления коротких тестов на анусвару в середине слова - если исправлять
     // нужно посмотреть, что в словаре MW - есть там n-in-a-middle, или всегда анусвара?
     // m,n на анусвару - в начале, а здесь - заменить анусвару на m? <==============
+    // И ВООБЩЕ СОМНИТЕЛЬНАЯ ВЕЩЬ:
 
     res = anusvaraInMiddle(samasa, uniq);
-    // log(111, uniq);
-
-    // ======================================================================================<<<
-    // отладка скрипта, убрать:
-    // var x = 'अम्बरम्';
-    // मेघैः मेदुरम् अंबरम्
-    var x = 'अंबरम्';
-    var conc = res.join(' ').split(' ');
-    // log(1, conc);
-    log('FIX:', u.c(conc, x));
 
     return res;
 }
