@@ -489,7 +489,7 @@ function splitone(samasa) {
     var combs = u.combinator(list, samasa);
 
     // combs = correct(combs, samasa);
-    if (combs.length > 5) log('==combs.size== marks:', marks.length, 'list:', list.length, 'combs:', combs.length)
+    if (combs.length > 500) log('==combs.size== marks:', marks.length, 'list:', list.length, 'combs:', combs.length)
 
     combs.forEach(function(comb, idx) {
         var result = samasa;
@@ -510,7 +510,7 @@ function splitone(samasa) {
             // var old = result;
             result = u.replaceByPos(result, mark.pattern, mark.sandhi, pos); // योक् युत्तम
             // log('result2', result, mark.sandhi.length, mark.pattern.length);
-            // if (result.slice(-1) == ' ') log('ZERO', mark); 'm_'
+            // if (mark.pos == 7) log('====>', result);
             // log('R', result);
             shift = mark.sandhi.length - mark.pattern.length;
 
@@ -539,6 +539,13 @@ function splitone(samasa) {
     // И ВООБЩЕ СОМНИТЕЛЬНАЯ ВЕЩЬ:
 
     res = anusvaraInMiddle(samasa, uniq);
+    // res = uniq;
+
+    // FIX:
+    // var x = 'वक्त्र'; //
+    // // [ 'वक्‌त्रांबुजसौरभम्', 'वक्त्र अंबुज सौरभम्' ],
+    // var concat = res.join(' ').split(' ');
+    // log('FIX:', u.c(concat, x));
 
     return res;
 }
