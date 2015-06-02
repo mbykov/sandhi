@@ -527,9 +527,10 @@ function splitone(samasa) {
 
     // ======================================================================================<<<
     // отладка скрипта, убрать:
-    // var x = 'अंबरम्';
-    var x = 'अम्बरम्';
-    var conc = uniq.join(' ').split(' ');
+    // var x = 'अम्बरम्';
+    // मेघैः मेदुरम् अंबरम्
+    var x = 'अंबरम्';
+    var conc = res.join(' ').split(' ');
     // log(1, conc);
     log('FIX:', u.c(conc, x));
 
@@ -542,19 +543,10 @@ function anusvaraInMiddle(samasa, arr) {
     var res = [];
     arr.forEach(function(vigraha) {
         Const.nasals.forEach(function(n) {
-            var re = new RegExp(n + Const.virama);
-            var replaced = vigraha.split(re).join(Const.anusvara);
-
-
-            // ======================================================================================<<<
-            // var x = 'अंबरम्';
-            var x = 'अम्बरम्';
-            if (u.c(vigraha.split(' '), x)) log('=====================', vigraha, 2, replaced)
-
-
-
+            var nv = [n, Const.virama].join('');
+            var re = new RegExp(nv + '([^ $])', 'g');
+            var replaced = vigraha.replace(re, Const.anusvara+'$1');
             if (replaced != vigraha) arr.push(replaced) ;
-            // if (replaced != vigraha) log(1, replaced, 2, vigraha);
         });
     });
     // odd method only for gita-govindam tests:

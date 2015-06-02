@@ -73,7 +73,7 @@ gita:
 		--grep $(g) \
 		--timeout 3000 \
 		$(GITA) \
-		2> /dev/null
+#		2> /dev/null
 
 
 
