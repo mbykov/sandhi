@@ -84,6 +84,7 @@ function makeMarkerList(samasa) {
         // m,n to anusvara or nasal + cons of class of that nasal; reverse: anusvara to nasal
         // 8.3.23 AND 8.4.58 for splitting
         // .58 - middle of a word - INTERNAL
+        // FIXME: TODO: еще случай - в common 'mM'
         if ((sym == Const.anusvara && u.c(Const.hal, next1)) || u.c(Const.nasals, sym) && next1 == Const.virama && u.eqvarga(sym, next2)) {
             if (next1 == Const.virama) {
                 // 8.3.23 пересекается с common - split при i+2 - просто раздвигает в месте pos=i
@@ -152,13 +153,13 @@ function makeMarkerList(samasa) {
         }
 
         // a or ā is followed by simple ->  guna; reverse: guna = a+simple
-        if (u.c(Const.gunas, u.vowel(sym))) {
+        if (u.vowsound(prev) && u.c(Const.gunas, u.vowel(sym))) {
             var mark = {num: '6.1.87', pattern: sym, idx: i, pos: i};
             marks.push(mark);
             // log('M vow guna', i, 'mark', mark);
-        } else if ((u.c(Const.hal, sym) || sym == Const.A) && (next1 == 'र' || next1 == 'ल') && next2 == Const.virama) {
-            var pattern = [next1, Const.virama].join('');
-            var mark = {num: '6.1.87', pattern: pattern, idx: i, pos: i+1};
+        } else if (u.vowsound(prev) && (sym == 'र' || sym == 'ल') && next1 == Const.virama) {
+            var pattern = [sym, Const.virama].join('');
+            var mark = {num: '6.1.87', pattern: pattern, idx: i, pos: i};
             marks.push(mark);
             // log('M vow guna RL', i, 'mark', mark);
         }
@@ -194,7 +195,7 @@ function makeMarkerList(samasa) {
             var mark = {num: '6.1.78', pattern: pattern, beg: next1, idx: i, pos: i-1};
             marks.push(mark);
             // log('M ayadi-vriddhi 78 ', i, 'mark', mark);
-            // FIXME: TODO va-na - может крыться с common ?
+            // FIME: TODO va-na - может крыться с common ?
         } else if (prev != Const.A && prev != Const.virama && u.c(Const.yava, sym) && u.c(Const.allligas, next1)) {
             var pattern = [sym, next1].join('');
             var mark = {num: '6.1.78', pattern: pattern, idx: i, pos: i};
@@ -234,6 +235,13 @@ function makeMarkerList(samasa) {
         if (u.c(Const.hal, sym) && next1 == 'ो' && next2 == Const.avagraha) {
             pattern = [next1, Const.avagraha].join('');
             var mark = {type: 'visarga', num: 'visarga-ah-a', pattern: pattern, idx: i, pos: i};
+            marks.push(mark);
+            // log('M visarga', i, 'mark', mark);
+        }
+
+        if (u.c(Const.hal, prev) && sym == 'ो' && u.c(Const.haS, next1)) {
+            pattern = sym;
+            var mark = {type: 'visarga', num: 'visarga-ah-soft', pattern: pattern, idx: i, pos: i};
             marks.push(mark);
             // log('M visarga', i, 'mark', mark);
         }
@@ -302,7 +310,9 @@ function makeMarkerList(samasa) {
             } else if (next1 == Const.visarga) {
                 // log('VISARGA?', i, sym, next1, next2); // FIXME:
             } else if (next1 == Const.anusvara) {
-                log('ANUSVARA?', i, sym, next1, next2); // FIXME:
+                // log('ANUSVARA?', i, sym, 1, next1, 2, next2); // pattern mM -> m aM
+                mark.pattern = next1;
+                mark.sandhi = [Const.virama, ' अ', Const.anusvara].join('');
             } else {
                 // log('WHAT?', i, sym, 1, next1, 2, next2); // FIXME:
             }
@@ -539,11 +549,12 @@ function splitone(samasa) {
     // И ВООБЩЕ СОМНИТЕЛЬНАЯ ВЕЩЬ:
 
     res = anusvaraInMiddle(samasa, uniq);
-    // res = uniq;
+    // log('RES ANUSVARA', uniq);
+    res = uniq;
 
     // FIX:
-    // var x = 'वक्त्र'; //
-    // // [ 'वक्‌त्रांबुजसौरभम्', 'वक्त्र अंबुज सौरभम्' ],
+    // [ 'व्रीडाचंचलमंचलम्', 'व्रीडा चंचलम् अंचलम्' ], // चलमंच्
+    // var x = 'चंचलम्'; //
     // var concat = res.join(' ').split(' ');
     // log('FIX:', u.c(concat, x));
 
@@ -555,6 +566,7 @@ function splitone(samasa) {
 function anusvaraInMiddle(samasa, arr) {
     var res = [];
     arr.forEach(function(vigraha) {
+        // FIXME: нужно менять все носовые нарастающим итогом
         Const.nasals.forEach(function(n) {
             var nv = [n, Const.virama].join('');
             var re = new RegExp(nv + '([^ $])', 'g');
