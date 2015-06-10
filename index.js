@@ -312,8 +312,12 @@ function makeMarkerList(samasa) {
                 // log('VISARGA?', i, sym, next1, next2); // FIXME:
             } else if (next1 == Const.anusvara) {
                 // log('ANUSVARA?', i, sym, 1, next1, 2, next2); // pattern mM -> m aM
-                mark.pattern = next1;
-                mark.sandhi = [Const.virama, ' अ', Const.anusvara].join('');
+                // mark.pattern = next1;
+                // mark.sandhi = [Const.virama, ' अ', Const.anusvara].join('');
+                if (u.c(Const.hal, sym)) {
+                    mark.pattern = [sym, Const.anusvara].join('');
+                    mark.sandhi = [u.soft2hard(sym), Const.virama, ' अ', Const.anusvara].join('');
+                }
             } else {
                 // log('WHAT?', i, sym, 1, next1, 2, next2); // FIXME:
             }
@@ -554,10 +558,10 @@ function splitone(samasa) {
     res = uniq;
 
     // FIX:
-    // [ 'नकोऽपि', 'न कः अपि' ],
-    // var x = 'कः';
-    // var concat = res.join(' ').split(' ');
-    // log('FIX:', u.c(concat, x));
+    // [ 'मलयजपवनेन', 'मलय ज पवनेन' ],
+    var x = 'ज';
+    var concat = res.join(' ').split(' ');
+    log('FIX:', u.c(concat, x));
 
     return res;
 }
