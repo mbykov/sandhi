@@ -232,8 +232,8 @@ function makeMarkerList(samasa) {
         // === VISARGA === only concatenated result
 
         // अ & visarga changes to ओ+avagraha when followed by अ
-        if (u.c(Const.hal, sym) && next1 == 'ो' && next2 == Const.avagraha) {
-            pattern = [next1, Const.avagraha].join('');
+        if (u.c(Const.hal, prev) && sym == 'ो' && next1 == Const.avagraha) {
+            pattern = [sym, Const.avagraha].join('');
             var mark = {type: 'visarga', num: 'visarga-ah-a', pattern: pattern, idx: i, pos: i};
             marks.push(mark);
             // log('M visarga', i, 'mark', mark);
@@ -280,7 +280,8 @@ function makeMarkerList(samasa) {
 
         // var next = (next1 == Const.virama) ? next2 : next1; // TODO: кажется, это спсоб упростить все
         // zero: отсутствие маркера - тем не менее, разбиение м.б. - FIXME: сразу здесь прописать ВСЕ условия
-        if (!mark || mark.num == '6.1.87' || mark.num == 'visarga-r') {
+        // if (!mark || mark.num == '6.1.87' || mark.num == 'visarga-r') {
+        if (true) {
             if (sym == Const.virama || !next1) return;
             // FIXME: а sym тут, что, любой?
             var mark = {num: '0', idx: i, pos: i};
@@ -290,7 +291,7 @@ function makeMarkerList(samasa) {
             } else if (u.c(Const.allligas, next1)) {
                 mark.pattern = [sym, next1].join('');
                 mark.sandhi = [sym, Const.virama, ' ', u.vowel(next1)].join('');
-                // log('============= vow zero sandhi ?', i, sym, next1);
+                // log('============= vow zero sandhi', i, sym, next1, u.vowel(next1), mark.sandhi);
             } else if (u.c(Const.hal, next1)) {
                 mark.pattern = [sym, next1].join('');
                 mark.sandhi = [sym, ' ', next1].join('');
@@ -352,8 +353,8 @@ function checkResult(mark) {
             result = false;
         }
     } else {
-        if (vir && !u.c(['क', 'ट', 'त', 'प', 'ङ', 'ण', 'न', 'म', 'ल', Const.visarga], fin)) {
-            // log('== ERROR_CONS_FIN==========', 'f:', fin, 'b:', 'm:', beg, mark);
+        if (vir && !u.c(['क', 'ट', 'त', 'प', 'ङ', 'ण', 'न', 'म', 'ल', 'र', Const.visarga], fin)) { // added 'र'
+            // log('== ERROR_CONS_FIN==========', 'fin:', fin, 'beg:', beg, mark);
             result = false;
         }
     }
@@ -499,7 +500,7 @@ function splitone(samasa) {
     var combs = u.combinator(list, samasa);
 
     // combs = correct(combs, samasa);
-    if (combs.length > 500) log('==combs.size== marks:', marks.length, 'list:', list.length, 'combs:', combs.length)
+    if (combs.length > 1000) log('==combs.size== marks:', marks.length, 'list:', list.length, 'combs:', combs.length)
 
     combs.forEach(function(comb, idx) {
         var result = samasa;
@@ -541,7 +542,7 @@ function splitone(samasa) {
     // log('res:', res); //
     var uniq = _.uniq(res);
     // if (res.length != uniq.length) log('NOT UNIQ! SPLIT results:', res.length, 'uniq:', uniq.length, 'combs:', combs.length); // भानूदयः
-    // log('SPLIT=> UNIQ RES', uniq);
+    // log('SPLIT=> URES', uniq);
 
     // FIXME: это выбросить после исправления коротких тестов на анусвару в середине слова - если исправлять
     // нужно посмотреть, что в словаре MW - есть там n-in-a-middle, или всегда анусвара?
@@ -553,8 +554,8 @@ function splitone(samasa) {
     res = uniq;
 
     // FIX:
-    // [ 'व्रीडाचंचलमंचलम्', 'व्रीडा चंचलम् अंचलम्' ], // चलमंच्
-    // var x = 'चंचलम्'; //
+    // [ 'नकोऽपि', 'न कः अपि' ],
+    // var x = 'कः';
     // var concat = res.join(' ').split(' ');
     // log('FIX:', u.c(concat, x));
 
