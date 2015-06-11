@@ -1,6 +1,8 @@
 //
 
 // var salita = require('salita-component');
+var splitter = require('../splitter');
+
 var sandhi = require('../index');
 var debug = (process.env.debug == 'true') ? true : false;
 
@@ -62,9 +64,11 @@ utils.prototype.gita = function(descr, sa, v, idx, idy) {
         var splitted = hash[sa];
         // log('test-gita splitted size', splitted.length);
         // log('hash', arr2string(res)); // '"भीरुः अयम्"'
-
         isIN(splitted, vistr).should.equal(true);
         // true.should.equal(true);
+
+        // SPLITTER FIXME: убрать, это тест
+        splitter.split(sa);
     });
 }
 

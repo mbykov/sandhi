@@ -3404,37 +3404,6 @@ var tests = [
     ],
 ];
 
-// tests.forEach(function(test, idx) {
-//     // if (idx !=2) return;
-//     var descr = ['gita', idx].join('-');
-//     var str = test.map(function(t) { return t[0]}).join(' ');
-//     var res = test.map(function(t) { return t[1]});
-//     describe(descr, function() {
-//         it(descr, function() {
-//             utils.gita(str, res, idx);
-//         });
-//     });
-// });
-
-// var samasa = t[0];
-// var vigraha = t[1].split(' ');
-// if (samasa == vigraha[0]) return;
-// if (vigraha.length > 2) return;
-// // log(1, idx, idy, samasa, 2, vigraha.length, vigraha);
-// var sam = salita.sa2slp(samasa);
-// var vig = arr2slp(vigraha);
-// var descr = ['', idx, idy].join('-');
-// // if (idx > 50) return;
-// // log(descr);
-// describe(descr, function() {
-//     descr = ['', idx, idy, sam, samasa, vig].join('-');
-//     utils.gita(descr, samasa, vigraha, idx, idy);
-//     // t.tests.forEach(function(test, idx) {
-//     //     if (t.only) test.push(t.only);
-//     //     utils.test(test, idx);
-//     // });
-// });
-
 describe('gita splitter', function() {
     tests.forEach(function(test, idx) {
         test.forEach(function(t, idy) {
