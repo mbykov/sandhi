@@ -34,7 +34,7 @@ function makeMarkerList(samasa) {
         // if (u.c(Const.special, sym)) return;
         // FIXME: здесь как-то нужно установить пределы аккуратнее, а не просто - со второй до предпоследней
         // if (i < 1) return;
-        // if (i > samasa.length - 0) return;
+        if (i > samasa.length - 1) return;
         var mark, pattern, size;
         var prev = arr[i-1];
         var next1 = arr[i+1];
@@ -504,7 +504,7 @@ function splitone(samasa) {
     var combs = u.combinator(list, samasa);
 
     // combs = correct(combs, samasa);
-    if (combs.length > 1000) log('==combs.size== marks:', marks.length, 'list:', list.length, 'combs:', combs.length)
+    if (combs.length > 100) log('==combs.size== marks:', marks.length, 'list:', list.length, 'combs:', combs.length)
 
     combs.forEach(function(comb, idx) {
         var result = samasa;
@@ -559,9 +559,9 @@ function splitone(samasa) {
 
     // FIX:
     // [ 'मलयजपवनेन', 'मलय ज पवनेन' ],
-    var x = 'ज';
-    var concat = res.join(' ').split(' ');
-    log('FIX:', u.c(concat, x));
+    // var x = 'ज';
+    // var concat = res.join(' ').split(' ');
+    // log('FIX:', u.c(concat, x));
 
     return res;
 }
