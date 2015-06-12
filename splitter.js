@@ -40,28 +40,32 @@ function scrape(samasa) {
     // var syms = trn.split('');
     syms.forEach(function(sym, idx) {
         var rest = syms.slice(idx);
-        // log('----', idx, rest.join(''));
+        log('----', idx, rest.join(''));
         var vows = 0;
         var flakes = [];
-        var flakes__ = [];
         rest.forEach(function(s, idy) {
-            if (u.c(Const.allvowels, u.vowel(s))) vows+=1;
-            log(111, s, vows);
+            // FIXME: подсчет гласных - или слогов - тут неаккуратно
+            if (u.c(Const.hal, s)) vows+=1;
+            else if (Const.virama == s) vows-=1;
+            // log(111, s, u.vowel(s), vows);
             var flake = rest.slice(0, idy+1).join('');
-            var flake__ = salita.sa2slp(flake);
             // log('===', idx, idy, flake);
-            if (vows < 3) flakes.push(flake);
-            if (vows < 3) flakes__.push(flake__);
+            if (vows < 4) flakes.push(flake);
         });
-        log('F', idx, flakes__);
+        log('F', idx, flakes);
         anchors.push(flakes);
     });
 
-    log('=========== FLAKES', samasa, trn);
+    log('=========== FLAKES', samasa, trn, Const.allvowels);
     // log(anchors);
     translit(anchors);
     return anchors;
 }
+
+// function vowCount(str) {
+//     var syms = str.split('');
+//     var vows = syms.map(function())
+// }
 
 function translit(arr) {
     var trows = [];
