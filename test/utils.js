@@ -68,7 +68,7 @@ utils.prototype.gita = function(descr, sa, v, idx, idy) {
         // true.should.equal(true);
 
         // SPLITTER FIXME: убрать, это тест
-        splitter.split(sa);
+        splitter.get(sa);
     });
 }
 
