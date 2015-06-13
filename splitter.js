@@ -29,43 +29,50 @@ splitter.prototype.get = function(samasa) {
     var flakes = scrape(samasa);
 }
 
+// 16-15, 16-26, ---->  17-29, 17-48
+
 /*
    rasp aka scrape - строгать, скоблить - создает чешуйки
-   берем samasa, создаем чешуйки-flakes от каждого символа до - двух-трех слогов, (без учета приставок и флексий, эх)
+   берем samasa, создаем чешуйки-flakes от каждого символа до - двух-трех слогов, (пока без учета приставок и флексий, эх)
  */
 function scrape(samasa) {
     var anchors = [];
     var trn = salita.sa2slp(samasa);
     var syms = samasa.split('');
-    // var syms = trn.split('');
     syms.forEach(function(sym, idx) {
-        var rest = syms.slice(idx);
-        log('----', idx, rest.join(''));
-        var vows = 0;
-        var flakes = [];
-        rest.forEach(function(s, idy) {
-            // FIXME: подсчет гласных - или слогов - тут неаккуратно
-            if (u.c(Const.hal, s)) vows+=1;
-            else if (Const.virama == s) vows-=1;
-            // log(111, s, u.vowel(s), vows);
-            var flake = rest.slice(0, idy+1).join('');
-            // log('===', idx, idy, flake);
-            if (vows < 4) flakes.push(flake);
-        });
-        log('F', idx, flakes);
-        anchors.push(flakes);
+        var tail = syms.slice(idx);
+        anchors.push(shredder(tail));
     });
 
-    log('=========== FLAKES', samasa, trn, Const.allvowels);
-    // log(anchors);
+    log('=========== FLAKES', samasa, trn);
     translit(anchors);
     return anchors;
 }
 
-// function vowCount(str) {
-//     var syms = str.split('');
-//     var vows = syms.map(function())
-// }
+/*
+  main method - cuts tails into flakes with sandhi
+*/
+function shredder(tail) {
+
+
+
+
+
+
+
+    // TMP method:
+    var vows = (u.c(Const.allvowels, u.vowel(tail[0]))) ? 1 : 0;
+    var flakes = [];
+    tail.forEach(function(s, idy) {
+        if (u.c(Const.hal, s)) vows+=1;
+        else if (Const.virama == s) vows-=1;
+        var flake = tail.slice(0, idy+1).join('');
+        // log('->', s, u.vowel(s), vows);
+        if (vows < 4) flakes.push(flake);
+    });
+    // log('F', idx, vows);
+    return flakes;
+}
 
 function translit(arr) {
     var trows = [];

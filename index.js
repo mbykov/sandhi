@@ -588,30 +588,104 @@ function anusvaraInMiddle(samasa, arr) {
     return arr;
 }
 
-// FIXME: тут должна быть рекурсия, но не получилось пока
-function replaceN(str, re) {
-    var replaced = str.replace(/re/, Const.anusvara);
-    // log(1, replaced);
-    if (replaced == str) return str;
-    return replaceN(str, n);
+
+// ============= CUT ==================
+
+/*
+*/
+sandhi.prototype.cut = function(samasa, second) {
+    var first = '';
+    var marker = markerTemplate(first, second);
+    switch (marker.type) {
+    case 'vowel':
+        addVowelFilter(marker);
+        break;
+    }
+    log('CUT TEMPLATE',marker);
+
+    // mark = cutFilter(mark);
+    // var sutra = vowRules[mark.num] || consRules[mark.num] || visRules[mark.num];
+    // if (!sutra) return; // FIXME: не должно быть
+    // var marks = sutra.add(mark);
+    // // log('ADD=> RES', res);
+    // return marks.map(function(m) { return makeAddResult(m)});
+    return [];
 }
 
+function cutFilter(first, ssecond) {
+    var marker = {first: first, fin: fin, vir: vir, second: second, beg: beg};
+    return marker;
+}
 
-// шмитовский проезд - кони - б.белое здание, по ул. 5=года - управа, мюллер, 916-917-42-22
+function markerTemplate(first, second) {
+    var first = first.split('');
+    var second = second.split('');
+    var fin = first.slice(-1)[0];
+    if (u.c(Const.consonants, fin)) fin = '';
+    var penult = first.slice(-2)[0];
+    var beg = second[0];
+    var marker;
+    // Const.special ? candra всегда после вирамы? Что остальные?
+    if (fin == Const.virama) { //  && u.c(Const.hal, beg)
+        var vir = false;
+        var candra = false;
+        if (fin == Const.virama) {
+            first.pop();
+            fin = first.slice(-1)[0];
+            penult = first.slice(-2)[0];
+            vir = true;
+        }
+        if (fin == Const.candra) {
+            first.pop();
+            fin = first.slice(-1)[0];
+            candra = true;
+        }
+        marker = {type: 'cons', first: first, fin: fin, vir: vir, second: second, beg: beg};
+        if (vir) marker.vir = true;
+        if (candra) marker.candra = true;
+    } else if ((u.c(Const.consonants, fin) || u.c(Const.allligas, fin)) && u.c(Const.allvowels, beg)) {
+        marker = {type: 'vowel', first: first, fin: fin, second: second, beg: beg};
+    } else if (fin == Const.visarga) {
+        var ah = u.c(Const.hal, penult);
+        var aah = Const.A == penult;
+        marker = {type: 'visarga', first: first, fin: fin, second: second, beg: beg};
+    }
+    return marker;
+}
 
 sandhi.prototype.add = function(first, second) {
-    var mark = makeMarker(first, second);
-    var sutra = vowRules[mark.num] || consRules[mark.num] || visRules[mark.num];
-    if (!sutra) return; // FIXME: не должно быть
-    var marks = sutra.add(mark);
-    var res = marks.map(function(m) { return makeAddResult(m)});
+    var marker = markerTemplate(first, second);
+    switch (marker.type) {
+    case 'vowel':
+        addVowelFilter(marker);
+        break;
+    }
+    // log('ADD TEMPLATE',marker);
 
+    // marker = addFilter_(first, second);
+    // log('ADD TEMPLATE',marker);
+
+    var sutra = vowRules[marker.num] || consRules[marker.num] || visRules[marker.num];
+    if (!sutra) return; // FIXME: не должно быть
+    var markers = sutra.add(marker);
     // log('ADD=> RES', res);
-    return res;
+    return markers.map(function(m) { return makeAddResult(m)});
 }
 
+function addVowelFilter(marker) {
+    var fin = marker.fin;
+    var penult = marker.penult;
+    var beg = marker.beg;
+    if (u.similar(fin, beg) || u.c(Const.aAliga, fin) && u.c(Const.aA, beg)) marker.num = '6.1.101';
+    if (u.c(Const.aAliga, fin) && u.c(Const.allsimples, beg)) marker.num = '6.1.87';
+    if (u.c(Const.aAliga, fin) && u.c(Const.diphtongs, beg)) marker.num = '6.1.88';
+    if (u.c(Const.allsimpleligas, fin) && u.c(Const.allvowels, beg) && !u.similar(fin, beg)) marker.num = '6.1.77';
+    // 6.1.78 - ayadi-guna - e,o+vow-a => ay,av+vow-a (comp. 6.1.109); - ayadi-vriddhi - E,O+vow => Ay,Av+vow, if vow=aA - next=cons
+    if (u.c(Const.diphtongs, u.vowel(fin)) && u.c(Const.allvowels, u.vowel(fin)) && !(u.c(Const.gunas, u.vowel(fin)) && beg =='अ')) marker.num = '6.1.78';
+    if (u.c(Const.gunas, u.vowel(fin)) && beg =='अ') marker.num = '6.1.109';
+}
 
-function makeMarker(f, s) {
+function addFilter_(f, s) {
     var first = f.split('');
     var second = s.split('');
     var fin = first.slice(-1)[0];
@@ -730,47 +804,4 @@ function makeAddResult(mark) {
     if (mark.end) mark.first.push(mark.end);
     if (mark.vir) mark.first.push(Const.virama);
     return [mark.first.join(''), mark.second.join('')].join(space);
-}
-
-
-// Rules for syllables
-// A syllable is a sound that has exactly one vowel.
-// A syllable can start with a vowel only when:
-// The syllable is at the beginning of a line.
-// The syllable follows a consonant that is removed due to a special rule. (Ignore this for the time being.)
-// A syllable can end in any number of consonants; but when a stop appears, it ends the syllable.
-// Syllables that end in short vowels are light. All other syllables are heavy.
-// As we read a line, we should make each syllable as large as possible. But we cannot break the rules above.
-
-/*
-  я хочу: выяснить, можно ли разбить сегмент на слоги. И только.
-  - гласные: первая в начале, первая согласная из двух, лига или висарга или анусвара
-  - первую пропустили пока
-  - слог открыт, syllable: true
-
-  - sym, next
-  - vow: false => before vow => onset
-  - sym: cons
-  - next:virama, - nnn
-  - next:liga, - vow:true
-  - next:cons, - vow:a:true
-
-  - sym:virama & next = cons, - nnn
-  - sym:liga & next = cons, - nnn
-
-  - vow: true => after vow => coda
-  - sym = cons && sym != stop -> nnn
-  - sym = cons && sym = stop -> syllable: false, vow: false - закрыть
-  - if next = isVow i.e. liga or next1 = cons && next2 !=virama -> закрыть
-  -
-  - если первая vow
-  - vow + cons (а что еще после vow?) vow:true, syllable: true
-  -
-  - если конец строки, а слог открыт, то нельзя разбить на слоги
-  == очень сложно ==
-
-*/
-
-function isSyllable(str) {
-
 }

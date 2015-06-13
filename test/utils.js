@@ -1,6 +1,6 @@
 //
 
-// var salita = require('salita-component');
+var salita = require('salita-component');
 var splitter = require('../splitter');
 
 var sandhi = require('../index');
@@ -20,36 +20,47 @@ utils.prototype.test = function(test, idx) {
     if (!compound) return;
     var addtext = test.join(' + ');
     var idxstr = ['_', idx+1, '_'].join('');
-    var descr = [idxstr, 'add', addtext, compound].join(' - ');
+    var cotrn = salita.sa2slp(compound);
+    var fitrn = salita.sa2slp(first);
+    var setrn = salita.sa2slp(second);
+    var trn = [fitrn, setrn, cotrn].join(' - ');
     // add
+    var descr = [idxstr, 'add', addtext, compound, trn].join(' - ');
     it(descr, function() {
         var added = sandhi.add(first, second);
-        if (!added) {
-            log('===================false, no added');
-            false.should.equal(true);
-        }
         // log('TEST ADD', added);
         isIN(added, compound).should.equal(true);
     });
-    // split
-    var descr = [idxstr, 'split', addtext, compound].join(' - ');
+
+    // cut
+    var descr = [idxstr, 'cut', addtext, compound].join(' - ');
     it(descr, function() {
-        var splitted;
         var testStr = [first, second].join(' ');
-        var hash = sandhi.split(compound);
-        if (hash[compound]) {
-            splitted = hash[compound]
-            isIN(splitted, testStr).should.equal(true);
-        } else {
-            var spacedFirst = compound.split(' ')[0];
-            splitted = hash[spacedFirst];
-            isIN(splitted, first).should.equal(true);
-            // splitted = hash[second];
-            // isIN(splitted, second).should.equal(true);
-        }
-        // splitted = (hash[compound]) ? hash[compound] : testStr;
-        // isIN(splitted, testStr).should.equal(true);
+        var cutted = sandhi.cut(compound, second);
+        // log('TEST CUT', cutted);
+        var concatenated = cutted.map(function(cutt) { return cutt.join(' ') });
+        isIN(concatenated, testStr).should.equal(true);
     });
+
+    // split
+    // var descr = [idxstr, 'split', addtext, compound].join(' - ');
+    // it(descr, function() {
+    //     var splitted;
+    //     var testStr = [first, second].join(' ');
+    //     var hash = sandhi.split(compound);
+    //     if (hash[compound]) {
+    //         splitted = hash[compound]
+    //         isIN(splitted, testStr).should.equal(true);
+    //     } else {
+    //         var spacedFirst = compound.split(' ')[0];
+    //         splitted = hash[spacedFirst];
+    //         isIN(splitted, first).should.equal(true);
+    //         // splitted = hash[second];
+    //         // isIN(splitted, second).should.equal(true);
+    //     }
+    //     // splitted = (hash[compound]) ? hash[compound] : testStr;
+    //     // isIN(splitted, testStr).should.equal(true);
+    // });
 }
 
 utils.prototype.gita = function(descr, sa, v, idx, idy) {
