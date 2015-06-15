@@ -604,11 +604,14 @@ sandhi.prototype.del = function(samasa, second) {
     // a or ā is followed by simple ->  guna; reverse: guna = a+simple
     if (u.vowsound(marker.fin) && u.c(Const.gunas, u.vowel(marker.pattern))) marker.num = '6.1.87';
 
-    // log('M-marker', marker);
+    if ((marker.fin == 'र' || marker.fin == 'ल') && marker.pattern == Const.virama) marker.num = '6.1.87';
+    // var pattern = [sym, Const.virama].join('');
+
+    // log('M-marker', marker, marker.first.slice(-2));
     var sutra = vowRules[marker.num] || consRules[marker.num] || visRules[marker.num];
     // if (!sutra) return; // FIXME: не должно быть
     var cutted = sutra.del(marker);
-    // log('ADD=> RES', res);
+    // log('ADD=> RES', cutted);
     // return markers.map(function(m) { return addResult(m)});
     return cutted;
 }
