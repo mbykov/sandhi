@@ -601,6 +601,8 @@ sandhi.prototype.del = function(samasa, second) {
 
     // simple vowel, followed by a similar vowel => dirgha
     if (u.c(Const.dirgha, u.vowel(marker.pattern))) marker.num = '6.1.101';
+    // a or ā is followed by simple ->  guna; reverse: guna = a+simple
+    if (u.vowsound(marker.fin) && u.c(Const.gunas, u.vowel(marker.pattern))) marker.num = '6.1.87';
 
     // log('M-marker', marker);
     var sutra = vowRules[marker.num] || consRules[marker.num] || visRules[marker.num];

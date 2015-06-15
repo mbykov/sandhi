@@ -38,7 +38,7 @@ utils.prototype.test = function(test, idx) {
        вычитаю вторую половину для естественности
        salita не перекодирует начальные лиги
      */
-    var descr = [idxstr, 'delete', addtext, compound].join(' - ');
+    var descr = [idxstr, 'del', addtext, compound].join(' - ');
     it(descr, function() {
         var res = sandhi.del(compound, second);
         // log('TEST CUT', res);
