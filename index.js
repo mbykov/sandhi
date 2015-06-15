@@ -589,33 +589,66 @@ function anusvaraInMiddle(samasa, arr) {
 }
 
 
-// ============= CUT ==================
+// ============= DELETE ==================
 
 /*
+  разрезаю samasa - получаю пару first-second. Второе слово может менять первую букву
+  методы cut() и del()
+  del() возвращает пару first-second, cut() возвращает first
 */
-sandhi.prototype.cut = function(samasa, second) {
-    var first = '';
-    var marker = markerTemplate(first, second);
-    switch (marker.type) {
-    case 'vowel':
-        addVowelFilter(marker);
-        break;
-    }
-    log('CUT TEMPLATE',marker);
+sandhi.prototype.del = function(samasa, second) {
+    var marker = delMarker(samasa, second);
 
-    // mark = cutFilter(mark);
-    // var sutra = vowRules[mark.num] || consRules[mark.num] || visRules[mark.num];
+    // simple vowel, followed by a similar vowel => dirgha
+    if (u.c(Const.dirgha, u.vowel(marker.pattern))) marker.num = '6.1.101';
+
+    // log('M-marker', marker);
+    var sutra = vowRules[marker.num] || consRules[marker.num] || visRules[marker.num];
     // if (!sutra) return; // FIXME: не должно быть
-    // var marks = sutra.add(mark);
-    // // log('ADD=> RES', res);
-    // return marks.map(function(m) { return makeAddResult(m)});
-    return [];
+    var cutted = sutra.del(marker);
+    // log('ADD=> RES', res);
+    // return markers.map(function(m) { return addResult(m)});
+    return cutted;
 }
 
-function cutFilter(first, ssecond) {
-    var marker = {first: first, fin: fin, vir: vir, second: second, beg: beg};
+/*
+
+*/
+function delMarker(samasa, second) {
+    var spart = second.slice(1);
+    var fpart = samasa.replace(spart, '');
+    samasa = samasa.split('');
+    var first = fpart.split('');
+    second = second.split('');
+    // var fin = first.slice(-1)[0];
+    // if (u.c(Const.consonants, fin)) fin = '';
+    var pattern = first.slice(-1)[0];
+    var beg = second[0];
+    var fin = first.slice(-2)[0];
+    var pos = first.length-1;
+    var marker = {type: 'vowel', first: first, second: second, fin: fin, pattern: pattern, beg: beg, pos: pos};
     return marker;
 }
+
+
+// будущий cutMarker:
+// if (typeof second == "number") {
+//     pos = second; // = 3;
+//     pattern = samasa.slice(pos)[0];
+//     beg = samasa.slice(pos)[1];
+//     // fin = samasa.slice(pos-1).slice(-1)[0];
+//     fin = samasa.slice(0, pos).slice(-1)[0];
+//     log('S', samasa, pos, 'f', fin, 'p', pattern, 'b', beg);
+// }
+
+
+function delVowFilter(first, ssecond) {
+}
+
+
+
+
+// ============ ADD ==========
 
 function markerTemplate(first, second) {
     var first = first.split('');
@@ -669,7 +702,7 @@ sandhi.prototype.add = function(first, second) {
     if (!sutra) return; // FIXME: не должно быть
     var markers = sutra.add(marker);
     // log('ADD=> RES', res);
-    return markers.map(function(m) { return makeAddResult(m)});
+    return markers.map(function(m) { return addResult(m)});
 }
 
 function addVowelFilter(marker) {
@@ -793,7 +826,7 @@ function addFilter_(f, s) {
     return marker;
 }
 
-function makeAddResult(mark) {
+function addResult(mark) {
     if (mark.type == 'cons' && u.c(Const.allvowels, mark.beg)) {
         mark.second.shift();
         var liga = u.liga(mark.beg);

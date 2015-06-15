@@ -32,11 +32,23 @@ utils.prototype.test = function(test, idx) {
         isIN(added, compound).should.equal(true);
     });
 
-    // cut
-    var descr = [idxstr, 'cut', addtext, compound].join(' - ');
+    // delete
+    /* как организовать тесты? В реальной жизни я имею samasa и хвост, а в сплиттере наоборот - начало от samasa
+       здесь я могу посчитать длину second и вычислить половинки - вычитаю длину второго и символ начала (+1)
+       вычитаю вторую половину для естественности
+       salita не перекодирует начальные лиги
+     */
+    var descr = [idxstr, 'delete', addtext, compound].join(' - ');
     it(descr, function() {
+        // var fsize = first.length + 1;
+        // var fpart = compound.slice(0, fsize);
+        // var ssize = second.length;
+        // var size = compound.length - ssize;
+        // var spart = compound.slice(size);
+        // var mark = spart[0];
+        // log('FPART', fpart, salita.sa2slp(fpart), spart, salita.sa2slp(spart), mark); // ानुशासन
         var testStr = [first, second].join(' ');
-        var cutted = sandhi.cut(compound, second);
+        var cutted = sandhi.del(compound, second);
         // log('TEST CUT', cutted);
         var concatenated = cutted.map(function(cutt) { return cutt.join(' ') });
         isIN(concatenated, testStr).should.equal(true);
