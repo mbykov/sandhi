@@ -40,18 +40,10 @@ utils.prototype.test = function(test, idx) {
      */
     var descr = [idxstr, 'delete', addtext, compound].join(' - ');
     it(descr, function() {
-        // var fsize = first.length + 1;
-        // var fpart = compound.slice(0, fsize);
-        // var ssize = second.length;
-        // var size = compound.length - ssize;
-        // var spart = compound.slice(size);
-        // var mark = spart[0];
-        // log('FPART', fpart, salita.sa2slp(fpart), spart, salita.sa2slp(spart), mark); // ानुशासन
-        var testStr = [first, second].join(' ');
-        var cutted = sandhi.del(compound, second);
-        // log('TEST CUT', cutted);
-        var concatenated = cutted.map(function(cutt) { return cutt.join(' ') });
-        isIN(concatenated, testStr).should.equal(true);
+        var res = sandhi.del(compound, second);
+        // log('TEST CUT', res);
+        isIN(res.firsts, first).should.equal(true);
+        isIN(res.seconds, second).should.equal(true);
     });
 
     // split
