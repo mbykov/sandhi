@@ -616,7 +616,8 @@ sandhi.prototype.del = function(samasa, second) {
 */
 function delMarker(samasa, second) {
     var spart = second.slice(1);
-    var fpart = samasa.replace(spart, '');
+    var re = new RegExp(spart + '$');
+    var fpart = samasa.replace(re, '');
     samasa = samasa.split('');
     var first = fpart.split('');
     second = second.split('');
@@ -683,6 +684,7 @@ function markerTemplate(first, second) {
         var aah = Const.A == penult;
         marker = {type: 'visarga', first: first, fin: fin, second: second, beg: beg};
     }
+    // log('ADD=', marker);
     return marker;
 }
 
@@ -710,12 +712,14 @@ function addVowelFilter(marker) {
     var penult = marker.penult;
     var beg = marker.beg;
     if (u.similar(fin, beg) || u.c(Const.aAliga, fin) && u.c(Const.aA, beg)) marker.num = '6.1.101';
+    if (fin =='ृ' && beg == 'ऌ') marker.num = '6.1.101';
     if (u.c(Const.aAliga, fin) && u.c(Const.allsimples, beg)) marker.num = '6.1.87';
     if (u.c(Const.aAliga, fin) && u.c(Const.diphtongs, beg)) marker.num = '6.1.88';
     if (u.c(Const.allsimpleligas, fin) && u.c(Const.allvowels, beg) && !u.similar(fin, beg)) marker.num = '6.1.77';
     // 6.1.78 - ayadi-guna - e,o+vow-a => ay,av+vow-a (comp. 6.1.109); - ayadi-vriddhi - E,O+vow => Ay,Av+vow, if vow=aA - next=cons
     if (u.c(Const.diphtongs, u.vowel(fin)) && u.c(Const.allvowels, u.vowel(fin)) && !(u.c(Const.gunas, u.vowel(fin)) && beg =='अ')) marker.num = '6.1.78';
     if (u.c(Const.gunas, u.vowel(fin)) && beg =='अ') marker.num = '6.1.109';
+    // log('ADD=', marker);
 }
 
 function addFilter_(f, s) {
