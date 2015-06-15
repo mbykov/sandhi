@@ -603,11 +603,11 @@ sandhi.prototype.del = function(samasa, second) {
     if (u.c(Const.dirgha, u.vowel(marker.pattern))) marker.num = '6.1.101';
     // a or ā is followed by simple ->  guna; reverse: guna = a+simple
     if (u.vowsound(marker.fin) && u.c(Const.gunas, u.vowel(marker.pattern))) marker.num = '6.1.87';
-
     if ((marker.fin == 'र' || marker.fin == 'ल') && marker.pattern == Const.virama) marker.num = '6.1.87';
-    // var pattern = [sym, Const.virama].join('');
+    // a or ā is followed by e, o, ai or au - vriddhi
+    if (u.c(Const.vriddhis, u.vowel(marker.pattern))) marker.num = '6.1.88';
 
-    // log('M-marker', marker, marker.first.slice(-2));
+    // log('M-marker', marker);
     var sutra = vowRules[marker.num] || consRules[marker.num] || visRules[marker.num];
     // if (!sutra) return; // FIXME: не должно быть
     var cutted = sutra.del(marker);
