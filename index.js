@@ -607,14 +607,15 @@ sandhi.prototype.del = function(samasa, second) {
     // a or ā is followed by e, o, ai or au - vriddhi
     if (u.c(Const.vriddhis, u.vowel(marker.pattern))) marker.num = '6.1.88';
     // simple vowel except Aa followed by a dissimilar simple vowel changes to its semi-vowel (+virama); yana-sandhi; reverse: semi-vow = simple + dissimilar
-    if (marker.fin == Const.virama && u.c(Const.yaR, marker.pattern) && marker.beg != Const.virama) marker.num = '6.1.77';
+    if (marker.fin == Const.virama && u.c(Const.yaR, marker.pattern) ) marker.num = '6.1.77';
     // diphthong followed by any vowel (e,o vow-a), including itself, changes to its semi-vowel equivalent - external - optional
-    else if (u.c(Const.yaR, marker.pattern) && marker.beg != Const.virama) marker.num = '6.1.78';
+    else if (u.c(Const.yaR, marker.pattern)) marker.num = '6.1.78';
 
-    // log('M-marker', marker);
+    // log('DEL-marker', marker);
+
     var sutra = vowRules[marker.num] || consRules[marker.num] || visRules[marker.num];
     var cutted = sutra.del(marker);
-    // log('ADD=> RES', cutted);
+    // log('DEL=> RES', cutted);
     return cutted;
 }
 
@@ -632,14 +633,21 @@ function delMarker(samasa, second) {
     // var fin = first.slice(-1)[0];
     // if (u.c(Const.consonants, fin)) fin = '';
     var pattern = first.slice(-1)[0];
+    var penult = first.slice(-3)[0];
     var fin = first.slice(-2)[0];
-    if (u.c(Const.yaR, fin)) {
+    // log(1, pattern, fin, u.base(fin))
+    // if (penult == Const.virama && u.c(Const.yaR, fin) && u.c(Const.allligas, pattern) && !u.similar(u.base(fin), beg)) {
+    if (penult == Const.virama && u.c(Const.yaR, fin) && u.c(Const.allligas, pattern) && pattern != Const.virama ) {
+    // if (false) {
+        log('=======');
         first.pop();
         pattern = first.slice(-1)[0];
         fin = first.slice(-2)[0];
     }
+    // log(2, pattern, fin, u.base(fin))
     var pos = first.length-1;
-    var marker = {type: 'vowel', first: first, second: second, fin: fin, pattern: pattern, beg: beg, pos: pos};
+    var marker = {type: 'vowel', first: first, second: second, fin: fin, pattern: pattern, pen: penult, beg: beg, pos: pos};
+    // log(marker)
     return marker;
 }
 
