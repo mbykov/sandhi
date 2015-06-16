@@ -726,10 +726,15 @@ function addVowelFilter(marker) {
     if (u.c(Const.aAliga, fin) && u.c(Const.allsimples, beg)) marker.num = '6.1.87';
     if (u.c(Const.aAliga, fin) && u.c(Const.diphtongs, beg)) marker.num = '6.1.88';
     if (u.c(Const.allsimpleligas, fin) && u.c(Const.allvowels, beg) && !u.similar(fin, beg)) marker.num = '6.1.77';
+    if (u.c(Const.allsimpleligas, fin) && u.c(Const.diphtongs, beg)) marker.num = '6.1.77';
     // 6.1.78 - ayadi-guna - e,o+vow-a => ay,av+vow-a (comp. 6.1.109); - ayadi-vriddhi - E,O+vow => Ay,Av+vow, if vow=aA - next=cons
-    if (u.c(Const.diphtongs, u.vowel(fin)) && u.c(Const.allvowels, u.vowel(fin)) && !(u.c(Const.gunas, u.vowel(fin)) && beg =='अ')) marker.num = '6.1.78';
-    if (u.c(Const.gunas, u.vowel(fin)) && beg =='अ') marker.num = '6.1.109';
-    // log('ADD=', marker);
+    // if (u.c(Const.diphtongs, u.vowel(fin)) && u.c(Const.allvowels, u.vowel(fin)) && !(u.c(Const.gunas, u.vowel(fin)) && beg =='अ')) marker.num = '6.1.78';
+    // 6.1.78 - diphthong followed by any vowel (e,o vow-a), including itself, changes to its semi-vowel equivalent - external - optional
+    if (u.c(Const.gunas, u.vowel(fin)) && beg != 'अ') marker.num = '6.1.78';
+    // the same, vriddhis
+    if (u.c(Const.vriddhis, u.vowel(fin)) && u.c(Const.allvowels, beg)) marker.num = '6.1.78';
+    if (u.c(Const.gunas, u.vowel(fin)) && beg == 'अ') marker.num = '6.1.109';
+    log('ADD=', u.vowel(fin), u.c(Const.vriddhis, u.vowel(fin)), u.c(Const.allvowels, u.vowel(beg) ), beg, u.vowel(beg));
 }
 
 function addFilter_(f, s) {
