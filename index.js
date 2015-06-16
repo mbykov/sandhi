@@ -598,33 +598,48 @@ function anusvaraInMiddle(samasa, arr) {
 */
 sandhi.prototype.del = function(samasa, second) {
     var marker = delMarker(samasa, second);
+    var markers = [];
+    // log('DEL-marker', marker);
+
+    var pushMark = function(num) {
+        var mark = _.clone(marker);
+        mark.num = num;
+        // log('DEL-marker', mark);
+        markers.push(mark);
+    }
 
     // simple vowel, followed by a similar vowel => dirgha
-    if (u.c(Const.dirgha, u.vowel(marker.pattern))) marker.num = '6.1.101';
+    if (u.c(Const.dirgha, u.vowel(marker.pattern))) pushMark('6.1.101');
+
     // a or ā is followed by simple ->  guna; reverse: guna = a+simple
-    if (u.vowsound(marker.fin) && u.c(Const.gunas, u.vowel(marker.pattern))) marker.num = '6.1.87';
-    if ((marker.fin == 'र' || marker.fin == 'ल') && marker.pattern == Const.virama) marker.num = '6.1.87';
+    if (u.vowsound(marker.fin) && u.c(Const.gunas, u.vowel(marker.pattern))) pushMark('6.1.87');
+    if ((marker.fin == 'र' || marker.fin == 'ल') && marker.pattern == Const.virama) pushMark('6.1.87');
+
     // a or ā is followed by e, o, ai or au - vriddhi
-    if (u.c(Const.vriddhis, u.vowel(marker.pattern))) marker.num = '6.1.88';
+    if (u.c(Const.vriddhis, u.vowel(marker.pattern))) pushMark('6.1.88');
+
     // simple vowel except Aa followed by a dissimilar simple vowel changes to its semi-vowel (+virama); yana-sandhi; reverse: semi-vow = simple + dissimilar
-    if (marker.pen == Const.virama && u.c(Const.yaR, marker.fin) && u.c(Const.allligas, marker.pattern) && !u.similar(u.base(marker.fin), marker.beg)) marker.num = '6.1.77';
-    if (u.c(Const.yaR, marker.pattern) && marker.fin == Const.virama && u.c(Const.aA, marker.beg)) marker.num = '6.1.77';
-
+    if (marker.pen == Const.virama && u.c(Const.yaR, marker.fin) && u.c(Const.allligas, marker.pattern) && !u.similar(u.base(marker.fin), marker.beg)) pushMark('6.1.77');
+    else if (u.c(Const.yaR, marker.pattern) && marker.fin == Const.virama && u.c(Const.aA, marker.beg)) pushMark('6.1.77');
     // diphthong followed by any vowel (e,o vow-a), including itself, changes to its semi-vowel equivalent - external - optional
-    else if (u.c(Const.yaR, marker.pattern)) marker.num = '6.1.78';
+    else if ((u.c(Const.yaR, marker.fin) || u.c(Const.yaR, marker.pen)) ) pushMark('6.1.78');
 
-    // log('DEL-marker', marker, u.c(Const.yaR, marker.fin));
 
-    var sutra = vowRules[marker.num] || consRules[marker.num] || visRules[marker.num];
-    var cutted = sutra.del(marker);
-
+    var cutted = [];
+    markers.forEach(function(mark) {
+        // log('DEL-marker', mark);
+        var sutra = vowRules[mark.num] || consRules[mark.num] || visRules[mark.num];
+        var res = sutra.del(mark);
+        res.pos = mark.pos;
+        res.num = mark.num;
+        cutted.push(res);
+    });
     // log('DEL=> RES', cutted);
     return cutted;
 }
 
-/*
 
-*/
+/**/
 function delMarker(samasa, second) {
     var spart = second.slice(1);
     var re = new RegExp(spart + '$');
@@ -633,14 +648,11 @@ function delMarker(samasa, second) {
     var first = fpart.split('');
     second = second.split('');
     var beg = second[0];
-    // var fin = first.slice(-1)[0];
-    // if (u.c(Const.consonants, fin)) fin = '';
     var pattern = first.slice(-1)[0];
     var fin = first.slice(-2)[0];
     var penult = first.slice(-3)[0];
     var pos = first.length-1;
-    var marker = {type: 'vowel', first: first, second: second, fin: fin, pattern: pattern, pen: penult, beg: beg, pos: pos};
-    // log(marker)
+    var marker = {type: 'vowel', first: first, second: second, pen: penult, fin: fin, pattern: pattern, beg: beg, pos: pos};
     return marker;
 }
 

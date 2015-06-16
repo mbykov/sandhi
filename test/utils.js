@@ -40,10 +40,16 @@ utils.prototype.test = function(test, idx) {
      */
     var descr = [idxstr, 'del', addtext, compound].join(' - ');
     it(descr, function() {
-        var res = sandhi.del(compound, second);
+        var fres = false;
+        var sres = false;
+        var results = sandhi.del(compound, second);
+        results.forEach(function(res) {
+            if (isIN(res.firsts, first)) fres = true;
+            if (isIN(res.seconds, second)) sres = true;
+        });
         // log('TEST CUT', res);
-        isIN(res.firsts, first).should.equal(true);
-        isIN(res.seconds, second).should.equal(true);
+        fres.should.equal(true);
+        sres.should.equal(true);
     });
 
     // split
