@@ -606,13 +606,13 @@ sandhi.prototype.del = function(samasa, second) {
     if ((marker.fin == 'र' || marker.fin == 'ल') && marker.pattern == Const.virama) marker.num = '6.1.87';
     // a or ā is followed by e, o, ai or au - vriddhi
     if (u.c(Const.vriddhis, u.vowel(marker.pattern))) marker.num = '6.1.88';
+    // simple vowel except Aa followed by a dissimilar simple vowel changes to its semi-vowel (+virama); yana-sandhi; reverse: semi-vow = simple + dissimilar
+    if (marker.fin == Const.virama && u.c(Const.yaR, marker.pattern) && marker.beg != Const.virama) marker.num = '6.1.77';
 
     // log('M-marker', marker);
     var sutra = vowRules[marker.num] || consRules[marker.num] || visRules[marker.num];
-    // if (!sutra) return; // FIXME: не должно быть
     var cutted = sutra.del(marker);
     // log('ADD=> RES', cutted);
-    // return markers.map(function(m) { return addResult(m)});
     return cutted;
 }
 
@@ -626,11 +626,16 @@ function delMarker(samasa, second) {
     samasa = samasa.split('');
     var first = fpart.split('');
     second = second.split('');
+    var beg = second[0];
     // var fin = first.slice(-1)[0];
     // if (u.c(Const.consonants, fin)) fin = '';
     var pattern = first.slice(-1)[0];
-    var beg = second[0];
     var fin = first.slice(-2)[0];
+    if (u.c(Const.yaR, fin)) {
+        first.pop();
+        pattern = first.slice(-1)[0];
+        fin = first.slice(-2)[0];
+    }
     var pos = first.length-1;
     var marker = {type: 'vowel', first: first, second: second, fin: fin, pattern: pattern, beg: beg, pos: pos};
     return marker;
