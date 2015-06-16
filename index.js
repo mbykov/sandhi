@@ -608,6 +608,8 @@ sandhi.prototype.del = function(samasa, second) {
     if (u.c(Const.vriddhis, u.vowel(marker.pattern))) marker.num = '6.1.88';
     // simple vowel except Aa followed by a dissimilar simple vowel changes to its semi-vowel (+virama); yana-sandhi; reverse: semi-vow = simple + dissimilar
     if (marker.fin == Const.virama && u.c(Const.yaR, marker.pattern) && marker.beg != Const.virama) marker.num = '6.1.77';
+    // diphthong followed by any vowel (e,o vow-a), including itself, changes to its semi-vowel equivalent - external - optional
+    else if (u.c(Const.yaR, marker.pattern) && marker.beg != Const.virama) marker.num = '6.1.78';
 
     // log('M-marker', marker);
     var sutra = vowRules[marker.num] || consRules[marker.num] || visRules[marker.num];
@@ -734,7 +736,7 @@ function addVowelFilter(marker) {
     // the same, vriddhis
     if (u.c(Const.vriddhis, u.vowel(fin)) && u.c(Const.allvowels, beg)) marker.num = '6.1.78';
     if (u.c(Const.gunas, u.vowel(fin)) && beg == 'अ') marker.num = '6.1.109';
-    log('ADD=', u.vowel(fin), u.c(Const.vriddhis, u.vowel(fin)), u.c(Const.allvowels, u.vowel(beg) ), beg, u.vowel(beg));
+    // log('ADD=', marker);
 }
 
 function addFilter_(f, s) {
