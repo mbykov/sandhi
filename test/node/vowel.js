@@ -4,6 +4,10 @@ var tests = [
     {sutra: '6.1.101',
      descr: 'simple vowel, followed by a similar vowel',
      tests: [
+
+         ['योगानुशासन', '', 'योगानुशासन'],
+         ['योगानुशासन', 'य', 'ोगानुशासन'],
+
          ['योगानुशासन', 'योग', 'अनुशासन'], // a + a = A
          ['योगानन्द', 'योग', 'आनन्द'],
          ['महामृत', 'महा', 'अमृत'],
@@ -219,7 +223,7 @@ var tests = [
     },
 ]
 
-describe('vowel sandhi', function() {
+describe('vowel_sandhi', function() {
     tests.forEach(function(t) {
         if (t.sutra == '') return;
         var descr = [t.sutra, t.descr].join(' - ');

@@ -3,7 +3,8 @@
 var salita = require('salita-component');
 var splitter = require('../splitter');
 
-var sandhi = require('../index');
+var s = require('../index');
+var sandhi = s.sandhi;
 var debug = (process.env.debug == 'true') ? true : false;
 
 module.exports = utils();
@@ -28,7 +29,7 @@ utils.prototype.test = function(test, idx) {
     var descr = [idxstr, 'add', addtext, compound, trn].join(' - ');
     it(descr, function() {
         var added = sandhi.add(first, second);
-        // log('TEST ADD', added);
+        log('TEST ADD', added);
         isIN(added, compound).should.equal(true);
     });
 

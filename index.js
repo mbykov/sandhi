@@ -16,7 +16,13 @@ var salita = require('salita-component'); // FIXME: это нужно убрат
 
 var debug = (process.env.debug == 'true') ? true : false;
 
-module.exports = sandhi();
+// module.exports = sandhi();
+
+module.exports = {
+    sandhi: sandhi(),
+    const: Const,
+    u: u
+}
 
 /**/
 function sandhi() {
@@ -185,6 +191,7 @@ function makeMarkerList(samasa) {
         }
 
         // 6.1.78 - ayadi-guna - e,o+vow-a => ay,av+vow-a (comp. 6.1.109); - ayadi-vriddhi - E,O+vow => Ay,Av+vow, if vow=aA - next=cons
+        // diphthong followed by any vowel but a, including itself, changes to its semi-vowel equivalent - ext - optl
         // reverse:
         if (prev == Const.A && u.c(Const.yava, sym)) { // E,O
             if (u.c(Const.allligas, next1)) {
@@ -590,7 +597,6 @@ function anusvaraInMiddle(samasa, arr) {
 
 
 // ============= DELETE ==================
-
 /*
   разрезаю samasa - получаю пару first-second. Второе слово может менять первую букву
   методы cut() и del()
@@ -624,7 +630,7 @@ sandhi.prototype.del = function(samasa, second) {
     else if (marker.fin == Const.virama && u.c(Const.yaR, marker.pattern) && u.c(Const.hal, marker.next)) pushMark('6.1.77');
     else if (marker.pen == Const.virama && u.c(Const.yaR, marker.fin) && u.c(Const.diphtongs, u.vowel(marker.pattern)) && u.c(Const.hal, marker.next)) pushMark('6.1.77');
     // diphthong followed by any vowel (e,o vow-a), including itself, changes to its semi-vowel equivalent - external - optional
-    else if ((u.c(Const.yaR, marker.fin) || u.c(Const.yaR, marker.pen)) && marker.pattern != Const.avagraha) pushMark('6.1.78');
+    else if ((u.c(Const.yaR, marker.fin) || u.c(Const.yaR, marker.pen)) && marker.pattern != Const.avagraha && u.c(Const.allsimpleligas, marker.beg)) pushMark('6.1.78');
 
     // 6.1.109 - ayadi - e,o+a => avagraha
     if (marker.pattern == Const.avagraha) pushMark('6.1.109');
@@ -636,8 +642,22 @@ sandhi.prototype.del = function(samasa, second) {
         var res = sutra.del(mark);
         res.pos = mark.pos;
         res.num = mark.num;
+        res.pat = mark.pattern;
         cutted.push(res);
     });
+
+    if (cutted.length == 0) {
+        marker.first.pop();
+        var beg = marker.second[0];
+        if (u.c(Const.allligas, beg)) {
+            marker.second.shift();
+            beg = u.vowel(beg);
+            marker.second.unshift(beg);
+        }
+        var res = {firsts: [marker.first.join('')], seconds: [marker.second.join('')], pos: marker.pos, num: 'common', pat: marker.pattern}
+        cutted.push(res);
+    }
+
     // log('DEL=> RES', cutted);
     return cutted;
 }
