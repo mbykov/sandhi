@@ -633,6 +633,23 @@ sandhi.prototype.del = function(samasa, second) {
     // 6.1.109 - ayadi - e,o+a => avagraha
     if (marker.pattern == Const.avagraha) pushMark('6.1.109');
 
+    // ================= CONS FILTERS ================
+
+    // hard consonant followed by a soft consonant but nasal or vow. changes to the third of its class => reverse: class3 + soft but nasal or vowels
+    // if (u.c(Const.jaS, sym) && next1 == Const.virama && u.c(Const.haS, next2) && !u.c(Const.Yam, next2) ) {
+    //     var pattern = [sym, Const.virama].join('');
+    //     var mark = {num: '8.2.39', pattern: pattern, fin: sym, beg: next2, idx: i, pos: i};
+    //     marks.push(mark);
+    //     // log('M hard before soft cons', i, 'mark', sym, next1, next2);
+    // } else if (u.c(Const.jaS, sym) && u.c(Const.allligas, next1)) {
+    //     var pattern = [sym, next1].join('');
+    //     var mark = {num: '8.2.39', pattern: pattern, fin: sym, beg: next1, idx: i, pos: i};
+    //     marks.push(mark);
+    //     // log('M hard before vows', i, 'mark', sym, next1, next2);
+    // }
+
+
+
     var cutted = [];
     markers.forEach(function(mark) {
         var sutra = vowRules[mark.num] || consRules[mark.num] || visRules[mark.num];
@@ -643,7 +660,7 @@ sandhi.prototype.del = function(samasa, second) {
         cutted.push(res);
     });
 
-    // вот это что? Когда образуется?
+    // FIXME: вот это что? Когда образуется? Имеет смысл только для vowel или нет?
     if (cutted.length == 0) {
         marker.first.pop();
         var beg = marker.second[0];
@@ -656,12 +673,13 @@ sandhi.prototype.del = function(samasa, second) {
         cutted.push(res);
     }
 
-    // ================= CONSONANT FILTERS ================
-
     // log('DEL=> RES', cutted);
     return cutted;
 }
 
+
+// function delVowFilter(first, ssecond) {
+// }
 
 /**/
 function delMarker(samasa, second) {
@@ -677,26 +695,45 @@ function delMarker(samasa, second) {
     var penult = first.slice(-3)[0];
     var pos = first.length-1;
     var next = samasa[pos+1]; // just after .beg
+    // FIXME: в гласных first имеет в хвосте pattern - это некрасиво и неинтуитивно - переделать
     // var marker = {type: 'vowel', first: first, second: second, pen: penult, fin: fin, pattern: pattern, beg: beg, next: next, pos: pos};
     var marker = {first: first, second: second, pen: penult, fin: fin, pattern: pattern, beg: beg, next: next, pos: pos};
-    // FIXME: сложно написать выбор типа маркера - для гласных по кр. мере - придется пока что лепить фильтры простыней
-    // if (u.c(Const.allligas, pattern)) {
-    //     marker.type = 'vowel';
-    // } else {
-    //     marker.type = 'cons';
-    // }
+    // FIXME: сложно написать выбор типа маркера?
+
+    // нужно до классификации - fin, beg ? pattern?
+    // в гласных - beg сливается. FIXME: Вытолкнуть beg из second - в utils поправить combine
+    // в согласных - ничего никогда не сливается?
+
+    // это пока комментировать для vowels
+    var beg = second[0];
+    var pattern = first.pop();
+    var fin = first.slice(-1)[0];
+    var type;
+    var size;
+    var virama, candra;
+    if (u.c(Const.allvowels, beg)) { // FIXME: а как тут будет условие про последний символ перевого слова?
+        marker = {first: first, second: second.split(''), pen: penult, fin: fin, pattern: pattern, beg: beg, next: next, pos: pos};
+        marker.type = 'vowel';
+    } else if (u.isConst(beg) && u.isConst(pattern) && fin == Const.virama) {
+        log('2============================ CONS');
+        first.pop();
+        virama = true;
+        type = 'cons';
+        size = first.length;
+        fin = first[size-1];
+        penult = first[size-2];
+        beg = second[0];
+        next = second[1];
+        pos = size + 1;
+        // что здесь pattern? всегда - символ, который стоит на месте beg
+    }
+    var marker = {type: type, first: first, second: second, pen: penult, fin: fin, pattern: pattern, beg: beg, next: next, pos: pos};
+
+    if (virama) marker.virama = true;
+    if (candra) marker.candra = true;
     log('DEL-marker', '\n', marker);
     return marker;
 }
-
-
-
-
-
-// function delVowFilter(first, ssecond) {
-// }
-
-
 
 
 // ============ ADD ==========
