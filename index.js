@@ -597,6 +597,33 @@ function anusvaraInMiddle(samasa, arr) {
 
 
 // ============= DELETE ==================
+
+// ================= DEL CONS FILTERS ================
+function delConsFilter(marker) {
+    var fin = marker.fin;
+    var penult = marker.penult;
+    var beg = marker.beg;
+
+    log('DEL-marker', '\n', marker);
+
+    // hard consonant followed by a soft consonant but nasal or vow. changes to the third of its class => reverse: class3 + soft but nasal or vowels
+    if (u.c(Const.jaS, fin) && u.c(Const.haS, beg) && !u.c(Const.Yam, beg) ) {
+        log('HERE!');
+    }
+    // if (u.c(Const.jaS, sym) && next1 == Const.virama && u.c(Const.haS, next2) && !u.c(Const.Yam, next2) ) {
+    //     var pattern = [sym, Const.virama].join('');
+    //     var mark = {num: '8.2.39', pattern: pattern, fin: sym, beg: next2, idx: i, pos: i};
+    //     marks.push(mark);
+    //     // log('M hard before soft cons', i, 'mark', sym, next1, next2);
+    // } else if (u.c(Const.jaS, sym) && u.c(Const.allligas, next1)) {
+    //     var pattern = [sym, next1].join('');
+    //     var mark = {num: '8.2.39', pattern: pattern, fin: sym, beg: next1, idx: i, pos: i};
+    //     marks.push(mark);
+    //     // log('M hard before vows', i, 'mark', sym, next1, next2);
+    // }
+
+}
+
 /*
   разрезаю samasa - получаю пару first-second. Второе слово может менять первую букву
   методы cut() и del() - del() возвращает пару first-second, cut() возвращает first
@@ -609,6 +636,15 @@ sandhi.prototype.del = function(samasa, second) {
         var mark = _.clone(marker);
         mark.num = num;
         markers.push(mark);
+    }
+
+    switch (marker.type) {
+    // case 'vowel':
+    //     addVowelFilter(marker);
+    //     break;
+    case 'cons':
+        delConsFilter(marker);
+        break;
     }
 
     // ================= VOWEL FILTERS ================
@@ -632,21 +668,6 @@ sandhi.prototype.del = function(samasa, second) {
 
     // 6.1.109 - ayadi - e,o+a => avagraha
     if (marker.pattern == Const.avagraha) pushMark('6.1.109');
-
-    // ================= CONS FILTERS ================
-
-    // hard consonant followed by a soft consonant but nasal or vow. changes to the third of its class => reverse: class3 + soft but nasal or vowels
-    // if (u.c(Const.jaS, sym) && next1 == Const.virama && u.c(Const.haS, next2) && !u.c(Const.Yam, next2) ) {
-    //     var pattern = [sym, Const.virama].join('');
-    //     var mark = {num: '8.2.39', pattern: pattern, fin: sym, beg: next2, idx: i, pos: i};
-    //     marks.push(mark);
-    //     // log('M hard before soft cons', i, 'mark', sym, next1, next2);
-    // } else if (u.c(Const.jaS, sym) && u.c(Const.allligas, next1)) {
-    //     var pattern = [sym, next1].join('');
-    //     var mark = {num: '8.2.39', pattern: pattern, fin: sym, beg: next1, idx: i, pos: i};
-    //     marks.push(mark);
-    //     // log('M hard before vows', i, 'mark', sym, next1, next2);
-    // }
 
 
 
@@ -678,9 +699,6 @@ sandhi.prototype.del = function(samasa, second) {
 }
 
 
-// function delVowFilter(first, ssecond) {
-// }
-
 /**/
 function delMarker(samasa, second) {
     var spart = second.slice(1);
@@ -710,9 +728,11 @@ function delMarker(samasa, second) {
     var fin = first.slice(-1)[0];
     var type;
     var size;
+
     var virama, candra;
+
     if (u.c(Const.allvowels, beg)) { // FIXME: а как тут будет условие про последний символ перевого слова?
-        marker = {first: first, second: second.split(''), pen: penult, fin: fin, pattern: pattern, beg: beg, next: next, pos: pos};
+        marker = {first: first, second: second, pen: penult, fin: fin, pattern: pattern, beg: beg, next: next, pos: pos};
         marker.type = 'vowel';
     } else if (u.isConst(beg) && u.isConst(pattern) && fin == Const.virama) {
         log('2============================ CONS');
@@ -726,12 +746,12 @@ function delMarker(samasa, second) {
         next = second[1];
         pos = size + 1;
         // что здесь pattern? всегда - символ, который стоит на месте beg
+        var marker = {type: type, first: first, second: second, pen: penult, fin: fin, pattern: pattern, beg: beg, next: next, pos: pos};
     }
-    var marker = {type: type, first: first, second: second, pen: penult, fin: fin, pattern: pattern, beg: beg, next: next, pos: pos};
 
     if (virama) marker.virama = true;
     if (candra) marker.candra = true;
-    log('DEL-marker', '\n', marker);
+    // log('DEL-marker', '\n', marker);
     return marker;
 }
 
