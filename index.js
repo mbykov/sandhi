@@ -599,21 +599,19 @@ function anusvaraInMiddle(samasa, arr) {
 // ============= DELETE ==================
 /*
   разрезаю samasa - получаю пару first-second. Второе слово может менять первую букву
-  методы cut() и del()
-  del() возвращает пару first-second, cut() возвращает first
+  методы cut() и del() - del() возвращает пару first-second, cut() возвращает first
 */
 sandhi.prototype.del = function(samasa, second) {
     var marker = delMarker(samasa, second);
     var markers = [];
-    // log('DEL-marker', marker);
 
     var pushMark = function(num) {
         var mark = _.clone(marker);
         mark.num = num;
-        // log('DEL-marker', mark);
         markers.push(mark);
     }
 
+    // ================= VOWEL FILTERS ================
     // simple vowel, followed by a similar vowel => dirgha
     if (u.c(Const.dirgha, u.vowel(marker.pattern))) pushMark('6.1.101');
 
@@ -637,7 +635,6 @@ sandhi.prototype.del = function(samasa, second) {
 
     var cutted = [];
     markers.forEach(function(mark) {
-        // log('DEL-marker', mark);
         var sutra = vowRules[mark.num] || consRules[mark.num] || visRules[mark.num];
         var res = sutra.del(mark);
         res.pos = mark.pos;
@@ -646,6 +643,7 @@ sandhi.prototype.del = function(samasa, second) {
         cutted.push(res);
     });
 
+    // вот это что? Когда образуется?
     if (cutted.length == 0) {
         marker.first.pop();
         var beg = marker.second[0];
@@ -657,6 +655,8 @@ sandhi.prototype.del = function(samasa, second) {
         var res = {firsts: [marker.first.join('')], seconds: [marker.second.join('')], pos: marker.pos, num: 'common', pat: marker.pattern}
         cutted.push(res);
     }
+
+    // ================= CONSONANT FILTERS ================
 
     // log('DEL=> RES', cutted);
     return cutted;
@@ -677,25 +677,24 @@ function delMarker(samasa, second) {
     var penult = first.slice(-3)[0];
     var pos = first.length-1;
     var next = samasa[pos+1]; // just after .beg
-    var marker = {type: 'vowel', first: first, second: second, pen: penult, fin: fin, pattern: pattern, beg: beg, next: next, pos: pos};
-    // log(marker)
+    // var marker = {type: 'vowel', first: first, second: second, pen: penult, fin: fin, pattern: pattern, beg: beg, next: next, pos: pos};
+    var marker = {first: first, second: second, pen: penult, fin: fin, pattern: pattern, beg: beg, next: next, pos: pos};
+    // FIXME: сложно написать выбор типа маркера - для гласных по кр. мере - придется пока что лепить фильтры простыней
+    // if (u.c(Const.allligas, pattern)) {
+    //     marker.type = 'vowel';
+    // } else {
+    //     marker.type = 'cons';
+    // }
+    log('DEL-marker', '\n', marker);
     return marker;
 }
 
 
-// будущий cutMarker:
-// if (typeof second == "number") {
-//     pos = second; // = 3;
-//     pattern = samasa.slice(pos)[0];
-//     beg = samasa.slice(pos)[1];
-//     // fin = samasa.slice(pos-1).slice(-1)[0];
-//     fin = samasa.slice(0, pos).slice(-1)[0];
-//     log('S', samasa, pos, 'f', fin, 'p', pattern, 'b', beg);
+
+
+
+// function delVowFilter(first, ssecond) {
 // }
-
-
-function delVowFilter(first, ssecond) {
-}
 
 
 
@@ -741,6 +740,7 @@ function markerTemplate(first, second) {
 
 sandhi.prototype.add = function(first, second) {
     var marker = markerTemplate(first, second);
+    // log('ADD TEMPLATE', marker);
     switch (marker.type) {
     case 'vowel':
         addVowelFilter(marker);
@@ -749,7 +749,6 @@ sandhi.prototype.add = function(first, second) {
         addConsFilter(marker);
         break;
     }
-    // log('ADD TEMPLATE', marker);
 
     // marker = addFilter_(first, second);
     // log('ADD TEMPLATE',marker);

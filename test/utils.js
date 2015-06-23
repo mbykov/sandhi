@@ -44,6 +44,7 @@ utils.prototype.test = function(test, idx) {
         var fres = false;
         var sres = false;
         var results = sandhi.del(compound, second);
+        // log('TEST DEL', results);
         results.forEach(function(res) {
             if (isIN(res.firsts, first)) fres = true;
             if (isIN(res.seconds, second)) sres = true;
