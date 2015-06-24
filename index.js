@@ -659,20 +659,22 @@ function delConsFilter(marker) {
     // NB: palatal after palatal - 8.4.40
     if (u.c(Const.jaS, fin) && u.c(Const.haS, beg) && !u.c(Const.Yam, beg) && ! (u.c(u.palatal(), fin) && u.c(u.palatal(), beg))) pushMark('8.2.39');
 
-    // dental class consonant followed by a palatal class consonant changes to the corresponding palatal
-    if (u.c(u.palatal(), fin) && u.c(u.palatal(), beg)) pushMark('8.4.40');
-    // if (u.c(u.palatal(), fin) && u.c(u.palatal(), beg) && !(u.c(Const.nasals, fin) && u.eqvarga(fin, beg))) pushMark('8.4.40');
+    // dental class consonant followed by a palatal class consonant changes to the corresponding palatal; reverse: doubled palatal
+    // if (u.c(u.palatal(), fin) && u.c(u.palatal(), beg)) pushMark('8.4.40');
+
+    // dental class consonant followed by a cerebral class consonant changes to the corresponding cerebral; reverse: doubled cerebral
+    // if (u.c(u.cerebral(), fin) && u.c(u.cerebral(), beg)) pushMark('8.4.41');
+
 
     // 8.4.55 =>soft consonant except nasal, followed by a hard consonant changes to 1st consonant of class = > reverse: NO REVERSE!
 
     // class consonant followed by (nasal) optionally changes to the nasal of class, or less commonly for class hard consonants, changes to 3rd consonant of class    // reverse: nasal or 3-rd to hard fin
-    if ((u.c(Const.nasals, fin) || u.c(Const.class3, fin)) && u.c(Const.nm, beg)) pushMark('8.4.45');
+    // if ((u.c(Const.nasals, fin) || u.c(Const.class3, fin)) && u.c(Const.nm, beg)) pushMark('8.4.45');
 
     // m at fin to anusvara; reverse: anusvara to m
-    if (marker.anusvara) pushMark('8.3.23');
+    // if (marker.anusvara) pushMark('8.3.23');
     // nasal + cons of class of that nasal; reverse: nasal to m
-
-    if (u.c(Const.nasals, fin) && u.eqvarga(fin, beg)) pushMark('8.3.23');
+    // if (u.c(Const.nasals, fin) && u.eqvarga(fin, beg)) pushMark('8.3.23');
 
     // log(33, markers);
     return markers;
@@ -730,12 +732,14 @@ function delMarker(samasa, second) {
     var re = new RegExp(spart + '$');
     var fpart = samasa.replace(re, '');
     samasa = samasa.split('');
-    var first = fpart.split('');
-    second = second.split('');
+    // var first = fpart.split('');
+    // second = second.split('');
 
     var beg = second[0];
     var next = second[1];// just after .beg
-    var pattern = first.pop();
+    // var pattern = first.pop();
+    var pattern = fpart.slice(-1);
+    var first = fpart.slice(0, -1);
     var size = first.length;
     var fin = first[size-1];
     var penult = first[size-2];
@@ -750,7 +754,8 @@ function delMarker(samasa, second) {
     // } else if (u.isConst(beg) && u.isConst(pattern) && fin == Const.virama) {
     } else if (u.isConst(beg) && u.isConst(pattern) && u.c(Const.special, fin)) {
         // log('2============================ CONS');
-        first.pop();
+        // first.pop();
+        first = first.slice(0, -1);
         spec = fin;
         size = first.length;
         fin = first[size-1];
@@ -764,7 +769,6 @@ function delMarker(samasa, second) {
     else if (spec == Const.anusvara) marker.anusvara = true;
     else if (spec == Const.candra) marker.candra = true;
     else if (spec == Const.anunasika) marker.anunasika = true;
-
     // log('DEL-marker', '\n', marker);
     return marker;
 }
