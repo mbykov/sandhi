@@ -597,14 +597,48 @@ function anusvaraInMiddle(samasa, arr) {
 
 
 // ============= DELETE ==================
+function delVowFilter(marker) {
+    var markers = [];
+    var fin = marker.fin;
+    var penult = marker.penult;
+    var beg = marker.beg;
+    // log('DEL VOW FILTERS');
+
+    var pushMark = function(num) {
+        var mark = _.clone(marker);
+        mark.num = num;
+        markers.push(mark);
+    }
+
+    // simple vowel, followed by a similar vowel => dirgha
+    if (u.c(Const.dirgha, u.vowel(marker.pattern))) pushMark('6.1.101');
+
+    // a or ā is followed by simple ->  guna; reverse: guna = a+simple
+    if (u.vowsound(marker.fin) && u.c(Const.gunas, u.vowel(marker.pattern))) pushMark('6.1.87');
+    if ((marker.fin == 'र' || marker.fin == 'ल') && marker.pattern == Const.virama) pushMark('6.1.87');
+
+    // a or ā is followed by e, o, ai or au - vriddhi
+    if (u.c(Const.vriddhis, u.vowel(marker.pattern))) pushMark('6.1.88');
+
+    // simple vowel except Aa followed by a dissimilar simple vowel changes to its semi-vowel (+virama); yana-sandhi; reverse: semi-vow = simple + dissimilar
+    // if (marker.pen == Const.virama && u.c(Const.yaR, marker.fin) && u.c(Const.allligas, marker.pattern) && !u.similar(u.base(marker.fin), marker.beg)) pushMark('6.1.77');
+    if (marker.pen == Const.virama && u.c(Const.yaR, marker.fin) && u.c(Const.allligas, marker.pattern) && !u.similar(u.base(marker.fin), u.vowel(marker.pattern))) pushMark('6.1.77');
+    else if (marker.fin == Const.virama && u.c(Const.yaR, marker.pattern) && u.c(Const.hal, marker.next)) pushMark('6.1.77');
+    else if (marker.pen == Const.virama && u.c(Const.yaR, marker.fin) && u.c(Const.diphtongs, u.vowel(marker.pattern)) && u.c(Const.hal, marker.next)) pushMark('6.1.77');
+    // diphthong followed by any vowel (e,o vow-a), including itself, changes to its semi-vowel equivalent - external - optional
+    else if ((u.c(Const.yaR, marker.fin) || u.c(Const.yaR, marker.pen)) && marker.pattern != Const.avagraha && u.c(Const.allsimpleligas, marker.beg)) pushMark('6.1.78');
+
+    // 6.1.109 - ayadi - e,o+a => avagraha
+    if (marker.pattern == Const.avagraha) pushMark('6.1.109');
+
+    return markers;
+}
 
 // ================= DEL CONS FILTERS ================
 function delConsFilter(marker) {
     var fin = marker.fin;
     var penult = marker.penult;
     var beg = marker.beg;
-
-    log('DEL-marker', '\n', marker);
 
     // hard consonant followed by a soft consonant but nasal or vow. changes to the third of its class => reverse: class3 + soft but nasal or vowels
     if (u.c(Const.jaS, fin) && u.c(Const.haS, beg) && !u.c(Const.Yam, beg) ) {
@@ -630,46 +664,38 @@ function delConsFilter(marker) {
 */
 sandhi.prototype.del = function(samasa, second) {
     var marker = delMarker(samasa, second);
-    var markers = [];
-
-    var pushMark = function(num) {
-        var mark = _.clone(marker);
-        mark.num = num;
-        markers.push(mark);
-    }
+    var markers;
 
     switch (marker.type) {
-    // case 'vowel':
-    //     addVowelFilter(marker);
-    //     break;
+    case 'vowel':
+        markers = delVowFilter(marker);
+        break;
     case 'cons':
-        delConsFilter(marker);
+        markers = delConsFilter(marker);
         break;
     }
 
     // ================= VOWEL FILTERS ================
     // simple vowel, followed by a similar vowel => dirgha
-    if (u.c(Const.dirgha, u.vowel(marker.pattern))) pushMark('6.1.101');
+    // if (u.c(Const.dirgha, u.vowel(marker.pattern))) pushMark('6.1.101');
 
-    // a or ā is followed by simple ->  guna; reverse: guna = a+simple
-    if (u.vowsound(marker.fin) && u.c(Const.gunas, u.vowel(marker.pattern))) pushMark('6.1.87');
-    if ((marker.fin == 'र' || marker.fin == 'ल') && marker.pattern == Const.virama) pushMark('6.1.87');
+    // // a or ā is followed by simple ->  guna; reverse: guna = a+simple
+    // if (u.vowsound(marker.fin) && u.c(Const.gunas, u.vowel(marker.pattern))) pushMark('6.1.87');
+    // if ((marker.fin == 'र' || marker.fin == 'ल') && marker.pattern == Const.virama) pushMark('6.1.87');
 
-    // a or ā is followed by e, o, ai or au - vriddhi
-    if (u.c(Const.vriddhis, u.vowel(marker.pattern))) pushMark('6.1.88');
+    // // a or ā is followed by e, o, ai or au - vriddhi
+    // if (u.c(Const.vriddhis, u.vowel(marker.pattern))) pushMark('6.1.88');
 
-    // simple vowel except Aa followed by a dissimilar simple vowel changes to its semi-vowel (+virama); yana-sandhi; reverse: semi-vow = simple + dissimilar
-    // if (marker.pen == Const.virama && u.c(Const.yaR, marker.fin) && u.c(Const.allligas, marker.pattern) && !u.similar(u.base(marker.fin), marker.beg)) pushMark('6.1.77');
-    if (marker.pen == Const.virama && u.c(Const.yaR, marker.fin) && u.c(Const.allligas, marker.pattern) && !u.similar(u.base(marker.fin), u.vowel(marker.pattern))) pushMark('6.1.77');
-    else if (marker.fin == Const.virama && u.c(Const.yaR, marker.pattern) && u.c(Const.hal, marker.next)) pushMark('6.1.77');
-    else if (marker.pen == Const.virama && u.c(Const.yaR, marker.fin) && u.c(Const.diphtongs, u.vowel(marker.pattern)) && u.c(Const.hal, marker.next)) pushMark('6.1.77');
-    // diphthong followed by any vowel (e,o vow-a), including itself, changes to its semi-vowel equivalent - external - optional
-    else if ((u.c(Const.yaR, marker.fin) || u.c(Const.yaR, marker.pen)) && marker.pattern != Const.avagraha && u.c(Const.allsimpleligas, marker.beg)) pushMark('6.1.78');
+    // // simple vowel except Aa followed by a dissimilar simple vowel changes to its semi-vowel (+virama); yana-sandhi; reverse: semi-vow = simple + dissimilar
+    // // if (marker.pen == Const.virama && u.c(Const.yaR, marker.fin) && u.c(Const.allligas, marker.pattern) && !u.similar(u.base(marker.fin), marker.beg)) pushMark('6.1.77');
+    // if (marker.pen == Const.virama && u.c(Const.yaR, marker.fin) && u.c(Const.allligas, marker.pattern) && !u.similar(u.base(marker.fin), u.vowel(marker.pattern))) pushMark('6.1.77');
+    // else if (marker.fin == Const.virama && u.c(Const.yaR, marker.pattern) && u.c(Const.hal, marker.next)) pushMark('6.1.77');
+    // else if (marker.pen == Const.virama && u.c(Const.yaR, marker.fin) && u.c(Const.diphtongs, u.vowel(marker.pattern)) && u.c(Const.hal, marker.next)) pushMark('6.1.77');
+    // // diphthong followed by any vowel (e,o vow-a), including itself, changes to its semi-vowel equivalent - external - optional
+    // else if ((u.c(Const.yaR, marker.fin) || u.c(Const.yaR, marker.pen)) && marker.pattern != Const.avagraha && u.c(Const.allsimpleligas, marker.beg)) pushMark('6.1.78');
 
-    // 6.1.109 - ayadi - e,o+a => avagraha
-    if (marker.pattern == Const.avagraha) pushMark('6.1.109');
-
-
+    // // 6.1.109 - ayadi - e,o+a => avagraha
+    // if (marker.pattern == Const.avagraha) pushMark('6.1.109');
 
     var cutted = [];
     markers.forEach(function(mark) {
@@ -707,50 +733,34 @@ function delMarker(samasa, second) {
     samasa = samasa.split('');
     var first = fpart.split('');
     second = second.split('');
-    var beg = second[0];
-    var pattern = first.slice(-1)[0];
-    var fin = first.slice(-2)[0];
-    var penult = first.slice(-3)[0];
-    var pos = first.length-1;
-    var next = samasa[pos+1]; // just after .beg
-    // FIXME: в гласных first имеет в хвосте pattern - это некрасиво и неинтуитивно - переделать
-    // var marker = {type: 'vowel', first: first, second: second, pen: penult, fin: fin, pattern: pattern, beg: beg, next: next, pos: pos};
-    var marker = {first: first, second: second, pen: penult, fin: fin, pattern: pattern, beg: beg, next: next, pos: pos};
-    // FIXME: сложно написать выбор типа маркера?
 
-    // нужно до классификации - fin, beg ? pattern?
-    // в гласных - beg сливается. FIXME: Вытолкнуть beg из second - в utils поправить combine
-    // в согласных - ничего никогда не сливается?
-
-    // это пока комментировать для vowels
     var beg = second[0];
+    var next = second[1];// just after .beg
     var pattern = first.pop();
-    var fin = first.slice(-1)[0];
+    var size = first.length;
+    var fin = first[size-1];
+    var penult = first[size-2];
+    var pos = size + 1;
     var type;
-    var size;
-
     var virama, candra;
 
     if (u.c(Const.allvowels, beg)) { // FIXME: а как тут будет условие про последний символ перевого слова?
-        marker = {first: first, second: second, pen: penult, fin: fin, pattern: pattern, beg: beg, next: next, pos: pos};
-        marker.type = 'vowel';
+        type = 'vowel';
     } else if (u.isConst(beg) && u.isConst(pattern) && fin == Const.virama) {
-        log('2============================ CONS');
+        // log('2============================ CONS');
         first.pop();
         virama = true;
-        type = 'cons';
         size = first.length;
         fin = first[size-1];
         penult = first[size-2];
-        beg = second[0];
-        next = second[1];
-        pos = size + 1;
-        // что здесь pattern? всегда - символ, который стоит на месте beg
-        var marker = {type: type, first: first, second: second, pen: penult, fin: fin, pattern: pattern, beg: beg, next: next, pos: pos};
+        pattern = fin; // что здесь pattern? всегда - символ, который стоит на месте fin?
+        pos = size - 1;
+        type = 'cons';
     }
-
+    var marker = {type: type, first: first, second: second, pen: penult, fin: fin, pattern: pattern, beg: beg, next: next, pos: pos};
     if (virama) marker.virama = true;
     if (candra) marker.candra = true;
+
     // log('DEL-marker', '\n', marker);
     return marker;
 }
