@@ -631,6 +631,13 @@ function delVowFilter(marker) {
     // 6.1.109 - ayadi - e,o+a => avagraha
     if (marker.pattern == Const.avagraha) pushMark('6.1.109');
 
+    if (u.c(Const.allvowels, u.vowel(marker.pattern)) && (u.c(Const.class3, marker.fin))) { // xdVyy->xt->Vyy
+        var mark = _.clone(marker);
+        mark.type = 'cons';
+        mark.num = '8.2.39';
+        markers.push(mark);
+    }
+
     return markers;
 }
 
@@ -648,6 +655,7 @@ function delConsFilter(marker) {
     }
 
     // hard consonant followed by a soft consonant but nasal or vow. changes to the third of its class => reverse: class3 + soft but nasal or vowels
+    // NB: beg in vow processed in vowel filters:
     if (u.c(Const.jaS, fin) && u.c(Const.haS, beg) && !u.c(Const.Yam, beg) ) pushMark('8.2.39');
 
     // if (u.c(Const.jaS, sym) && next1 == Const.virama && u.c(Const.haS, next2) && !u.c(Const.Yam, next2) ) {
@@ -693,6 +701,7 @@ sandhi.prototype.del = function(samasa, second) {
     });
 
     // FIXME: вот это что? Когда образуется? Имеет смысл только для vowel или нет?
+    // VOW - навероное, должно исчезнуть после обработки xdVyy-> xt->Vyy
     if (cutted.length == 0) {
         marker.first.pop();
         var beg = marker.second[0];
@@ -705,7 +714,7 @@ sandhi.prototype.del = function(samasa, second) {
         cutted.push(res);
     }
 
-    log('DEL=> RES', cutted);
+    // log('DEL=> RES', cutted);
     return cutted;
 }
 
@@ -747,7 +756,7 @@ function delMarker(samasa, second) {
     if (virama) marker.virama = true;
     if (candra) marker.candra = true;
 
-    log('DEL-marker', '\n', marker);
+    // log('DEL-marker', '\n', marker);
     return marker;
 }
 
