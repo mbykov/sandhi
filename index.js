@@ -602,7 +602,7 @@ function delVowFilter(marker) {
     var fin = marker.fin;
     var penult = marker.penult;
     var beg = marker.beg;
-    // log('DEL VOW FILTERS');
+    // log('DEL-marker', '\n', marker);
 
     var pushMark = function(num) {
         var mark = _.clone(marker);
@@ -621,22 +621,27 @@ function delVowFilter(marker) {
     if (u.c(Const.vriddhis, u.vowel(marker.pattern))) pushMark('6.1.88');
 
     // simple vowel except Aa followed by a dissimilar simple vowel changes to its semi-vowel (+virama); yana-sandhi; reverse: semi-vow = simple + dissimilar
-    // if (marker.pen == Const.virama && u.c(Const.yaR, marker.fin) && u.c(Const.allligas, marker.pattern) && !u.similar(u.base(marker.fin), marker.beg)) pushMark('6.1.77');
+    if (marker.pen == Const.virama && u.c(Const.yaR, marker.fin) && u.c(Const.allligas, marker.pattern) && !u.similar(u.base(marker.fin), marker.beg)) pushMark('6.1.77');
     if (marker.pen == Const.virama && u.c(Const.yaR, marker.fin) && u.c(Const.allligas, marker.pattern) && !u.similar(u.base(marker.fin), u.vowel(marker.pattern))) pushMark('6.1.77');
     else if (marker.fin == Const.virama && u.c(Const.yaR, marker.pattern) && u.c(Const.hal, marker.next)) pushMark('6.1.77');
     else if (marker.pen == Const.virama && u.c(Const.yaR, marker.fin) && u.c(Const.diphtongs, u.vowel(marker.pattern)) && u.c(Const.hal, marker.next)) pushMark('6.1.77');
+
     // diphthong followed by any vowel (e,o vow-a), including itself, changes to its semi-vowel equivalent - external - optional
-    else if ((u.c(Const.yaR, marker.fin) || u.c(Const.yaR, marker.pen)) && marker.pattern != Const.avagraha && u.c(Const.allsimpleligas, marker.beg)) pushMark('6.1.78');
+    // else if ((u.c(Const.yaR, marker.fin) || u.c(Const.yaR, marker.pen)) && marker.pattern != Const.avagraha && u.c(Const.allsimples, marker.beg)) pushMark('6.1.78');
+    else if ((u.c(Const.yaR, marker.fin) || u.c(Const.yaR, marker.pen)) && marker.pattern != Const.avagraha && u.c(Const.allvowels, marker.beg)) pushMark('6.1.78');
+
+    // log('M', marker);
+    // log('M', u.c(Const.yaR, marker.pattern));
 
     // 6.1.109 - ayadi - e,o+a => avagraha
     if (marker.pattern == Const.avagraha) pushMark('6.1.109');
 
-    if (u.c(Const.allvowels, u.vowel(marker.pattern)) && (u.c(Const.class3, marker.fin))) { // xdVyy->xt->Vyy
-        var mark = _.clone(marker);
-        mark.type = 'cons';
-        mark.num = '8.2.39';
-        markers.push(mark);
-    }
+    // if (u.c(Const.allvowels, u.vowel(marker.pattern)) && (u.c(Const.class3, marker.fin))) { // xdVyy->xt->Vyy
+    //     var mark = _.clone(marker);
+    //     mark.type = 'cons';
+    //     mark.num = '8.2.39';
+    //     markers.push(mark);
+    // }
 
     return markers;
 }
