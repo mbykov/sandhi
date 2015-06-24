@@ -636,14 +636,20 @@ function delVowFilter(marker) {
 
 // ================= DEL CONS FILTERS ================
 function delConsFilter(marker) {
+    var markers = [];
     var fin = marker.fin;
     var penult = marker.penult;
     var beg = marker.beg;
 
-    // hard consonant followed by a soft consonant but nasal or vow. changes to the third of its class => reverse: class3 + soft but nasal or vowels
-    if (u.c(Const.jaS, fin) && u.c(Const.haS, beg) && !u.c(Const.Yam, beg) ) {
-        log('HERE!');
+    var pushMark = function(num) {
+        var mark = _.clone(marker);
+        mark.num = num;
+        markers.push(mark);
     }
+
+    // hard consonant followed by a soft consonant but nasal or vow. changes to the third of its class => reverse: class3 + soft but nasal or vowels
+    if (u.c(Const.jaS, fin) && u.c(Const.haS, beg) && !u.c(Const.Yam, beg) ) pushMark('8.2.39');
+
     // if (u.c(Const.jaS, sym) && next1 == Const.virama && u.c(Const.haS, next2) && !u.c(Const.Yam, next2) ) {
     //     var pattern = [sym, Const.virama].join('');
     //     var mark = {num: '8.2.39', pattern: pattern, fin: sym, beg: next2, idx: i, pos: i};
@@ -656,6 +662,7 @@ function delConsFilter(marker) {
     //     // log('M hard before vows', i, 'mark', sym, next1, next2);
     // }
 
+    return markers;
 }
 
 /*
@@ -674,28 +681,6 @@ sandhi.prototype.del = function(samasa, second) {
         markers = delConsFilter(marker);
         break;
     }
-
-    // ================= VOWEL FILTERS ================
-    // simple vowel, followed by a similar vowel => dirgha
-    // if (u.c(Const.dirgha, u.vowel(marker.pattern))) pushMark('6.1.101');
-
-    // // a or ā is followed by simple ->  guna; reverse: guna = a+simple
-    // if (u.vowsound(marker.fin) && u.c(Const.gunas, u.vowel(marker.pattern))) pushMark('6.1.87');
-    // if ((marker.fin == 'र' || marker.fin == 'ल') && marker.pattern == Const.virama) pushMark('6.1.87');
-
-    // // a or ā is followed by e, o, ai or au - vriddhi
-    // if (u.c(Const.vriddhis, u.vowel(marker.pattern))) pushMark('6.1.88');
-
-    // // simple vowel except Aa followed by a dissimilar simple vowel changes to its semi-vowel (+virama); yana-sandhi; reverse: semi-vow = simple + dissimilar
-    // // if (marker.pen == Const.virama && u.c(Const.yaR, marker.fin) && u.c(Const.allligas, marker.pattern) && !u.similar(u.base(marker.fin), marker.beg)) pushMark('6.1.77');
-    // if (marker.pen == Const.virama && u.c(Const.yaR, marker.fin) && u.c(Const.allligas, marker.pattern) && !u.similar(u.base(marker.fin), u.vowel(marker.pattern))) pushMark('6.1.77');
-    // else if (marker.fin == Const.virama && u.c(Const.yaR, marker.pattern) && u.c(Const.hal, marker.next)) pushMark('6.1.77');
-    // else if (marker.pen == Const.virama && u.c(Const.yaR, marker.fin) && u.c(Const.diphtongs, u.vowel(marker.pattern)) && u.c(Const.hal, marker.next)) pushMark('6.1.77');
-    // // diphthong followed by any vowel (e,o vow-a), including itself, changes to its semi-vowel equivalent - external - optional
-    // else if ((u.c(Const.yaR, marker.fin) || u.c(Const.yaR, marker.pen)) && marker.pattern != Const.avagraha && u.c(Const.allsimpleligas, marker.beg)) pushMark('6.1.78');
-
-    // // 6.1.109 - ayadi - e,o+a => avagraha
-    // if (marker.pattern == Const.avagraha) pushMark('6.1.109');
 
     var cutted = [];
     markers.forEach(function(mark) {
@@ -720,7 +705,7 @@ sandhi.prototype.del = function(samasa, second) {
         cutted.push(res);
     }
 
-    // log('DEL=> RES', cutted);
+    log('DEL=> RES', cutted);
     return cutted;
 }
 
@@ -744,6 +729,7 @@ function delMarker(samasa, second) {
     var type;
     var virama, candra;
 
+    // log('MAKE MARK', fin);
     if (u.c(Const.allvowels, beg)) { // FIXME: а как тут будет условие про последний символ перевого слова?
         type = 'vowel';
     } else if (u.isConst(beg) && u.isConst(pattern) && fin == Const.virama) {
@@ -761,7 +747,7 @@ function delMarker(samasa, second) {
     if (virama) marker.virama = true;
     if (candra) marker.candra = true;
 
-    // log('DEL-marker', '\n', marker);
+    log('DEL-marker', '\n', marker);
     return marker;
 }
 
