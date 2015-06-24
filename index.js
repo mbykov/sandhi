@@ -656,7 +656,12 @@ function delConsFilter(marker) {
 
     // hard consonant followed by a soft consonant but nasal or vow. changes to the third of its class => reverse: class3 + soft but nasal or vowels
     // NB: beg in vow processed in vowel filters:
-    if (u.c(Const.jaS, fin) && u.c(Const.haS, beg) && !u.c(Const.Yam, beg) ) pushMark('8.2.39');
+    // NB: palatal after palatal - 8.4.40
+    if (u.c(Const.jaS, fin) && u.c(Const.haS, beg) && !u.c(Const.Yam, beg) && ! (u.c(u.palatal(), fin) && u.c(u.palatal(), beg))) pushMark('8.2.39');
+
+    // dental class consonant followed by a palatal class consonant changes to the corresponding palatal
+    if (u.c(u.palatal(), fin) && u.c(u.palatal(), beg)) pushMark('8.4.40');
+
 
     // if (u.c(Const.jaS, sym) && next1 == Const.virama && u.c(Const.haS, next2) && !u.c(Const.Yam, next2) ) {
     //     var pattern = [sym, Const.virama].join('');
@@ -863,7 +868,6 @@ function addConsFilter(marker) {
     if (fin == 'म' && u.c(Const.hal, beg)) marker.num = '8.3.23';
     //ङ्, ण्, न् at the end of a word after a short vowel doubles itself when followed by a vowel',
     if (u.c(Const.Nam, fin) && u.vowshort(penult) && u.c(Const.allvowels, beg)) marker.num = 'cons-nasal-doubled';
-
 
     // FIXME: порядок имеет значение - 8.2.39 д.б. раньше 8.4.40
 
