@@ -662,18 +662,12 @@ function delConsFilter(marker) {
     // dental class consonant followed by a palatal class consonant changes to the corresponding palatal
     if (u.c(u.palatal(), fin) && u.c(u.palatal(), beg)) pushMark('8.4.40');
 
+    // 8.4.55 =>soft consonant except nasal, followed by a hard consonant changes to 1st consonant of class = > reverse: NO REVERSE!
 
-    // if (u.c(Const.jaS, sym) && next1 == Const.virama && u.c(Const.haS, next2) && !u.c(Const.Yam, next2) ) {
-    //     var pattern = [sym, Const.virama].join('');
-    //     var mark = {num: '8.2.39', pattern: pattern, fin: sym, beg: next2, idx: i, pos: i};
-    //     marks.push(mark);
-    //     // log('M hard before soft cons', i, 'mark', sym, next1, next2);
-    // } else if (u.c(Const.jaS, sym) && u.c(Const.allligas, next1)) {
-    //     var pattern = [sym, next1].join('');
-    //     var mark = {num: '8.2.39', pattern: pattern, fin: sym, beg: next1, idx: i, pos: i};
-    //     marks.push(mark);
-    //     // log('M hard before vows', i, 'mark', sym, next1, next2);
-    // }
+    // class consonant followed by (nasal) optionally changes to the nasal of class, or less commonly for class hard consonants, changes to 3rd consonant of class
+    // reverse: nasal or 3-rd to hard fin
+    if ((u.c(Const.nasals, fin) || u.c(Const.class3, fin)) && u.c(Const.nm, beg)) pushMark('8.4.45');
+
 
     return markers;
 }
@@ -791,7 +785,7 @@ function markerTemplate(first, second) {
             fin = first.slice(-1)[0];
             candra = true;
         }
-        marker = {type: 'cons', first: first, fin: fin, vir: vir, second: second, beg: beg};
+        marker = {type: 'cons', first: first, fin: fin, vir: vir, second: second, beg: beg, pen: penult};
         if (vir) marker.vir = true;
         if (candra) marker.candra = true;
     } else if ((u.c(Const.consonants, fin) || u.c(Const.allligas, fin)) && u.c(Const.allvowels, beg)) {
@@ -817,9 +811,6 @@ sandhi.prototype.add = function(first, second) {
         break;
     }
 
-    // marker = addFilter_(first, second);
-    // log('ADD TEMPLATE',marker);
-
     var sutra = vowRules[marker.num] || consRules[marker.num] || visRules[marker.num];
     if (!sutra) return; // FIXME: не должно быть
     var markers = sutra.add(marker);
@@ -829,7 +820,7 @@ sandhi.prototype.add = function(first, second) {
 
 function addVowelFilter(marker) {
     var fin = marker.fin;
-    var penult = marker.penult;
+    // var penult = marker.pen;
     var beg = marker.beg;
     if (u.similar(fin, beg) || u.c(Const.aAliga, fin) && u.c(Const.aA, beg)) marker.num = '6.1.101';
     if (fin =='ृ' && beg == 'ऌ') marker.num = '6.1.101';
@@ -849,12 +840,12 @@ function addVowelFilter(marker) {
 
 function addConsFilter(marker) {
     var fin = marker.fin;
-    var penult = marker.penult;
+    var penult = marker.pen;
     var beg = marker.beg;
     // === ADD FILTER CONSONATS ===
     // hard consonant followed by a soft consonant or vow. changes to the third of its class
     if (u.c(Const.Kay, fin) && (u.c(Const.allvowels, beg) || (u.c(Const.haS, beg) && !u.c(Const.Yam, beg)))) marker.num = '8.2.39';
-    // soft consonant except nasal, followed by a hard consonant changes to 1st consonant of class = > reverse: class1+hard
+    // soft consonant except nasal, followed by a hard consonant changes to 1st consonant of class = > reverse: NO REVERSE!
     if (u.c(Const.haS, fin) && !u.c(Const.nasals, fin) && u.c(Const.Kar, beg)) marker.num = '8.4.55';
     // class consonant followed by (nasal) optionally changes to the nasal of class, or less commonly for class hard consonants, changes to 3rd consonant of class
     if (u.c(Const.Jay, fin) && u.c(Const.nm, beg)) marker.num = '8.4.45';
@@ -872,7 +863,6 @@ function addConsFilter(marker) {
     // FIXME: порядок имеет значение - 8.2.39 д.б. раньше 8.4.40
 
     // log('CONS ADD MARKER:', marker.num, 'fin:', fin, 'beg:', beg, Const.Yam);
-
 }
 
 function addFilter_(f, s) {
