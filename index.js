@@ -636,12 +636,12 @@ function delVowFilter(marker) {
     // 6.1.109 - ayadi - e,o+a => avagraha
     if (marker.pattern == Const.avagraha) pushMark('6.1.109');
 
-    // if (u.c(Const.allvowels, u.vowel(marker.pattern)) && (u.c(Const.class3, marker.fin))) { // xdVyy->xt->Vyy
-    //     var mark = _.clone(marker);
-    //     mark.type = 'cons';
-    //     mark.num = '8.2.39';
-    //     markers.push(mark);
-    // }
+    if (u.c(Const.allvowels, u.vowel(marker.pattern)) && (u.c(Const.class3, marker.fin))) { // xdVyy->xt->Vyy
+        var mark = _.clone(marker);
+        mark.type = 'cons';
+        mark.num = '8.2.39';
+        markers.push(mark);
+    }
 
     return markers;
 }
@@ -665,7 +665,7 @@ function delConsFilter(marker) {
     if (u.c(Const.jaS, fin) && u.c(Const.haS, beg) && !u.c(Const.Yam, beg) && ! (u.c(u.palatal(), fin) && u.c(u.palatal(), beg))) pushMark('8.2.39');
 
     // dental class consonant followed by a palatal class consonant changes to the corresponding palatal; reverse: doubled palatal
-    // if (u.c(u.palatal(), fin) && u.c(u.palatal(), beg)) pushMark('8.4.40');
+    if (u.c(u.palatal(), fin) && u.c(u.palatal(), beg)) pushMark('8.4.40');
 
     // dental class consonant followed by a cerebral class consonant changes to the corresponding cerebral; reverse: doubled cerebral
     // if (u.c(u.cerebral(), fin) && u.c(u.cerebral(), beg)) pushMark('8.4.41');
@@ -681,7 +681,7 @@ function delConsFilter(marker) {
     // nasal + cons of class of that nasal; reverse: nasal to m
     // if (u.c(Const.nasals, fin) && u.eqvarga(fin, beg)) pushMark('8.3.23');
 
-    // log(33, markers);
+    // log(33, marker);
     return markers;
 }
 
