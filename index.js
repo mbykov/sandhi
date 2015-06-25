@@ -627,8 +627,7 @@ function delVowFilter(marker) {
     else if (marker.pen == Const.virama && u.c(Const.yaR, marker.fin) && u.c(Const.diphtongs, u.vowel(marker.pattern)) && u.c(Const.hal, marker.next)) pushMark('6.1.77');
 
     // diphthong followed by any vowel (e,o vow-a), including itself, changes to its semi-vowel equivalent - external - optional
-    // else if ((u.c(Const.yaR, marker.fin) || u.c(Const.yaR, marker.pen)) && marker.pattern != Const.avagraha && u.c(Const.allsimples, marker.beg)) pushMark('6.1.78');
-    else if ((u.c(Const.yaR, marker.fin) || u.c(Const.yaR, marker.pen)) && marker.pattern != Const.avagraha && u.c(Const.allvowels, marker.beg)) pushMark('6.1.78');
+    // else if ((u.c(Const.yaR, marker.fin) || u.c(Const.yaR, marker.pen)) && marker.pattern != Const.avagraha && u.c(Const.allvowels, marker.beg)) pushMark('6.1.78');
 
     // log('M', marker);
     // log('M', u.c(Const.yaR, marker.pattern));
@@ -643,6 +642,7 @@ function delVowFilter(marker) {
         markers.push(mark);
     }
 
+    // log('M', markers);
     return markers;
 }
 
@@ -705,7 +705,7 @@ sandhi.prototype.del = function(samasa, second) {
     if (markers.length == 0) {
         // log('====== SANDHI: ======= NO MARKERS =======');
         // log(marker);
-        var cutMark = {firsts: [marker.first], seconds: [marker.second], pos: marker.pos, num: 'common'};
+        var cutMark = {firsts: [marker.first], seconds: [marker.second], pos: marker.pos, num: 'common==='};
         return [cutMark];
     }
 
@@ -722,15 +722,16 @@ sandhi.prototype.del = function(samasa, second) {
     // FIXME: вот это что? Когда образуется? Имеет смысл только для vowel или нет?
     // VOW - навероное, должно исчезнуть после обработки xdVyy-> xt->Vyy
     if (cutted.length == 0) {
-        marker.first.pop();
-        var beg = marker.second[0];
-        if (u.c(Const.allligas, beg)) {
-            marker.second.shift();
-            beg = u.vowel(beg);
-            marker.second.unshift(beg);
-        }
-        var res = {firsts: [marker.first.join('')], seconds: [marker.second.join('')], pos: marker.pos, num: 'common', pat: marker.pattern}
-        cutted.push(res);
+        log('=======>>>>>>>>>>>>>>> CUTTED EMPTY');
+        // marker.first.pop();
+        // var beg = marker.second[0];
+        // if (u.c(Const.allligas, beg)) {
+        //     marker.second.shift();
+        //     beg = u.vowel(beg);
+        //     marker.second.unshift(beg);
+        // }
+        // var res = {firsts: [marker.first.join('')], seconds: [marker.second.join('')], pos: marker.pos, num: 'common', pat: marker.pattern}
+        // cutted.push(res);
     }
 
     // log('DEL=> RES', cutted);
