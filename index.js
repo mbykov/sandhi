@@ -705,7 +705,7 @@ sandhi.prototype.del = function(samasa, second) {
     if (markers.length == 0) {
         // log('====== SANDHI: ======= NO MARKERS =======');
         // log(marker);
-        var cutMark = {firsts: [marker.first], seconds: [marker.second], pos: marker.pos, num: 'common==='};
+        var cutMark = {firsts: [marker.first], seconds: [marker.second], pos: marker.pos, num: 'cut'};
         return [cutMark];
     }
 
@@ -745,18 +745,15 @@ function delMarker(samasa, second) {
     var re = new RegExp(spart + '$');
     var fpart = samasa.replace(re, '');
     samasa = samasa.split('');
-    // var first = fpart.split('');
-    // second = second.split('');
 
     var beg = second[0];
     var next = second[1];// just after .beg
-    // var pattern = first.pop();
     var pattern = fpart.slice(-1);
     var first = fpart.slice(0, -1);
     var size = first.length;
     var fin = first[size-1];
     var penult = first[size-2];
-    var pos = size + 1;
+    var pos = size + 1; // 2 - чтобы pos совпадал с позицией pattern - FIXME: всегда ли это правильно?
     var type;
     var virama, candra;
     var spec;
@@ -774,7 +771,7 @@ function delMarker(samasa, second) {
         fin = first[size-1];
         penult = first[size-2];
         pattern = fin; // что здесь pattern? всегда - символ, который стоит на месте fin?
-        pos = size - 1;
+        pos = size + 1;
         type = 'cons';
     }
     var marker = {type: type, first: first, second: second, pen: penult, fin: fin, pattern: pattern, beg: beg, next: next, pos: pos};
