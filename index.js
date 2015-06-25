@@ -668,18 +668,17 @@ function delConsFilter(marker) {
     if (u.c(u.palatal(), fin) && u.c(u.palatal(), beg)) pushMark('8.4.40');
 
     // dental class consonant followed by a cerebral class consonant changes to the corresponding cerebral; reverse: doubled cerebral
-    // if (u.c(u.cerebral(), fin) && u.c(u.cerebral(), beg)) pushMark('8.4.41');
-
+    if (u.c(u.cerebral(), fin) && u.c(u.cerebral(), beg)) pushMark('8.4.41');
 
     // 8.4.55 =>soft consonant except nasal, followed by a hard consonant changes to 1st consonant of class = > reverse: NO REVERSE!
 
     // class consonant followed by (nasal) optionally changes to the nasal of class, or less commonly for class hard consonants, changes to 3rd consonant of class    // reverse: nasal or 3-rd to hard fin
-    // if ((u.c(Const.nasals, fin) || u.c(Const.class3, fin)) && u.c(Const.nm, beg)) pushMark('8.4.45');
+    if ((u.c(Const.nasals, fin) || u.c(Const.class3, fin)) && u.c(Const.nm, beg)) pushMark('8.4.45');
 
     // m at fin to anusvara; reverse: anusvara to m
-    // if (marker.anusvara) pushMark('8.3.23');
+    if (marker.anusvara) pushMark('8.3.23');
     // nasal + cons of class of that nasal; reverse: nasal to m
-    // if (u.c(Const.nasals, fin) && u.eqvarga(fin, beg)) pushMark('8.3.23');
+    if (u.c(Const.nasals, fin) && u.eqvarga(fin, beg)) pushMark('8.3.23');
 
     // log(33, marker);
     return markers;
