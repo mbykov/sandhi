@@ -690,8 +690,9 @@ function delConsFilter(marker) {
 */
 sandhi.prototype.del = function(samasa, second) {
     var marker = delMarker(samasa, second);
-    var markers;
 
+    if (marker.first == '') return [{pos: 0, num: 'start', seconds: [samasa], firsts: []}];
+    var markers = [];
     switch (marker.type) {
     case 'vowel':
         markers = delVowFilter(marker);
@@ -699,6 +700,13 @@ sandhi.prototype.del = function(samasa, second) {
     case 'cons':
         markers = delConsFilter(marker);
         break;
+    }
+
+    if (markers.length == 0) {
+        // log('====== SANDHI: ======= NO MARKERS =======');
+        // log(marker);
+        var cutMark = {firsts: [marker.first], seconds: [marker.second], pos: marker.pos, num: 'common'};
+        return [cutMark];
     }
 
     var cutted = [];
@@ -774,6 +782,7 @@ function delMarker(samasa, second) {
     else if (spec == Const.candra) marker.candra = true;
     else if (spec == Const.anunasika) marker.anunasika = true;
     // log('DEL-marker', '\n', marker);
+
     return marker;
 }
 
