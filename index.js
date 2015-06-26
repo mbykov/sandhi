@@ -621,13 +621,20 @@ function delVowFilter(marker) {
     if (u.c(Const.vriddhis, u.vowel(marker.pattern))) pushMark('6.1.88');
 
     // simple vowel except Aa followed by a dissimilar simple vowel changes to its semi-vowel (+virama); yana-sandhi; reverse: semi-vow = simple + dissimilar
-    if (marker.pen == Const.virama && u.c(Const.yaR, marker.fin) && u.c(Const.allligas, marker.pattern) && !u.similar(u.base(marker.fin), marker.beg)) pushMark('6.1.77');
-    if (marker.pen == Const.virama && u.c(Const.yaR, marker.fin) && u.c(Const.allligas, marker.pattern) && !u.similar(u.base(marker.fin), u.vowel(marker.pattern))) pushMark('6.1.77');
-    else if (marker.fin == Const.virama && u.c(Const.yaR, marker.pattern) && u.c(Const.hal, marker.next)) pushMark('6.1.77');
-    else if (marker.pen == Const.virama && u.c(Const.yaR, marker.fin) && u.c(Const.diphtongs, u.vowel(marker.pattern)) && u.c(Const.hal, marker.next)) pushMark('6.1.77');
+    // if (marker.pen == Const.virama && u.c(Const.yaR, marker.fin) && u.c(Const.allligas, marker.pattern) && !u.similar(u.base(marker.fin), marker.beg)) pushMark('6.1.77');
+    if (marker.pen == Const.virama && u.c(Const.yaR, marker.fin) && u.c(Const.allligas, marker.pattern)
+        && (!u.similar(u.base(marker.fin), u.vowel(marker.pattern))) || u.c(Const.diphtongs, u.vowel(marker.pattern)) && u.c(Const.hal, marker.next)) { // dissimilar OR diphtong
+        marker.pattern = marker.fin;
+        marker.first = marker.first.slice(0,-2);
+        marker.pos = marker.first.length + 1; // virama
+        marker.fin = marker.first.slice(-1);
+        pushMark('6.1.77');
+    }
+    else if (marker.fin == Const.virama && u.c(Const.yaR, marker.pattern) && u.c(Const.hal, marker.next)) pushMark('6.1.77');  // a after pattern, i.e. -ya-
+    // OLD: else if (marker.pen == Const.virama && u.c(Const.yaR, marker.fin) && u.c(Const.diphtongs, u.vowel(marker.pattern)) && u.c(Const.hal, marker.next)) pushMark('6.1.77'); // diphtongs
 
     // diphthong followed by any vowel (e,o vow-a), including itself, changes to its semi-vowel equivalent - external - optional
-    // else if ((u.c(Const.yaR, marker.fin) || u.c(Const.yaR, marker.pen)) && marker.pattern != Const.avagraha && u.c(Const.allvowels, marker.beg)) pushMark('6.1.78');
+    else if ((u.c(Const.yaR, marker.fin) || u.c(Const.yaR, marker.pen)) && marker.pattern != Const.avagraha && u.c(Const.allvowels, marker.beg)) pushMark('6.1.78');
 
     // log('M', marker);
     // log('M', u.c(Const.yaR, marker.pattern));
@@ -642,7 +649,7 @@ function delVowFilter(marker) {
         markers.push(mark);
     }
 
-    // log('M', markers);
+    // log('MARKERS', markers);
     return markers;
 }
 
@@ -680,7 +687,7 @@ function delConsFilter(marker) {
     // nasal + cons of class of that nasal; reverse: nasal to m
     if (u.c(Const.nasals, fin) && u.eqvarga(fin, beg)) pushMark('8.3.23');
 
-    // log(33, marker);
+    // log('DEL-CONS-MARKER-S', markers);
     return markers;
 }
 
@@ -704,8 +711,8 @@ sandhi.prototype.del = function(samasa, second) {
 
     if (markers.length == 0) {
         // log('====== SANDHI: ======= NO MARKERS =======');
-        // log(marker);
         var cutMark = {firsts: [marker.first], seconds: [marker.second], pos: marker.pos, num: 'cut'};
+        // log('cutMark', cutMark);
         return [cutMark];
     }
 
@@ -748,12 +755,12 @@ function delMarker(samasa, second) {
 
     var beg = second[0];
     var next = second[1];// just after .beg
-    var pattern = fpart.slice(-1);
+    var pattern = fpart.slice(-1); // pattern - стоит на месте beg
     var first = fpart.slice(0, -1);
     var size = first.length;
     var fin = first[size-1];
     var penult = first[size-2];
-    var pos = size + 1; // 2 - чтобы pos совпадал с позицией pattern - FIXME: всегда ли это правильно?
+    var pos = size; // 2 - чтобы pos совпадал с позицией pattern - FIXME: всегда ли это правильно?
     var type;
     var virama, candra;
     var spec;
@@ -762,23 +769,25 @@ function delMarker(samasa, second) {
     if (u.c(Const.allvowels, beg)) { // FIXME: а как тут будет условие про последний символ перевого слова?
         type = 'vowel';
     // } else if (u.isConst(beg) && u.isConst(pattern) && fin == Const.virama) {
-    } else if (u.isConst(beg) && u.isConst(pattern) && u.c(Const.special, fin)) {
+    } else if (u.isConst(beg) && u.c(Const.special, fin) && u.isConst(pattern)) {
         // log('2============================ CONS');
-        // first.pop();
         first = first.slice(0, -1);
         spec = fin;
         size = first.length;
         fin = first[size-1];
         penult = first[size-2];
-        pattern = fin; // что здесь pattern? всегда - символ, который стоит на месте fin?
-        pos = size + 1;
+        pattern = beg; // что здесь pattern? всегда - символ, который стоит на месте fin?
+        pos = size+1; // cause virama
         type = 'cons';
+    } else {
+        type = 'cut';
     }
     var marker = {type: type, first: first, second: second, pen: penult, fin: fin, pattern: pattern, beg: beg, next: next, pos: pos};
     if (spec == Const.virama) marker.virama = true;
     else if (spec == Const.anusvara) marker.anusvara = true;
     else if (spec == Const.candra) marker.candra = true;
     else if (spec == Const.anunasika) marker.anunasika = true;
+
     // log('DEL-marker', '\n', marker);
 
     return marker;
