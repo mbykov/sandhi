@@ -342,3 +342,5 @@ sandhi.prototype.join = function(first, last) {
 sandhi.prototype.splitAll = function(samasa) {
     // TODO:
 }
+
+function log() { console.log.apply(console, arguments) }
