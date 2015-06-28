@@ -170,7 +170,7 @@ var tests = [
 
 ]
 
-describe('consonant sandhi', function() {
+describe('consonant_sandhi', function() {
     tests.forEach(function(t) {
         if (t.sutra == '') return;
         var descr = [t.sutra, t.descr, t.only].join(' - ');
