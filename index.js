@@ -698,7 +698,12 @@ function delConsFilter(marker) {
     // nasal + cons of class of that nasal; reverse: nasal to m
     if (u.c(Const.nasals, fin) && u.eqvarga(fin, beg)) pushMark('8.3.23');
 
-    // log('DEL-CONS-MARKER-S', markers);
+    // If n is followed by l, then n is replaced by nasal l. If a dental other than n and s is followed by l, then the dental is replaced by l.
+    if (u.c(u.dental(), fin) && beg == 'ल') marker.num = '8.4.60'; //  ल ँ ् ल
+    if (fin == 'ल' && beg == 'ल')  pushMark('8.4.60');
+    if (marker.pen == 'ल' && fin == Const.candra && beg == 'ल')  pushMark('8.4.60');
+
+    // log('DEL-CONS-MARKER-S', marker);
     return markers;
 }
 
@@ -903,7 +908,7 @@ function addConsFilter(marker) {
     // m,n to anusvara or nasal + cons of class of that nasal
     if (fin == 'म' && u.c(Const.hal, beg)) marker.num = '8.3.23';
     //ङ्, ण्, न् at the end of a word after a short vowel doubles itself when followed by a vowel',
-    if (u.c(Const.Nam, fin) && u.vowshort(penult) && u.c(Const.allvowels, beg)) marker.num = 'cons-nasal-doubled';
+    if (u.c(Const.Nam, fin) && u.vowshort(penult) && u.c(Const.allvowels, beg)) marker.num = 'nasal-doubled';
 
     // FIXME: порядок имеет значение - 8.2.39 д.б. раньше 8.4.40
 

@@ -60,8 +60,6 @@ var tests = [
      descr: 'Dental + Palatal / Palatal (ex S) + Dental -> Palatal',
      tests: [
 
-         ['शिवश्च', 'शिव', 'श्च'],
-
          ['शिवश्च', 'शिवस्', 'च'], // dental + palatal - 8.4.40 -> corr -> 8.4.55 -> err, wtf?
          ['तच्च', 'तत्', 'च'],
          ['तज्जह', 'तत्', 'जह'], // soft
@@ -145,7 +143,7 @@ var tests = [
     //  ]
     // },
 
-    {sutra: 'nasals-doubled',
+    {sutra: 'nasal-doubled',
      descr: 'ङ्, ण्, न् at the end of a word after a short vowel doubles itself when followed by a vowel',
      only: 'ext',
      tests: [
