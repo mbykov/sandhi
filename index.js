@@ -709,6 +709,26 @@ function delConsFilter(marker) {
     return markers;
 }
 
+// ================= DEL VISARGA FILTERS ================
+function delVisFilter(marker) {
+    var markers = [];
+    var fin = marker.fin;
+    var penult = marker.penult;
+    var beg = marker.beg;
+    var pattern = marker.pattern;
+
+    var pushMark = function(num) {
+        var mark = _.clone(marker);
+        mark.num = num;
+        markers.push(mark);
+    }
+    // FIXME: это повторяет условие makeMarker, и неясно нужно ли в delete-висарге вообще массив и соотв., клонирование
+    if (fin == 'ो' && pattern == Const.avagraha)  pushMark('visarga-ah-a');
+
+    // log('DEL-VISARGA-MARKERS', markers);
+    return markers;
+}
+
 /*
   разрезаю samasa - получаю пару first-second. Второе слово может менять первую букву
   методы cut() и del() - del() возвращает пару first-second, cut() возвращает first
@@ -724,6 +744,9 @@ sandhi.prototype.del = function(samasa, second) {
         break;
     case 'cons':
         markers = delConsFilter(marker);
+        break;
+    case 'visarga':
+        markers = delVisFilter(marker);
         break;
     }
 
@@ -753,15 +776,6 @@ sandhi.prototype.del = function(samasa, second) {
     // VOW - навероное, должно исчезнуть после обработки xdVyy-> xt->Vyy
     if (cutted.length == 0) {
         log('=======>>>>>>>>>>>>>>> CUTTED EMPTY');
-        // marker.first.pop();
-        // var beg = marker.second[0];
-        // if (u.c(Const.allligas, beg)) {
-        //     marker.second.shift();
-        //     beg = u.vowel(beg);
-        //     marker.second.unshift(beg);
-        // }
-        // var res = {firsts: [marker.first.join('')], seconds: [marker.second.join('')], pos: marker.pos, num: 'common', pat: marker.pattern}
-        // cutted.push(res);
     }
 
     // log('DEL=> RES', cutted);
@@ -789,7 +803,9 @@ function delMarker(samasa, second) {
     var spec;
     // log('MAKE MARKER', penult, fin, pattern, beg, 11, fpart, 22, first);
 
-    if (u.c(Const.allvowels, beg)) { // FIXME: а как тут будет условие про последний символ перевого слова?
+    if (fin == 'ो' && pattern == Const.avagraha) {
+        type = 'visarga';
+    } else if (u.c(Const.allvowels, beg)) { // FIXME: а как тут будет условие про последний символ перевого слова?
         type = 'vowel';
     // } else if (u.isConst(beg) && u.isConst(pattern) && fin == Const.virama) {
     } else if (u.isConst(beg) && u.c(Const.special, fin) && u.isConst(pattern)) {
@@ -877,7 +893,7 @@ sandhi.prototype.add = function(first, second) {
     // if (!sutra) return; // FIXME: не должно быть
     var markers = sutra.add(marker);
     // log('ADD=> MARKERS', markers);
-    log('ADD=> RES', markers.map(function(m) { return addResult(m)})); // शिोऽहम्
+    // log('ADD=> RES', markers.map(function(m) { return addResult(m)})); // शिोऽहम्
     return markers.map(function(m) { return addResult(m)});
 }
 
