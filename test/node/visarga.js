@@ -1,8 +1,9 @@
 var utils = require('../utils');
 
 var tests = [
+    // अ & visarga changes to ओ+avagraha when followed by अ;
     {sutra: 'visarga-ah-a',
-     descr: 'अ & visarga followed  by अ (for अस्) -> changes to ओ+avagraha  - A.1; (for अर्) changes to अर् when followed by a (vowel or soft consonant except र्), so after अ, C2',
+     descr: 'aH+a => o-ऽ',
      only: 'ext',
      tests: [
          ['शिवोऽहम्', 'शिवः', 'अहम्'],
@@ -16,24 +17,16 @@ var tests = [
     },
 
     {sutra: 'visarga-ah-soft',
-     descr: 'अ & visarga (for अस्) followed by a soft consonant -> changes to ओ - A2',
+     descr: 'अ & visarga (for अस्) followed by a soft consonant -> changes to ओ',
      only: 'ext',
      tests: [
-         ['नमोनारायणाय', 'नमः', 'नारायणाय'],
-         ['रामोगच्छति', 'रामः', 'गच्छति'],
-         ['नरोगच्छति', 'नरः', 'गच्छति'],
-         ['नरोयच्छति', 'नरः', 'यच्छति'],
-         ['नरोहसति', 'नरः', 'हसति'],
-         ['रुद्रोवन्द्यः', 'रुद्रः', 'वन्द्यः'],
-         ['प्राणायामोहितः', 'प्राणायामः', 'हितः'],
-
-         // ['नमो नारायणाय', 'नमः', 'नारायणाय'],
-         // ['रामो गच्छति', 'रामः', 'गच्छति'],
-         // ['नरो गच्छति', 'नरः', 'गच्छति'],
-         // ['नरो यच्छति', 'नरः', 'यच्छति'],
-         // ['नरो हसति', 'नरः', 'हसति'],
-         // ['रुद्रो वन्द्यः', 'रुद्रः', 'वन्द्यः'],
-         // ['प्राणायामो हितः', 'प्राणायामः', 'हितः'],
+         ['नमो नारायणाय', 'नमः', 'नारायणाय'],
+         ['रामो गच्छति', 'रामः', 'गच्छति'],
+         ['नरो गच्छति', 'नरः', 'गच्छति'],
+         ['नरो यच्छति', 'नरः', 'यच्छति'],
+         ['नरो हसति', 'नरः', 'हसति'],
+         ['रुद्रो वन्द्यः', 'रुद्रः', 'वन्द्यः'],
+         ['प्राणायामो हितः', 'प्राणायामः', 'हितः'],
      ]
     },
 
@@ -45,7 +38,7 @@ var tests = [
          ['राम उवाच', 'रामः', 'उवाच'],
          ['नर इच्छति', 'नरः', 'इच्छति'],
          ['शिव एति', 'शिवः', 'एति'],
-         // ['शिवयेति', 'शिवः', 'एति'], // optional y after diphtong - NOTE_1 in index.js
+         // ['शिवयेति', 'शिवः', 'एति'], // optional y after diphtong
          ['', '', ''],
      ]
     },
@@ -66,7 +59,6 @@ var tests = [
          ['', '', ''],
      ]
     },
-
 
 
     {sutra: 'visarga-hard-cons',
@@ -120,7 +112,7 @@ var tests = [
 
 ]
 
-describe('vowel sandhi', function() {
+describe('visarga_sandhi', function() {
     tests.forEach(function(t) {
         if (t.sutra == '') return;
         var descr = [t.sutra, t.descr, t.only].join(' - ');

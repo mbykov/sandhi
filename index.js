@@ -239,6 +239,7 @@ function makeMarkerList(samasa) {
         // === VISARGA === only concatenated result
 
         // अ & visarga changes to ओ+avagraha when followed by अ
+        // for अर् => changes to अर् when followed by a (vowel or soft consonant except र्), so after अ, C2
         if (u.c(Const.hal, prev) && sym == 'ो' && next1 == Const.avagraha) {
             pattern = [sym, Const.avagraha].join('');
             var mark = {type: 'visarga', num: 'visarga-ah-a', pattern: pattern, idx: i, pos: i};
@@ -594,7 +595,7 @@ function anusvaraInMiddle(samasa, arr) {
     });
     return arr;
 }
-
+// SPLIT END, REMOVE
 
 // ============= DELETE ==================
 function delVowFilter(marker) {
@@ -655,12 +656,13 @@ function delVowFilter(marker) {
         if (third == fin) {
             var mark = _.clone(marker);
             mark.type = 'cons';
+            mark.first = mark.first.slice(0,-1);
             mark.num = 'nasal-doubled';
             markers.push(mark);
         }
     }    // ['सुगण्णिति', 'सुगण्', 'इति'],
 
-    // log('MARKERS', marker);
+    // log('DEL-VOW-MARKERS', markers);
     return markers;
 }
 
@@ -696,14 +698,14 @@ function delConsFilter(marker) {
     // m at fin to anusvara; reverse: anusvara to m
     if (marker.anusvara) pushMark('8.3.23');
     // nasal + cons of class of that nasal; reverse: nasal to m
-    if (u.c(Const.nasals, fin) && u.eqvarga(fin, beg)) pushMark('8.3.23');
+    // if (u.c(Const.nasals, fin) && u.eqvarga(fin, beg)) pushMark('8.3.23'); // убрал пока - g=.40.+_3_ - tAn - janAn - tAYjanAn - попадает сюда, а не нужно
 
     // If n is followed by l, then n is replaced by nasal l. If a dental other than n and s is followed by l, then the dental is replaced by l.
     if (u.c(u.dental(), fin) && beg == 'ल') marker.num = '8.4.60'; //  ल ँ ् ल
     if (fin == 'ल' && beg == 'ल')  pushMark('8.4.60');
     if (marker.pen == 'ल' && fin == Const.candra && beg == 'ल')  pushMark('8.4.60');
 
-    // log('DEL-CONS-MARKER-S', marker);
+    // log('DEL-CONS-MARKERS', markers);
     return markers;
 }
 
@@ -714,7 +716,7 @@ function delConsFilter(marker) {
 sandhi.prototype.del = function(samasa, second) {
     var marker = delMarker(samasa, second);
 
-    if (marker.first == '') return [{pos: 0, num: 'start', seconds: [samasa], firsts: []}];
+    if (marker.first == '') return [{pos: 0, num: 'start', firsts: [], seconds: [samasa], delta: {} }];
     var markers = [];
     switch (marker.type) {
     case 'vowel':
@@ -727,7 +729,7 @@ sandhi.prototype.del = function(samasa, second) {
 
     if (markers.length == 0) {
         // log('====== SANDHI: ======= NO MARKERS =======');
-        var cutMark = {firsts: [marker.first], seconds: [marker.second], pos: marker.pos, num: 'cut'};
+        var cutMark = {firsts: [marker.first], seconds: [marker.second], pos: marker.pos, num: 'cut', delta: {}};
         // log('cutMark', cutMark);
         return [cutMark];
     }
@@ -739,6 +741,11 @@ sandhi.prototype.del = function(samasa, second) {
         res.pos = mark.pos;
         res.num = mark.num;
         res.pat = mark.pattern;
+        // FIXME:
+        if (!res.delta) {
+            res.delta = {};
+            res.delta[res.pos] = false;
+        }
         cutted.push(res);
     });
 
@@ -841,8 +848,10 @@ function markerTemplate(first, second) {
     } else if ((u.c(Const.consonants, fin) || u.c(Const.allligas, fin)) && u.c(Const.allvowels, beg)) {
         marker = {type: 'vowel', first: first, fin: fin, second: second, beg: beg};
     } else if (fin == Const.visarga) {
-        var ah = u.c(Const.hal, penult);
-        var aah = Const.A == penult;
+        // var ah = u.c(Const.hal, penult);
+        // var aah = Const.A == penult;
+        first.pop();
+        fin = first.slice(-1)[0];
         marker = {type: 'visarga', first: first, fin: fin, second: second, beg: beg};
     }
     // log('ADD=', marker);
@@ -859,12 +868,16 @@ sandhi.prototype.add = function(first, second) {
     case 'cons':
         addConsFilter(marker);
         break;
+    case 'visarga':
+        addVisargaFilter(marker);
+        break;
     }
 
     var sutra = vowRules[marker.num] || consRules[marker.num] || visRules[marker.num];
-    if (!sutra) return; // FIXME: не должно быть
+    // if (!sutra) return; // FIXME: не должно быть
     var markers = sutra.add(marker);
-    // log('ADD=> RES', res);
+    // log('ADD=> MARKERS', markers);
+    log('ADD=> RES', markers.map(function(m) { return addResult(m)})); // शिोऽहम्
     return markers.map(function(m) { return addResult(m)});
 }
 
@@ -875,7 +888,9 @@ function addVowelFilter(marker) {
     if (u.similar(fin, beg) || u.c(Const.aAliga, fin) && u.c(Const.aA, beg)) marker.num = '6.1.101';
     if (fin =='ृ' && beg == 'ऌ') marker.num = '6.1.101';
     if (u.c(Const.aAliga, fin) && u.c(Const.allsimples, beg)) marker.num = '6.1.87';
+    // a or ā is followed by e, o, ai or au - vriddhi
     if (u.c(Const.aAliga, fin) && u.c(Const.diphtongs, beg)) marker.num = '6.1.88';
+    // simple vowel except Aa followed by a dissimilar simple vowel changes to its semi-vowel
     if (u.c(Const.allsimpleligas, fin) && u.c(Const.allvowels, beg) && !u.similar(fin, beg)) marker.num = '6.1.77';
     if (u.c(Const.allsimpleligas, fin) && u.c(Const.diphtongs, beg)) marker.num = '6.1.77';
     // 6.1.78 - ayadi-guna - e,o+vow-a => ay,av+vow-a (comp. 6.1.109); - ayadi-vriddhi - E,O+vow => Ay,Av+vow, if vow=aA - next=cons
@@ -911,8 +926,20 @@ function addConsFilter(marker) {
     if (u.c(Const.Nam, fin) && u.vowshort(penult) && u.c(Const.allvowels, beg)) marker.num = 'nasal-doubled';
 
     // FIXME: порядок имеет значение - 8.2.39 д.б. раньше 8.4.40
-
     // log('CONS ADD MARKER:', marker.num, 'fin:', fin, 'beg:', beg, Const.Yam);
+}
+
+function addVisargaFilter(marker) {
+    var visarga = marker.fin;
+    var penult = marker.pen;
+    var beg = marker.beg;
+    var fin = marker.fin;
+    var ah = u.c(Const.hal, fin);
+    var aah = Const.A == fin;
+    if (ah && beg =='अ') marker.num = 'visarga-ah-a';
+
+    // log('VISARGA ADD MARKER:', marker.num, 'fin:', fin, 'beg:', beg);
+    // xxx
 }
 
 function addFilter_(f, s) {
@@ -987,7 +1014,7 @@ function addFilter_(f, s) {
         var ah = u.c(Const.hal, penult);
         var aah = Const.A == penult;
         marker = {type: 'visarga', first: first, fin: fin, second: second, beg: beg};
-        // -ah:
+        // -ah: // ***
         if (ah && beg =='अ') marker.num = 'visarga-ah-a';
         if (ah && u.c(Const.haS, beg)) marker.num = 'visarga-ah-soft';
         // अ & visarga (standing for अस्) followed by a vowel except अ -> visarga is dropped
