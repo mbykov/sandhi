@@ -723,6 +723,7 @@ function delVisFilter(marker) {
         markers.push(mark);
     }
     // FIXME: это повторяет условие makeMarker, и неясно нужно ли в delete-висарге вообще массив и соотв., клонирование
+
     if (fin == 'ो' && pattern == Const.avagraha)  pushMark('visarga-ah-a');
 
     // log('DEL-VISARGA-MARKERS', markers);
@@ -775,7 +776,7 @@ sandhi.prototype.del = function(samasa, second) {
     // FIXME: вот это что? Когда образуется? Имеет смысл только для vowel или нет?
     // VOW - навероное, должно исчезнуть после обработки xdVyy-> xt->Vyy
     if (cutted.length == 0) {
-        log('=======>>>>>>>>>>>>>>> CUTTED EMPTY');
+        log('=======>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> CUTTED EMPTY');
     }
 
     // log('DEL=> RES', cutted);
@@ -807,8 +808,8 @@ function delMarker(samasa, second) {
         type = 'visarga';
     } else if (u.c(Const.allvowels, beg)) { // FIXME: а как тут будет условие про последний символ перевого слова?
         type = 'vowel';
-    // } else if (u.isConst(beg) && u.isConst(pattern) && fin == Const.virama) {
-    } else if (u.isConst(beg) && u.c(Const.special, fin) && u.isConst(pattern)) {
+    // } else if (u.isConsonant(beg) && u.isConsonant(pattern) && fin == Const.virama) {
+    } else if (u.isConsonant(beg) && u.c(Const.special, fin) && u.isConsonant(pattern)) {
         // log('2============================ CONS');
         first = first.slice(0, -1);
         spec = fin;
@@ -870,7 +871,7 @@ function markerTemplate(first, second) {
         fin = first.slice(-1)[0];
         marker = {type: 'visarga', first: first, fin: fin, second: second, beg: beg};
     }
-    // log('ADD=', marker);
+    // log('ADD-marker', marker);
     return marker;
 }
 
@@ -888,8 +889,9 @@ sandhi.prototype.add = function(first, second) {
         addVisargaFilter(marker);
         break;
     }
-
+    // log(marker)
     var sutra = vowRules[marker.num] || consRules[marker.num] || visRules[marker.num];
+    // log(sutra)
     // if (!sutra) return; // FIXME: не должно быть
     var markers = sutra.add(marker);
     // log('ADD=> MARKERS', markers);
@@ -942,7 +944,7 @@ function addConsFilter(marker) {
     if (u.c(Const.Nam, fin) && u.vowshort(penult) && u.c(Const.allvowels, beg)) marker.num = 'nasal-doubled';
 
     // FIXME: порядок имеет значение - 8.2.39 д.б. раньше 8.4.40
-    // log('CONS ADD MARKER:', marker.num, 'fin:', fin, 'beg:', beg, Const.Yam);
+    // log('CONS ADD FILTER:', marker.num, 'fin:', fin, 'beg:', beg, Const.Yam);
 }
 
 function addVisargaFilter(marker) {
@@ -953,8 +955,10 @@ function addVisargaFilter(marker) {
     var ah = u.c(Const.hal, fin);
     var aah = Const.A == fin;
     if (ah && beg =='अ') marker.num = 'visarga-ah-a';
+    // HARD !!!!!!!!!!!!!
+    if (ah && u.isConsonant(beg)) marker.num = 'visarga-hard-cons';
 
-    // log('VISARGA ADD MARKER:', marker.num, 'fin:', fin, 'beg:', beg);
+    // log('VISARGA ADD FILTER:', marker.num, 'fin:', fin, 'beg:', beg);
     // xxx
 }
 
