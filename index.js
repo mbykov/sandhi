@@ -722,9 +722,10 @@ function delVisFilter(marker) {
         mark.num = num;
         markers.push(mark);
     }
-    // FIXME: это повторяет условие makeMarker, и неясно нужно ли в delete-висарге вообще массив и соотв., клонирование
+    // FIXME: ифы тут повторяют условия makeMarker, и неясно нужно ли в delete-висарге вообще массив и соотв., клонирование
 
     if (fin == 'ो' && pattern == Const.avagraha)  pushMark('visarga-ah-a');
+    else if (u.c(Const.Sar, marker.pattern) && marker.virama && u.c(Const.Kar, beg)) pushMark('visarga-hard-cons');
 
     // log('DEL-VISARGA-MARKERS', markers);
     return markers;
@@ -802,15 +803,22 @@ function delMarker(samasa, second) {
     var type;
     var virama, candra;
     var spec;
-    // log('MAKE MARKER', penult, fin, pattern, beg, 11, fpart, 22, first);
 
-    if (fin == 'ो' && pattern == Const.avagraha) {
+    if (fin == 'ो' && pattern == Const.avagraha) { // visarga-ah-a
         type = 'visarga';
+    } else if (u.c(Const.Sar, penult) && fin == Const.virama && u.c(Const.Kar, beg)) { // visarga-hard-cons
+        type = 'visarga';
+        pattern = penult;
+        first = first.slice(0, -2);
+        spec = Const.virama;
+        size = first.length;
+        fin = first[size-1];
+        penult = first[size-2];
+        pos = size+1; // cause virama
     } else if (u.c(Const.allvowels, beg)) { // FIXME: а как тут будет условие про последний символ перевого слова?
         type = 'vowel';
-    // } else if (u.isConsonant(beg) && u.isConsonant(pattern) && fin == Const.virama) {
     } else if (u.isConsonant(beg) && u.c(Const.special, fin) && u.isConsonant(pattern)) {
-        // log('2============================ CONS');
+        type = 'cons';
         first = first.slice(0, -1);
         spec = fin;
         size = first.length;
@@ -818,7 +826,6 @@ function delMarker(samasa, second) {
         penult = first[size-2];
         pattern = beg; // что здесь pattern? всегда - символ, который стоит на месте fin?
         pos = size+1; // cause virama
-        type = 'cons';
     } else {
         type = 'cut';
     }
@@ -829,14 +836,13 @@ function delMarker(samasa, second) {
     else if (spec == Const.anunasika) marker.anunasika = true;
 
     // log('DEL-marker', '\n', marker);
-
     return marker;
 }
 
 
 // ============ ADD ==========
 
-function markerTemplate(first, second) {
+function addMarker(first, second) {
     var first = first.split('');
     var second = second.split('');
     var fin = first.slice(-1)[0];
@@ -874,7 +880,7 @@ function markerTemplate(first, second) {
 }
 
 sandhi.prototype.add = function(first, second) {
-    var marker = markerTemplate(first, second);
+    var marker = addMarker(first, second);
     // log('ADD TEMPLATE', marker);
     switch (marker.type) {
     case 'vowel':
@@ -953,12 +959,9 @@ function addVisargaFilter(marker) {
     var ah = u.c(Const.hal, fin);
     var aah = Const.A == fin;
     if (ah && beg =='अ') marker.num = 'visarga-ah-a';
-    // HARD !!!!!!!!!!!!!
-    // if (ah && u.isConsonant(beg)) marker.num = 'visarga-hard-cons';
     if (u.vowsound(fin) && u.c(Const.Kar, beg)) marker.num = 'visarga-hard-cons';
 
     // log('VISARGA ADD FILTER:', marker);
-    // xxx
 }
 
 function addFilter_(f, s) {
