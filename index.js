@@ -865,8 +865,6 @@ function markerTemplate(first, second) {
     } else if ((u.c(Const.consonants, fin) || u.c(Const.allligas, fin)) && u.c(Const.allvowels, beg)) {
         marker = {type: 'vowel', first: first, fin: fin, second: second, beg: beg};
     } else if (fin == Const.visarga) {
-        // var ah = u.c(Const.hal, penult);
-        // var aah = Const.A == penult;
         first.pop();
         fin = first.slice(-1)[0];
         marker = {type: 'visarga', first: first, fin: fin, second: second, beg: beg};
@@ -956,9 +954,10 @@ function addVisargaFilter(marker) {
     var aah = Const.A == fin;
     if (ah && beg =='अ') marker.num = 'visarga-ah-a';
     // HARD !!!!!!!!!!!!!
-    if (ah && u.isConsonant(beg)) marker.num = 'visarga-hard-cons';
+    // if (ah && u.isConsonant(beg)) marker.num = 'visarga-hard-cons';
+    if (u.vowsound(fin) && u.c(Const.Kar, beg)) marker.num = 'visarga-hard-cons';
 
-    // log('VISARGA ADD FILTER:', marker.num, 'fin:', fin, 'beg:', beg);
+    // log('VISARGA ADD FILTER:', marker);
     // xxx
 }
 
