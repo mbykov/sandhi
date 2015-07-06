@@ -60,7 +60,6 @@ var tests = [
      ]
     },
 
-
     {sutra: 'visarga-hard-cons',
      descr: '(visarga) changes to (श्) (p sb) when followed by (च् or छ्) (p hc)',
      only: 'ext',
@@ -89,13 +88,22 @@ var tests = [
     // to R нужно переделать, чтобы охватить все
 
     {sutra: 'visarga-r',
-     descr: 'visarga after any vowel except अ or आ changes to र् when followed by a vowel or soft consonant except र्',
+     descr: 'visarga for र्',
      only: 'ext',
      tests: [
+         // visarga (for र्) after any vowel except अ or आ changes to र् when followed by a vowel or soft consonant except र्
          ['गणपतिरवतु', 'गणपतिः', 'अवतु'],
          ['रविरुदेति', 'रविः', 'उदेति'],
          ['गुरुर्ब्रह्मा', 'गुरुः', 'ब्रह्मा'],
          ['मनुर्गच्छति', 'मनुः', 'गच्छति'],
+         // अ & visarga changes to अर् when followed by a vowel or soft consonant except र्
+         ['पुनरपि', 'पुनः', 'अपि'],
+         ['पितर्वदसि', 'पितः', 'वदसि'],
+         ['मातरिन्दुं', 'मातः', 'इन्दुं'],
+         // आ & visarga changes to आर् when followed by a (vowel or soft consonant except र्)
+         ['द्वारत्र', 'द्वाः', 'अत्र'],
+         ['द्वार्दृष्टा', 'द्वाः', 'दृष्टा'],
+         ['', '', ''],
          ['', '', ''],
          ['', '', ''],
      ]

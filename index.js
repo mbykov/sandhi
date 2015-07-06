@@ -635,10 +635,11 @@ function delVowFilter(marker) {
 
     // diphthong followed by any vowel (e,o vow-a), including itself, changes to its semi-vowel equivalent - external - optional
     // else if ((u.c(Const.yaR, marker.fin) || u.c(Const.yaR, marker.pen)) && marker.pattern != Const.avagraha && u.c(Const.allvowels, marker.beg)) pushMark('6.1.78');
-    else if ((u.c(Const.yaR, marker.fin) || u.c(Const.yaR, marker.pen)) && marker.pattern != Const.avagraha) pushMark('6.1.78');
+    // FIXME: тут ИЛИ слишком много, уточнить - иначе перекрывается с R-visarga, пока убрал
+    // else if ((u.c(Const.yaR, marker.fin) || u.c(Const.yaR, marker.pen)) && marker.pattern != Const.avagraha) pushMark('6.1.78');
 
     // log('M', marker);
-    // log('M', u.c(Const.yaR, marker.pattern));
+    // log('M', Const.yaR, u.c(Const.yaR, marker.pattern));
 
     // 6.1.109 - ayadi - e,o+a => avagraha
     if (marker.pattern == Const.avagraha) pushMark('6.1.109');
@@ -662,6 +663,16 @@ function delVowFilter(marker) {
         }
     }    // ['सुगण्णिति', 'सुगण्', 'इति'],
 
+    //  visarga after any vowel changes to र् when followed by a vowel // vowel part of visarga-r sutra
+    if ((fin == 'र' && u.vowsound(marker.pen)) || (marker.pattern == 'र' && u.vowsound(fin))) {
+        var mark = _.clone(marker);
+        if (fin == 'र') mark.first = mark.first.slice(0,-1);
+        mark.type = 'visarga';
+        mark.num = 'visarga-r';
+        markers.push(mark);
+    }
+
+    // log('DEL-VOW-MARKER', marker);
     // log('DEL-VOW-MARKERS', markers);
     return markers;
 }
@@ -670,7 +681,7 @@ function delVowFilter(marker) {
 function delConsFilter(marker) {
     var markers = [];
     var fin = marker.fin;
-    var penult = marker.penult;
+    var penult = marker.pen;
     var beg = marker.beg;
 
     var pushMark = function(num) {
@@ -705,7 +716,15 @@ function delConsFilter(marker) {
     if (fin == 'ल' && beg == 'ल')  pushMark('8.4.60');
     if (marker.pen == 'ल' && fin == Const.candra && beg == 'ल')  pushMark('8.4.60');
 
-    // log('DEL-CONS-MARKERS', markers);
+    if (marker.fin == 'र' && u.vowsound(marker.pen) && (u.c(Const.JaS, marker.beg) || (u.c(Const.yaR, marker.beg) && marker.beg != 'र') ))  {
+        var mark = _.clone(marker);
+        mark.first = mark.first.slice(0,-1);
+        mark.type = 'visarga';
+        mark.num = 'visarga-r';
+        markers.push(mark);
+    }
+
+    // log('DEL-CONS-MARKERS', marker);
     return markers;
 }
 
@@ -751,6 +770,8 @@ sandhi.prototype.del = function(samasa, second) {
         markers = delVisFilter(marker);
         break;
     }
+
+    // log('DEL=> MARKERS', markers);
 
     if (markers.length == 0) {
         // log('====== SANDHI: ======= NO MARKERS =======');
