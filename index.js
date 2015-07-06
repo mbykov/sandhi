@@ -981,120 +981,14 @@ function addVisargaFilter(marker) {
     var aah = Const.A == fin;
     if (ah && beg =='अ') marker.num = 'visarga-ah-a';
     if (u.vowsound(fin) && u.c(Const.Kar, beg)) marker.num = 'visarga-hard-cons';
+    if (u.vowsound(fin) && u.c(Const.allvowels, beg) || (u.c(Const.JaS, marker.beg) || (u.c(Const.yaR, marker.beg) && marker.beg != 'र')) ) marker.num = 'visarga-r';
 
     // log('VISARGA ADD FILTER:', marker);
 }
 
-function addFilter_(f, s) {
-    var first = f.split('');
-    var second = s.split('');
-    var fin = first.slice(-1)[0];
-    if (u.c(Const.consonants, fin)) fin = '';
-    var penult = first.slice(-2)[0];
-    var beg = second[0];
-    var marker;
-    // Const.special ? candra всегда после вирамы? Что остальные?
-
-    if (fin == Const.virama) { //  && u.c(Const.hal, beg)
-        var vir = false;
-        var candra = false;
-        if (fin == Const.virama) {
-            first.pop();
-            fin = first.slice(-1)[0];
-            penult = first.slice(-2)[0];
-            vir = true;
-        }
-        if (fin == Const.candra) {
-            first.pop();
-            fin = first.slice(-1)[0];
-            candra = true;
-        }
-        marker = {type: 'cons', first: first, fin: fin, vir: vir, second: second, beg: beg};
-        if (vir) marker.vir = true;
-        if (candra) marker.candra = true;
-
-        // === ADD FILTER CONSONATS ===
-        // hard consonant followed by a soft consonant or vow. changes to the third of its class
-        if (u.c(Const.Kay, fin) && (u.c(Const.allvowels, beg) || (u.c(Const.haS, beg) && !u.c(Const.Yam, beg)))) marker.num = '8.2.39';
-        // soft consonant except nasal, followed by a hard consonant changes to 1st consonant of class = > reverse: class1+hard
-        if (u.c(Const.haS, fin) && !u.c(Const.nasals, fin) && u.c(Const.Kar, beg)) marker.num = '8.4.55';
-        // class consonant followed by (nasal) optionally changes to the nasal of class, or less commonly for class hard consonants, changes to 3rd consonant of class
-        if (u.c(Const.Jay, fin) && u.c(Const.nm, beg)) marker.num = '8.4.45';
-        // dental class consonant followed by a palatal class consonant changes to the corresponding palatal
-        if (u.c(u.dental(), fin) && u.c(u.palatal(), beg)) marker.num = '8.4.40';
-        // dental class consonant followed by a cerebral class consonant changes to the corresponding cerebral
-        if (u.c(u.dental(), fin) && u.c(u.cerebral(), beg)) marker.num = '8.4.41';
-        // If n is followed by l, then n is replaced by nasal l. If a dental other than n and s is followed by l, then the dental is replaced by l.
-        if (u.c(u.dental(), fin) && beg == 'ल') marker.num = '8.4.60';
-        // m,n to anusvara or nasal + cons of class of that nasal
-        if (fin == 'म' && u.c(Const.hal, beg)) marker.num = '8.3.23';
-        //ङ्, ण्, न् at the end of a word after a short vowel doubles itself when followed by a vowel',
-        if (u.c(Const.Nam, fin) && u.vowshort(penult) && u.c(Const.allvowels, beg)) marker.num = 'cons-nasal-doubled';
-
-
-        // FIXME: порядок имеет значение - 8.2.39 д.б. раньше 8.4.40
-
-        // log('CONS ADD MARKER:', marker.num, 'fin:', fin, 'beg:', beg, Const.Yam);
-
-        // === ADD FILTER VOWELS ===
-    } else if ((u.c(Const.consonants, fin) || u.c(Const.allligas, fin)) && u.c(Const.allvowels, beg)) {
-        marker = {type: 'vowel', first: first, fin: fin, second: second, beg: beg};
-        if (u.similar(fin, beg) || u.c(Const.aAliga, fin) && u.c(Const.aA, beg)) marker.num = '6.1.101';
-        if (u.c(Const.aAliga, fin) && u.c(Const.allsimples, beg)) marker.num = '6.1.87';
-        if (u.c(Const.aAliga, fin) && u.c(Const.diphtongs, beg)) marker.num = '6.1.88';
-        if (u.c(Const.allsimpleligas, fin) && u.c(Const.allvowels, beg) && !u.similar(fin, beg)) marker.num = '6.1.77';
-        // 6.1.78 - ayadi-guna - e,o+vow-a => ay,av+vow-a (comp. 6.1.109); - ayadi-vriddhi - E,O+vow => Ay,Av+vow, if vow=aA - next=cons
-        if (u.c(Const.diphtongs, u.vowel(fin)) && u.c(Const.allvowels, u.vowel(fin)) && !(u.c(Const.gunas, u.vowel(fin)) && beg =='अ')) marker.num = '6.1.78';
-        if (u.c(Const.gunas, u.vowel(fin)) && beg =='अ') marker.num = '6.1.109';
-
-        // log('ADD VOW MARK', marker.num, 'fin', fin, 'beg', beg, 3, u.vowel(fin));
-
-    // . . . if ((first.length == 1) && u.c(Const.allvowels, fin) && u.c(Const.allvowels, beg)) {        // FIXME: случай first из одной гласной буквы.
-
-
-        // === ADD FILTER VISARGA ===
-    } else if (fin == Const.visarga) {
-        var ah = u.c(Const.hal, penult);
-        var aah = Const.A == penult;
-        marker = {type: 'visarga', first: first, fin: fin, second: second, beg: beg};
-        // -ah: // ***
-        if (ah && beg =='अ') marker.num = 'visarga-ah-a';
-        if (ah && u.c(Const.haS, beg)) marker.num = 'visarga-ah-soft';
-        // अ & visarga (standing for अस्) followed by a vowel except अ -> visarga is dropped
-        // NOTE_1: FIXME: TODO: NB: ===> there is case with diphtongs, but not simple vowel, when visarga changes to y, but not space ->
-        // http://www.sanskrit-sanscrito.com.ar/en/learning-sanskrit-combination-4-1/431 -> Table 9
-        if (ah && u.c(Const.allexa, beg)) marker.num = 'visarga-ah-other';
-
-        // (visarga) changes to (श्) (p sb) when followed by (च् or छ्) (p hc)
-        if (u.c(['च', 'छ', 'श'], beg)) {
-            marker.num = 'visarga-hard-cons';
-            marker.result = 'श्';
-        } else if (u.c(['ट', 'ठ', 'ष'], beg)) {
-            marker.num = 'visarga-hard-cons';
-            marker.result = 'ष्';
-        } else if (u.c(['त', 'थ', 'स'], beg)) {
-            marker.num = 'visarga-hard-cons';
-            marker.result = 'स्';
-        }
-
-        // -Ah
-        // आ & visarga (for आस्) is followed by a vowel or soft consonent - > dropped.
-        if (aah && (u.c(Const.allvowels, beg) || u.c(Const.haS, beg))) marker.num = 'visarga-aah-vow';
-
-        // log('VISARGA ADD MARKER:', marker.num, 'fin:', fin, 'beg:', beg);
-
-        // visarga after simple changes to र् when followed by a vowel or soft consonant except र्
-        if (u.c(Const.allsimples, u.vowel(penult)) && (u.c(Const.allvowels, beg) || (u.c(Const.JaS, beg) && beg != 'र'))) marker.num = '4.1.3';
-
-    } else {
-      marker = 'can not be'
-    }
-    // log('MARKER', marker, fin, beg);
-    return marker;
-}
-
 function addResult(mark) {
-    if (mark.type == 'cons' && u.c(Const.allvowels, mark.beg)) {
+    // if (mark.type == 'cons' && u.c(Const.allvowels, mark.beg)) { // почему const? там же не м.б. beg=vowel?
+    if (u.c(Const.allvowels, mark.beg)) {
         mark.second.shift();
         var liga = u.liga(mark.beg);
         mark.second.unshift(liga);
