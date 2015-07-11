@@ -595,7 +595,8 @@ function anusvaraInMiddle(samasa, arr) {
     });
     return arr;
 }
-// SPLIT END, REMOVE
+
+// ============================= SPLIT END, REMOVE ==============================
 
 // ============= DELETE ==================
 function delVowFilter(marker) {
@@ -642,7 +643,8 @@ function delVowFilter(marker) {
     // log('M', Const.yaR, u.c(Const.yaR, marker.pattern));
 
     // 6.1.109 - ayadi - e,o+a => avagraha
-    if (marker.pattern == Const.avagraha) pushMark('6.1.109');
+    // FIXME: похоже, это вообще убрать. 109 дает o на конце, а visarga-ah-a в тех же тестах дает висаргу, что правильно. О - нечто промежуточное, им. смысл для add
+    // if (marker.pattern == Const.avagraha) pushMark('6.1.109');
 
     if (u.c(Const.allvowels, u.vowel(marker.pattern)) && (u.c(Const.class3, marker.fin))) { // xdVyy->xt->Vyy
         var mark = _.clone(marker);
