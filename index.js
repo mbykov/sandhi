@@ -757,9 +757,10 @@ function delVisFilter(marker) {
   методы cut() и del() - del() возвращает пару first-second, cut() возвращает first
 */
 sandhi.prototype.del = function(samasa, second) {
-    var marker = delMarker(samasa, second);
+    if (second == '') return [{pos: 0, num: 'start', firsts: [samasa], seconds: [''], delta: {} }];
+    else if (samasa == second) return [{pos: 0, num: 'start', firsts: [''], seconds: [samasa], delta: {} }];
 
-    if (marker.first == '') return [{pos: 0, num: 'start', firsts: [], seconds: [samasa], delta: {} }];
+    var marker = delMarker(samasa, second);
     var markers = [];
     switch (marker.type) {
     case 'vowel':
@@ -772,8 +773,6 @@ sandhi.prototype.del = function(samasa, second) {
         markers = delVisFilter(marker);
         break;
     }
-
-    // log('DEL=> MARKERS', markers);
 
     if (markers.length == 0) {
         // log('====== SANDHI: ======= NO MARKERS =======');
@@ -802,7 +801,7 @@ sandhi.prototype.del = function(samasa, second) {
     if (cutted.length == 0) {
         log('=======>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> CUTTED EMPTY');
     }
-
+    // log('DEL=> MARKERS', markers);
     // log('DEL=> RES', cutted);
     return cutted;
 }
@@ -858,7 +857,7 @@ function delMarker(samasa, second) {
     else if (spec == Const.candra) marker.candra = true;
     else if (spec == Const.anunasika) marker.anunasika = true;
 
-    // log('DEL-marker', '\n', marker);
+    // log('DEL-marker', '\n', marker); //
     return marker;
 }
 
@@ -903,6 +902,9 @@ function addMarker(first, second) {
 }
 
 sandhi.prototype.add = function(first, second) {
+    if (second == '') return first;
+    else if (first == '') return second;
+
     var marker = addMarker(first, second);
     // log('ADD TEMPLATE', marker);
     switch (marker.type) {
@@ -922,7 +924,7 @@ sandhi.prototype.add = function(first, second) {
     // if (!sutra) return; // FIXME: не должно быть
     var markers = sutra.add(marker);
     // log('ADD=> MARKERS', markers);
-    // log('ADD=> RES', markers.map(function(m) { return addResult(m)})); // शिोऽहम्
+    // log('ADD=> RES', markers.map(function(m) { return addResult(m)}));
     return markers.map(function(m) { return addResult(m)});
 }
 
@@ -989,8 +991,10 @@ function addVisargaFilter(marker) {
 }
 
 function addResult(mark) {
-    // if (mark.type == 'cons' && u.c(Const.allvowels, mark.beg)) { // почему const? там же не м.б. beg=vowel?
-    if (u.c(Const.allvowels, mark.beg)) {
+    // if (u.c(Const.allvowels, mark.beg)) {
+    // почему const? там же не м.б. beg=vowel?
+    // FIXME: потому что так неудачно прописаны сутры - действительно, нужно удалять и заменять в консонантах - исправить
+    if (mark.type == 'cons' && u.c(Const.allvowels, mark.beg)) {
         mark.second.shift();
         var liga = u.liga(mark.beg);
         mark.second.unshift(liga);
