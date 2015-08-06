@@ -1,5 +1,5 @@
 /*
-  node (only, not component) module for sandhi processing
+  node (only, not component) module for internal sandhi processing
 */
 
 var _ = require('underscore');
@@ -7,7 +7,6 @@ var util = require('util');
 var shiva = require('shiva-sutras');
 var Const = require('./lib/const');
 var u = require('./lib/utils');
-
 
 var voiced_asp = shiva('झष्').result;
 var unvoiced_asp = shiva('खव्').del('चव्').result;

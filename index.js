@@ -757,6 +757,7 @@ function delVisFilter(marker) {
   методы cut() и del() - del() возвращает пару first-second, cut() возвращает first
 */
 sandhi.prototype.del = function(samasa, second) {
+    if (second.length < 2) second = ''; // second should be long enough
     if (second == '') return [{pos: 0, num: 'start', firsts: [samasa], seconds: [''], delta: {} }];
     else if (samasa == second) return [{pos: 0, num: 'start', firsts: [''], seconds: [samasa], delta: {} }];
 

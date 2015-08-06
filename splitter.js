@@ -1,5 +1,5 @@
 /*
-  module flakes - чешуйки
+  module flakes - чешуйки - не используется больше
 */
 
 var _ = require('underscore');
