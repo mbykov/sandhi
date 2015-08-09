@@ -20,6 +20,8 @@ var tests = [
      ]
     },
 
+    // FIXME: not in examples
+
     // In place of the "m" ending in an inflected word , the substitution is to be the "anusvara" if a consonant follows
     // reverse: anusvara to m
     // {sutra: '8.3.23',
@@ -70,10 +72,11 @@ var tests = [
      ]
     },
 
+
+    // TODO: продолжить примеры здесь
     {sutra: '8.4.40',
      descr: 'Dental + Palatal',
      tests: [
-
          ['सच्चित्', 'सत्', 'चित्'],
          ['तच्छिनत्ति', 'तत्', 'छिनत्ति'],
          ['ताञ्जनान्', 'तान्', 'जनान्'], // nasal
@@ -96,7 +99,7 @@ var tests = [
     },
 
     {sutra: '8.4.41',
-     descr: 'A (dental class consonant) followed by a (cerebral class consonant) changes to the (corresponding cerebral)',
+     descr: 'A dental class consonant followed by a cerebral class consonant changes to the corresponding cerebral',
      tests: [
          // ['ताण्डम्बरानरामष्षष्ठः्', 'तान्', 'डम्बरान्'],
          ['ताण्डम्बरान्', 'तान्', 'डम्बरान्'],

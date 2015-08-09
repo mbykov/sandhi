@@ -758,8 +758,8 @@ function delVisFilter(marker) {
 */
 sandhi.prototype.del = function(samasa, second) {
     if (second.length < 2) second = ''; // second should be long enough
-    if (second == '') return [{pos: 0, num: 'start', firsts: [samasa], seconds: [''], delta: {} }];
-    else if (samasa == second) return [{pos: 0, num: 'start', firsts: [''], seconds: [samasa], delta: {} }];
+    if (second == '') return [{pos: 0, num: 'cut', firsts: [samasa], seconds: [''], delta: {} }]; // cut => start
+    else if (samasa == second) return [{pos: 0, num: 'cut', firsts: [''], seconds: [samasa], delta: {} }];
 
     var marker = delMarker(samasa, second);
     var markers = [];
@@ -819,7 +819,8 @@ function delMarker(samasa, second) {
     var next = second[1];// just after .beg
     var pattern = fpart.slice(-1); // pattern - стоит на месте beg
     var first = fpart.slice(0, -1);
-    var size = first.length;
+    var clean = first.split(Const.virama).join('');
+    var size = clean.length; // ===> вирама не считается за позицию - попытка
     var fin = first[size-1];
     var penult = first[size-2];
     var pos = size; // 2 - чтобы pos совпадал с позицией pattern - FIXME: всегда ли это правильно?
