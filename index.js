@@ -374,19 +374,6 @@ function checkResult(mark) {
     return result;
 }
 
-// function checkResultSTR_(result) {
-//     var words = result.split(' ');
-//     words.forEach(function(word) {
-//         var first = word[0];
-//         var last = word.slice(-1);
-//         if (last == Const.virama) last = word.slice(-2,-1);
-//         if (u.c(['ॠ', 'ऌ', 'ङ', 'ञ', 'ण'].concat(Const.special), first)) {
-//             log('== ERROR ==========', first, last);
-//         }
-//         // log(1, first, 2, last);
-//     });
-// }
-
 function spacedSplit(samasa, next) {
     var fin = samasa.slice(-1);
     var penult = samasa.slice(-2);
@@ -456,7 +443,6 @@ sandhi.prototype.split = function(str) {
     var samasas = str.split(' ');
     samasas.forEach(function(samasa, idx) {
         var next = samasas[idx+1] || '';
-        // var spaced = (next) ? spacedSplit(samasa, next) : samasa;
         var spaced = spacedSplit(samasa, next);
         // log(1, spaced, 'next', next);
         splits[samasa] = splitone(spaced);
@@ -820,7 +806,8 @@ function delMarker(samasa, second) {
     var pattern = fpart.slice(-1); // pattern - стоит на месте beg
     var first = fpart.slice(0, -1);
     var clean = first.split(Const.virama).join('');
-    var size = clean.length; // ===> вирама не считается за позицию - попытка
+    // var size = clean.length; // ===> вирама не считается за позицию - попытка
+    var size = first.length; // ===> вирама не считается за позицию - попытка
     var fin = first[size-1];
     var penult = first[size-2];
     var pos = size; // 2 - чтобы pos совпадал с позицией pattern - FIXME: всегда ли это правильно?
