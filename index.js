@@ -746,7 +746,6 @@ sandhi.prototype.del = function(samasa, second) {
     if (second.length < 2) second = ''; // second should be long enough
     if (second == '') return [{pos: 0, num: 'cut', firsts: [samasa], seconds: [''], delta: {} }]; // cut => start
     else if (samasa == second) return [{pos: 0, num: 'cut', firsts: [''], seconds: [samasa], delta: {} }];
-
     var marker = delMarker(samasa, second);
     var markers = [];
     switch (marker.type) {
@@ -762,7 +761,7 @@ sandhi.prototype.del = function(samasa, second) {
     }
 
     if (markers.length == 0) {
-        // log('====== SANDHI: ======= NO MARKERS =======');
+        log('====== SANDHI: ======= NO MARKERS =======');
         var cutMark = {firsts: [marker.first], seconds: [marker.second], pos: marker.pos, num: 'cut', delta: {}};
         // log('cutMark', cutMark);
         return [cutMark];
