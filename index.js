@@ -712,7 +712,7 @@ function delConsFilter(marker) {
         markers.push(mark);
     }
 
-    // log('DEL-CONS-MARKERS', marker);
+    // log('DEL-CONS-MARKERS', markers);
     return markers;
 }
 
@@ -732,7 +732,7 @@ function delVisFilter(marker) {
     // FIXME: ифы тут повторяют условия makeMarker, и неясно нужно ли в delete-висарге вообще массив и соотв., клонирование
 
     if (fin == 'ो' && pattern == Const.avagraha)  pushMark('visarga-ah-a');
-    else if (u.c(Const.Sar, marker.pattern) && marker.virama && u.c(Const.Kar, beg)) pushMark('visarga-hard-cons');
+    // else if (u.c(Const.Sar, marker.pattern) && marker.virama && u.c(Const.Kar, beg)) pushMark('visarga-hard-cons');
 
     // log('DEL-VISARGA-MARKERS', markers);
     return markers;
@@ -747,6 +747,7 @@ sandhi.prototype.del = function(samasa, second) {
     if (second == '') return [{pos: 0, num: 'cut', firsts: [samasa], seconds: [''], delta: {} }]; // cut => start
     else if (samasa == second) return [{pos: 0, num: 'cut', firsts: [''], seconds: [samasa], delta: {} }];
     var marker = delMarker(samasa, second);
+
     var markers = [];
     switch (marker.type) {
     case 'vowel':
@@ -816,7 +817,7 @@ function delMarker(samasa, second) {
 
     if (fin == 'ो' && pattern == Const.avagraha) { // visarga-ah-a
         type = 'visarga';
-    } else if (u.c(Const.Sar, penult) && fin == Const.virama && u.c(Const.Kar, beg)) { // visarga-hard-cons
+    } else if (u.c(Const.Sar, penult) && fin == Const.virama && !u.c(u.palatal(), beg) && u.c(Const.Kar, beg)) { // visarga-hard-cons
         type = 'visarga';
         pattern = penult;
         first = first.slice(0, -2);
