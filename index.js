@@ -252,8 +252,7 @@ function delMarker(samasa, second) {
 
     if (fin == 'ो' && pattern == Const.avagraha) { // visarga-ah-a
         type = 'visarga';
-    // } else if (u.c(Const.Sar, penult) && fin == Const.virama && !u.c(u.palatal(), beg) && u.c(Const.Kar, beg)) { // visarga-hard-cons
-    } else if (u.c(Const.Sar, penult) && fin == Const.virama && u.c(Const.cC, beg) ) { // visarga-hard-cons
+    } else if (u.c(Const.Sar, penult) && fin == Const.virama && u.c(Const.Kar, beg) ) { // visarga-hard-cons
         // descr: '(visarga) changes to (श्) (p sb) when followed by (च् or छ्) (p hc)',
         type = 'visarga';
         pattern = penult;
