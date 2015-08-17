@@ -11,7 +11,7 @@ var visRules = require('./lib/visarga_sutras');
 var consRules = require('./lib/cons_sutras');
 var sutras = require('./lib/cons_sutras');
 var log = u.log;
-var salita = require('salita-component'); // FIXME: это нужно убрать
+// var salita = require('salita-component');
 
 
 var debug = (process.env.debug == 'true') ? true : false;
@@ -66,12 +66,13 @@ function delVowFilter(marker) {
     // OLD: else if (marker.pen == Const.virama && u.c(Const.yaR, marker.fin) && u.c(Const.diphtongs, u.vowel(marker.pattern)) && u.c(Const.hal, marker.next)) pushMark('6.1.77'); // diphtongs
 
     // diphthong followed by any vowel (e,o vow-a), including itself, changes to its semi-vowel equivalent - external - optional
-    // else if ((u.c(Const.yaR, marker.fin) || u.c(Const.yaR, marker.pen)) && marker.pattern != Const.avagraha && u.c(Const.allvowels, marker.beg)) pushMark('6.1.78');
+    else if ((u.c(Const.yaR, marker.fin) || u.c(Const.yaR, marker.pen)) && marker.pattern != Const.avagraha && u.c(Const.allvowels, marker.beg)) pushMark('6.1.78');
     // FIXME: тут ИЛИ слишком много, уточнить - иначе перекрывается с R-visarga, пока убрал
-    // else if ((u.c(Const.yaR, marker.fin) || u.c(Const.yaR, marker.pen)) && marker.pattern != Const.avagraha) pushMark('6.1.78');
+    else if ((u.c(Const.yaR, marker.fin) || u.c(Const.yaR, marker.pen)) && marker.pattern != Const.avagraha) pushMark('6.1.78');
 
     // 6.1.109 - ayadi - e,o+a => avagraha
-    // FIXME: похоже, это вообще убрать. 109 дает o на конце, а visarga-ah-a в тех же тестах дает висаргу, что правильно. О - нечто промежуточное, им. смысл для add
+    // похоже, это вообще убрать. 109 дает o на конце, а visarga-ah-a в тех же тестах дает висаргу, что правильно. О - нечто промежуточное, им. смысл для add
+    // processed in browser for now
     // if (marker.pattern == Const.avagraha) pushMark('6.1.109');
 
     if (u.c(Const.allvowels, u.vowel(marker.pattern)) && (u.c(Const.class3, marker.fin))) { // xdVyy->xt->Vyy
@@ -174,7 +175,7 @@ function delVisFilter(marker) {
     // FIXME: ифы тут повторяют условия makeMarker, и неясно нужно ли в delete-висарге вообще массив и соотв., клонирование
 
     if (fin == 'ो' && pattern == Const.avagraha)  pushMark('visarga-ah-a');
-    // else if (u.c(Const.Sar, marker.pattern) && marker.virama && u.c(Const.Kar, beg)) pushMark('visarga-hard-cons');
+    else if (u.c(Const.Sar, marker.pattern) && marker.virama && u.c(Const.Kar, beg)) pushMark('visarga-hard-cons');
 
     // log('DEL-VISARGA-MARKERS', markers);
     return markers;
@@ -251,7 +252,9 @@ function delMarker(samasa, second) {
 
     if (fin == 'ो' && pattern == Const.avagraha) { // visarga-ah-a
         type = 'visarga';
-    } else if (u.c(Const.Sar, penult) && fin == Const.virama && !u.c(u.palatal(), beg) && u.c(Const.Kar, beg)) { // visarga-hard-cons
+    // } else if (u.c(Const.Sar, penult) && fin == Const.virama && !u.c(u.palatal(), beg) && u.c(Const.Kar, beg)) { // visarga-hard-cons
+    } else if (u.c(Const.Sar, penult) && fin == Const.virama && u.c(Const.cC, beg) ) { // visarga-hard-cons
+        // descr: '(visarga) changes to (श्) (p sb) when followed by (च् or छ्) (p hc)',
         type = 'visarga';
         pattern = penult;
         first = first.slice(0, -2);
@@ -280,7 +283,7 @@ function delMarker(samasa, second) {
     else if (spec == Const.candra) marker.candra = true;
     else if (spec == Const.anunasika) marker.anunasika = true;
 
-    // log('DEL-marker', '\n', marker); //
+    // log('DEL-marker', '\n', marker);//
     return marker;
 }
 

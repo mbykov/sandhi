@@ -145,7 +145,7 @@ var tests = [
 
     // not in examples yet
     {sutra: '6.1.78',
-     descr: 'diphthong followed by any vowel (e,o vow-a), including itself, changes to its semi-vowel equivalent - external - optional',
+     descr: 'diphthong followed by any vowel (e,o vow-a), including itself but a, changes to its semi-vowel equivalent - external - optional',
      // e,o+vow-a => ay,av+vow; E,O+vow => Ay,Av+vow
      only: 'ext',
      tests: [
@@ -176,18 +176,19 @@ var tests = [
      ]
     },
 
-    {sutra: '6.1.109',
-     // {sutra: '',
-     descr: '"e" and "o" at the end of a word, when followed by "a" gives avagraha',
-     only: 'ext',
-     tests: [
-         ['वनेऽटति', 'वने', 'अटति'],
-         ['शक्तयेऽर्चन्ति', 'शक्तये', 'अर्चन्ति'],
-         ['गुरोऽङ्ग्धि', 'गुरो', 'अङ्ग्धि'],
-         ['विष्णोऽक्ष्णुहि', 'विष्णो', 'अक्ष्णुहि'],
-         ['', '', ''],
-     ]
-    },
+    // processed in browser
+    // {sutra: '6.1.109',
+    //  // {sutra: '',
+    //  descr: '"e" and "o" at the end of a word, when followed by "a" gives avagraha',
+    //  only: 'ext',
+    //  tests: [
+    //      ['वनेऽटति', 'वने', 'अटति'],
+    //      ['शक्तयेऽर्चन्ति', 'शक्तये', 'अर्चन्ति'],
+    //      ['गुरोऽङ्ग्धि', 'गुरो', 'अङ्ग्धि'],
+    //      ['विष्णोऽक्ष्णुहि', 'विष्णो', 'अक्ष्णुहि'],
+    //      ['', '', ''],
+    //  ]
+    // },
 
     // {sutra: '6.1.78',
     {sutra: '',

@@ -1,10 +1,11 @@
 var utils = require('../utils');
 
 var tests = [
+    // browser
     // अ & visarga changes to ओ+avagraha when followed by अ;
     {sutra: 'visarga-ah-a',
      descr: 'aH+a => o-ऽ',
-     only: 'ext',
+     only: 'browser',
      tests: [
          ['शिवोऽहम्', 'शिवः', 'अहम्'],
          ['रामोऽस्ति', 'रामः', 'अस्ति'],
@@ -16,9 +17,10 @@ var tests = [
      ]
     },
 
+    // browser
     {sutra: 'visarga-ah-soft',
      descr: 'अ & visarga (for अस्) followed by a soft consonant -> changes to ओ',
-     only: 'ext',
+     only: 'browser',
      tests: [
          ['नमो नारायणाय', 'नमः', 'नारायणाय'],
          ['रामो गच्छति', 'रामः', 'गच्छति'],
@@ -30,9 +32,10 @@ var tests = [
      ]
     },
 
+    // browser
     {sutra: 'visarga-ah-other',
      descr: 'अ & visarga (standing for अस्) followed by a vowel except अ -> visarga is dropped',
-     only: 'ext',
+     only: 'browser',
      tests: [
          ['राम इच्छति', 'रामः', 'इच्छति'],
          ['राम उवाच', 'रामः', 'उवाच'],
@@ -43,10 +46,11 @@ var tests = [
      ]
     },
 
+    // browser
     // आ & visarga  (for आस्) is followed by a vowel or soft consonant - > dropped.
     {sutra: 'visarga-aah-vow',
      descr: '',
-     only: 'ext',
+     only: 'browser',
      tests: [
          ['नरा अटन्ति', 'नराः', 'अटन्ति'],
          ['नरा गच्छन्ति', 'नराः', 'गच्छन्ति'],
@@ -64,7 +68,7 @@ var tests = [
      descr: '(visarga) changes to (श्) (p sb) when followed by (च् or छ्) (p hc)',
      only: 'ext',
      tests: [
-         ['रामश्च', 'रामः', 'च'],
+         ['रामश्चातक', 'रामः', 'चातक'],
          ['नरश्चरति', 'नरः', 'चरति'],
          ['शिवश्छायः', 'शिवः', 'छायः'],
 
@@ -78,15 +82,14 @@ var tests = [
          ['नरस्थुत्थुकारकः', 'नरः', 'थुत्थुकारकः'],
 
          // optional - repeating beg
-         ['नमश्शिवाय', 'नमः', 'शिवाय'],
-         ['नमष्षणमुखाय', 'नमः', 'षणमुखाय'],
+         // ['नमश्शिवाय', 'नमः', 'शिवाय'],
+         // ['नमष्षणमुखाय', 'नमः', 'षणमुखाय'],
          ['', '', ''],
          ['', '', ''],
      ]
     },
 
     // to R нужно переделать, чтобы охватить все
-
     {sutra: 'visarga-r',
      descr: 'visarga for र्',
      only: 'ext',
@@ -123,6 +126,7 @@ var tests = [
 describe('visarga_sandhi', function() {
     tests.forEach(function(t) {
         if (t.sutra == '') return;
+        if (t.only != 'ext') return;
         var descr = [t.sutra, t.descr, t.only].join(' - ');
         describe(descr, function() {
             t.tests.forEach(function(test, idx) {
