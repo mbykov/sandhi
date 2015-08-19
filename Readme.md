@@ -1,7 +1,5 @@
 # node.js sanskrit sandhi rules
 
-to be completely rewritten
-
 ## Installation
 
 With node.js:
