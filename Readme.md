@@ -1,4 +1,4 @@
-# node.js sanskrit internal sandhi only
+# node.js sanskrit sandhi rules
 
 to be completely rewritten
 
@@ -6,21 +6,27 @@ to be completely rewritten
 
 With node.js:
 
-````bash
+````javascript
 $ npm install sandhi
 ````
 
 ## API
 
+````javascript
 var sandhi = require('sandhi');
+````
 
-sandhi.del(form, flex, cflex)
+````javascript
+sandhi.del(samasa, second)
+sandhi.add(first, second)
+sandhi.int(form, flex, cflex)
+````
 
 View more examples in [test suite](https://github.com/mbykov/sandhi/tree/master/test/node)
 
 ## Running node tests
 
-````bash
+````javascript
 $ make test
 ````
 

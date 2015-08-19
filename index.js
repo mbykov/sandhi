@@ -12,11 +12,9 @@ var consRules = require('./lib/cons_sutras');
 var sutras = require('./lib/cons_sutras');
 var log = u.log;
 // var salita = require('salita-component');
-
+var internal = require('./lib/internal');
 
 var debug = (process.env.debug == 'true') ? true : false;
-
-// module.exports = sandhi();
 
 module.exports = {
     sandhi: sandhi(),
@@ -422,4 +420,10 @@ function addResult(mark) {
     if (mark.end) mark.first.push(mark.end);
     if (mark.vir) mark.first.push(Const.virama);
     return [mark.first.join(''), mark.second.join('')].join(space);
+}
+
+// =================== internal consonant sandhi, should be rewritten =================
+
+sandhi.prototype.int = function(form, flex, cflex, prefix, krit) {
+    return internal(form, flex, cflex, prefix, krit);
 }
