@@ -22,7 +22,7 @@
     },
     "devDependencies": {
         "uglify-js": "*",
-        "mocha": "*",
+        "mocha": "~2.0.1",
         "should": "*"
     },
     "author": "m.bykov",
