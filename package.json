@@ -21,8 +21,6 @@
         "salita-component": "*"
     },
     "devDependencies": {
-        "duo": "*",
-        "duo-test": "*",
         "uglify-js": "*",
         "mocha": "*",
         "should": "*"
