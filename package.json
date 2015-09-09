@@ -1,6 +1,6 @@
 {
     "name": "sandhi",
-    "version": "1.43.1",
+    "version": "1.43.2",
     "description": "sanskrit sandhi rules module for node.js",
     "main": "index.js",
     "scripts": {
@@ -17,7 +17,8 @@
     },
     "dependencies": {
         "underscore": "*",
-        "shiva-sutras": "*"
+        "shiva-sutras": "*",
+        "salita-component": "*"
     },
     "devDependencies": {
         "duo": "*",

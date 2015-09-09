@@ -1,7 +1,7 @@
 //
 
 var salita = require('salita-component');
-var splitter = require('../splitter');
+// var splitter = require('../splitter');
 
 var s = require('../index');
 var sandhi = s.sandhi;
@@ -91,7 +91,7 @@ utils.prototype.gita = function(descr, sa, v, idx, idy) {
         // true.should.equal(true);
 
         // SPLITTER FIXME: убрать, это тест
-        splitter.get(sa);
+        // splitter.get(sa);
     });
 }
 

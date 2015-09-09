@@ -425,5 +425,5 @@ function addResult(mark) {
 // =================== internal consonant sandhi, should be rewritten =================
 
 sandhi.prototype.int = function(form, flex, cflex, prefix, krit) {
-    return internal(form, flex, cflex, prefix, krit);
+    return internal.del(form, flex, cflex, prefix, krit);
 }
