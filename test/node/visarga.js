@@ -1,71 +1,9 @@
 var utils = require('../utils');
 
 var tests = [
-    // browser
-    // अ & visarga changes to ओ+avagraha when followed by अ;
-    {sutra: 'visarga-ah-a',
-     descr: 'aH+a => o-ऽ',
-     only: 'browser',
-     tests: [
-         ['शिवोऽहम्', 'शिवः', 'अहम्'],
-         ['रामोऽस्ति', 'रामः', 'अस्ति'],
-         ['गच्छतोऽश्वौ', 'गच्छतः', 'अश्वौ'],
-         ['शिवोऽहम्', 'शिवः', 'अहम्'],
-         ['देवोऽस्ति', 'देवः', 'अस्ति'],
-         ['नरोऽश्वः', 'नरः', 'अश्वः'],
-         ['', '', ''],
-     ]
-    },
 
-    // browser
-    {sutra: 'visarga-ah-soft',
-     descr: 'अ & visarga (for अस्) followed by a soft consonant -> changes to ओ',
-     only: 'browser',
-     tests: [
-         ['नमो नारायणाय', 'नमः', 'नारायणाय'],
-         ['रामो गच्छति', 'रामः', 'गच्छति'],
-         ['नरो गच्छति', 'नरः', 'गच्छति'],
-         ['नरो यच्छति', 'नरः', 'यच्छति'],
-         ['नरो हसति', 'नरः', 'हसति'],
-         ['रुद्रो वन्द्यः', 'रुद्रः', 'वन्द्यः'],
-         ['प्राणायामो हितः', 'प्राणायामः', 'हितः'],
-     ]
-    },
-
-    // browser
-    {sutra: 'visarga-ah-other',
-     descr: 'अ & visarga (standing for अस्) followed by a vowel except अ -> visarga is dropped',
-     only: 'browser',
-     tests: [
-         ['राम इच्छति', 'रामः', 'इच्छति'],
-         ['राम उवाच', 'रामः', 'उवाच'],
-         ['नर इच्छति', 'नरः', 'इच्छति'],
-         ['शिव एति', 'शिवः', 'एति'],
-         // ['शिवयेति', 'शिवः', 'एति'], // optional y after diphtong
-         ['', '', ''],
-     ]
-    },
-
-    // browser
-    // आ & visarga  (for आस्) is followed by a vowel or soft consonant - > dropped.
-    {sutra: 'visarga-aah-vow',
-     descr: '',
-     only: 'browser',
-     tests: [
-         ['नरा अटन्ति', 'नराः', 'अटन्ति'],
-         ['नरा गच्छन्ति', 'नराः', 'गच्छन्ति'],
-         ['देवा निस्तारयन्ति', 'देवाः', 'निस्तारयन्ति'],
-         ['अश्वा भवन्ति', 'अश्वाः', 'भवन्ति'],
-         ['योगा आवश्यकाः', 'योगाः', 'आवश्यकाः'],
-         ['', '', ''],
-         ['', '', ''],
-         ['', '', ''],
-         ['', '', ''],
-     ]
-    },
-
-    {sutra: 'visarga-hard-cons',
-     descr: '(visarga) changes to (श्) (p sb) when followed by (च् or छ्) (p hc)',
+    {sutra: 'visarga-sibilant',
+     descr: 'Visarga to श्, ष्, स् when followed by (च् or छ्), (ट् or ठ्), (त् or थ्)',
      only: 'ext',
      tests: [
          ['रामश्चातक', 'रामः', 'चातक'],
@@ -81,15 +19,11 @@ var tests = [
          ['विष्णुस्त्राता', 'विष्णुः', 'त्राता'],
          ['नरस्थुत्थुकारकः', 'नरः', 'थुत्थुकारकः'],
 
-         // optional - repeating beg
-         // ['नमश्शिवाय', 'नमः', 'शिवाय'],
-         // ['नमष्षणमुखाय', 'नमः', 'षणमुखाय'],
          ['', '', ''],
          ['', '', ''],
      ]
     },
 
-    // to R нужно переделать, чтобы охватить все
     {sutra: 'visarga-r',
      descr: 'visarga for र्',
      only: 'ext',
@@ -106,8 +40,78 @@ var tests = [
          // आ & visarga changes to आर् when followed by a (vowel or soft consonant except र्)
          ['द्वारत्र', 'द्वाः', 'अत्र'],
          ['द्वार्दृष्टा', 'द्वाः', 'दृष्टा'],
+         // C1. (visarga) after any (vowel except अ or आ) changes to र् when followed by a (vowel or soft consonant except र्)
+         ['गणपतिरवतु', 'गणपतिः', 'अवतु'],
+         ['रविरुदेति', 'रविः', 'उदेति'],
+         ['गुरुर्ब्रह्मा', 'गुरुः', 'ब्रह्मा'],
+         ['मनुर्गच्छति', 'मनुः', 'गच्छति'],
          ['', '', ''],
          ['', '', ''],
+     ]
+    },
+
+    // ======== OUTER.js ==========
+    // browser
+    // अ & visarga changes to ओ+avagraha when followed by अ;
+    {sutra: 'visarga-avagraha',
+     descr: 'aH+a => o-ऽ',
+     first: true,
+     only: 'ext',
+     tests: [
+         ['शिवोऽहम्', 'शिवः', 'अहम्'],
+         ['रामोऽस्ति', 'रामः', 'अस्ति'],
+         ['गच्छतोऽश्वौ', 'गच्छतः', 'अश्वौ'],
+         ['शिवोऽहम्', 'शिवः', 'अहम्'],
+         ['देवोऽस्ति', 'देवः', 'अस्ति'],
+         ['नरोऽश्वः', 'नरः', 'अश्वः'],
+         ['', '', ''],
+     ]
+    },
+
+    // browser
+    // {sutra: 'visarga-ah-soft',
+    // spaced o-sandhi, sometimes written as external sandhi, i.e. as combined word
+    {sutra: 'visarga-o',
+     descr: 'अ & visarga (for अस्) followed by a soft consonant -> changes to ओ',
+     // only: 'browser',
+     tests: [
+         ['नमोनारायणाय', 'नमः', 'नारायणाय'], // नमो नारायणाय
+         ['रामोगच्छति', 'रामः', 'गच्छति'], // रामो गच्छति
+         ['नरोगच्छति', 'नरः', 'गच्छति'], // etc
+         ['नरोयच्छति', 'नरः', 'यच्छति'],
+         // ['नरोहसति', 'नरः', 'हसति'],
+         // ['रुद्रोवन्द्यः', 'रुद्रः', 'वन्द्यः'],
+         // ['प्राणायामो हितः', 'प्राणायामः', 'हितः'], // प्राणायामो हितः
+     ]
+    },
+
+    // browser
+    // {sutra: 'visarga-ah-other',
+    {sutra: '',
+     descr: 'अ & visarga (standing for अस्) followed by a vowel except अ -> visarga is dropped',
+     only: 'browser',
+     tests: [
+         ['राम इच्छति', 'रामः', 'इच्छति'],
+         ['राम उवाच', 'रामः', 'उवाच'],
+         ['नर इच्छति', 'नरः', 'इच्छति'],
+         ['शिव एति', 'शिवः', 'एति'],
+         // ['शिवयेति', 'शिवः', 'एति'], // optional y after diphtong
+         ['', '', ''],
+     ]
+    },
+
+    // browser
+    // आ & visarga  (for आस्) is followed by a vowel or soft consonant - > dropped.
+    // {sutra: 'visarga-aah-vow',
+     {sutra: '',
+     descr: '',
+     only: 'browser',
+     tests: [
+         ['नरा अटन्ति', 'नराः', 'अटन्ति'],
+         ['नरा गच्छन्ति', 'नराः', 'गच्छन्ति'],
+         ['देवा निस्तारयन्ति', 'देवाः', 'निस्तारयन्ति'],
+         ['अश्वा भवन्ति', 'अश्वाः', 'भवन्ति'],
+         ['योगा आवश्यकाः', 'योगाः', 'आवश्यकाः'],
          ['', '', ''],
      ]
     },
@@ -126,12 +130,12 @@ var tests = [
 describe('visarga_sandhi', function() {
     tests.forEach(function(t) {
         if (t.sutra == '') return;
-        if (t.only != 'ext') return;
-        var descr = [t.sutra, t.descr, t.only].join(' - ');
+        var descr = [t.sutra, t.descr].join(' - ');
+        var cut = false;
+        if (t.first) cut = t.first + '';
         describe(descr, function() {
             t.tests.forEach(function(test, idx) {
-                if (t.only) test.push(t.only);
-                utils.test(test, idx);
+                utils.test(test, idx, cut);
             });
         });
     });

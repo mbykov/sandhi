@@ -1,4 +1,4 @@
-# node.js sanskrit sandhi rules
+# node.js sanskrit external sandhi rules
 
 ## Installation
 
@@ -17,7 +17,6 @@ var sandhi = require('sandhi');
 ````javascript
 sandhi.del(samasa, second)
 sandhi.add(first, second)
-sandhi.int(form, flex, cflex)
 ````
 
 View more examples in [test suite](https://github.com/mbykov/sandhi/tree/master/test/node)
@@ -26,6 +25,7 @@ View more examples in [test suite](https://github.com/mbykov/sandhi/tree/master/
 
 ````javascript
 $ make test
+$ make gita
 ````
 
 ## License

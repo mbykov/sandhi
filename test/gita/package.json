@@ -1,0 +1,13 @@
+{
+  "name": "sandhicut-gita",
+  "version": "0.1.0",
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+      "underscore": "*",
+      "sandhi": "*",
+      "relax-component": "*",
+      "salita-component": "*"
+  }
+}

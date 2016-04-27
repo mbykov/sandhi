@@ -1,0 +1,66 @@
+/*
+  runner: node morph.js eva
+*/
+
+var lat = process.argv.slice(2)[0] || false;
+var lat2 = process.argv.slice(3)[0] || false;
+var add = process.argv.slice(4)[0] || false;
+// var util = require('util');
+var u = require('./lib/utils');
+var inc = u.include;
+
+var salita = require('salita-component');
+var s = require('./index');
+var sandhi = s.sandhi;
+
+if (!lat) return log('samasa ?');
+if (!lat2) return log('second ?');
+
+var samasa, second;
+
+if (/[a-zA-Z]/.test(lat[0])) {
+    samasa = salita.slp2sa(lat);
+} else {
+    samasa = lat;
+    lat = salita.sa2slp(samasa);
+}
+
+if (/[a-zA-Z]/.test(lat2[0])) {
+    second = salita.slp2sa(lat2);
+} else {
+    second = lat2;
+    lat2 = salita.sa2slp(second);
+}
+
+
+log('_la_:', lat, lat2, '_sa_:', samasa, second);
+
+var res;
+if (add) res = sandhi.add(samasa, second);
+else res = sandhi.del(samasa, second, true);
+
+log('del:');
+log(res);
+if (!res) {
+    log('==== NO RESULTS ! ====');
+    return;
+}
+
+log('add:');
+if (!add) {
+    res.forEach(function(result) {
+        log('del-sutra:', result.sutra);
+        result.firsts.forEach(function(first) {
+            result.seconds.forEach(function(second) {
+                var addres = sandhi.add(first, second);
+                var samasas = addres.map(function(r) { return r.samasa});
+                var ok = inc(samasas, samasa);
+                log('f:', first, 's:', second, 'add:', addres, 'ok', ok);
+            })
+        })
+    })
+}
+
+
+
+function log() { console.log.apply(console, arguments) }

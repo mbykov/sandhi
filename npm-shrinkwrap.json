@@ -1,0 +1,63 @@
+{
+  "name": "sandhi",
+  "version": "2.0.0",
+  "dependencies": {
+    "salita-component": {
+      "version": "1.3.0",
+      "from": "salita-component@*"
+    },
+    "shiva-sutras": {
+      "version": "1.1.0",
+      "from": "shiva-sutras@*",
+      "dependencies": {
+        "each-component": {
+          "version": "0.1.0",
+          "from": "each-component@*",
+          "dependencies": {
+            "to-function": {
+              "version": "2.0.6",
+              "from": "to-function@*",
+              "resolved": "https://registry.npmjs.org/to-function/-/to-function-2.0.6.tgz",
+              "dependencies": {
+                "component-props": {
+                  "version": "1.1.1",
+                  "from": "component-props@*"
+                }
+              }
+            }
+          }
+        },
+        "map-component": {
+          "version": "0.0.1",
+          "from": "map-component@*",
+          "dependencies": {
+            "to-function": {
+              "version": "2.0.6",
+              "from": "to-function@*",
+              "resolved": "https://registry.npmjs.org/to-function/-/to-function-2.0.6.tgz",
+              "dependencies": {
+                "component-props": {
+                  "version": "1.1.1",
+                  "from": "component-props@*"
+                }
+              }
+            }
+          }
+        },
+        "type-component": {
+          "version": "0.0.1",
+          "from": "type-component@*"
+        },
+        "array-uniq": {
+          "version": "1.0.2",
+          "from": "array-uniq@*",
+          "resolved": "https://registry.npmjs.org/array-uniq/-/array-uniq-1.0.2.tgz"
+        }
+      }
+    },
+    "underscore": {
+      "version": "1.7.0",
+      "from": "underscore@*"
+    }
+  }
+}

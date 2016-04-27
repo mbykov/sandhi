@@ -3,9 +3,14 @@
 var salita = require('salita-component');
 // var splitter = require('../splitter');
 
+// var go = process.argv.slice(3)[0] || false;
+
+var debug = (process.env.debug == 'true') ? true : false;
 var s = require('../index');
 var sandhi = s.sandhi;
-var debug = (process.env.debug == 'true') ? true : false;
+var u = s.u;
+var inc = u.include;
+var log = u.log;
 
 module.exports = utils();
 
@@ -14,95 +19,65 @@ function utils(str) {
     return this;
 }
 
-utils.prototype.test = function(test, idx) {
+utils.prototype.test = function(test, idx, cut, type) {
     var compound = test.shift();
+    if (!compound) return;
     var first = test[0];
     var second = test[1];
-    if (!compound) return;
+    var full_sec = second;
+    var beg = u.first(second);
     var addtext = test.join(' + ');
     var idxstr = ['_', idx+1, '_'].join('');
-    var cotrn = salita.sa2slp(compound);
-    var fitrn = salita.sa2slp(first);
-    var setrn = salita.sa2slp(second);
-    var trn = [fitrn, setrn, cotrn].join(' - ');
-    // add
-    var descr = [idxstr, 'add', addtext, compound, trn].join(' - ');
+    var co_slp = salita.sa2slp(compound);
+    var fi_slp = salita.sa2slp(first);
+    var se_slp = salita.sa2slp(second);
+    var _slp = [fi_slp, se_slp, co_slp].join(' - ');
+    var descr = [idxstr, 'add', addtext, compound, _slp].join(' - ');
+
+    if (u.isVowel(beg)) {
+        // if (cut) second = second.slice(1);
+        second = second.slice(1);
+        // else second = [u.liga(beg), u.wofirst(second)].join(''); // test starts with vowel, but it was not cutted - (doubled nasals, ayadi);
+    }
+
     it(descr, function() {
-        var added = sandhi.add(first, second);
-        // log('TEST ADD', added);
-        isIN(added, compound).should.equal(true);
+        var added = sandhi.add(first, full_sec);
+        // log('tests: ADD', added, 'f', first, 'sec', full_sec, 'samasa', compound, 0, added[0]);
+        var samasas = added.map(function(r) { return r.samasa});
+        inc(samasas, compound).should.equal(true);
     });
 
-    // delete
-    /* как организовать тесты? В реальной жизни я имею samasa и хвост, а в сплиттере наоборот - начало от samasa
-       здесь я могу посчитать длину second и вычислить половинки - вычитаю длину второго и символ начала (+1)
-       вычитаю вторую половину для естественности
-       salita не перекодирует начальные лиги
-     */
-    var descr = [idxstr, 'del', addtext, compound].join(' - ');
+    var descr = [idxstr, 'del', addtext, compound, fi_slp, se_slp, co_slp].join(' - ');
     it(descr, function() {
         var fres = false;
         var sres = false;
         var results = sandhi.del(compound, second);
+        if (!results) log('TEST DEL - NO RESULT');
         // log('TEST DEL', results);
         results.forEach(function(res) {
-            if (isIN(res.firsts, first)) fres = true;
-            if (isIN(res.seconds, second)) sres = true;
+            if (inc(res.firsts, first)) fres = true;
+            if (inc(res.seconds, full_sec)) sres = true;
+            // reversed adding:
+            res.firsts.forEach(function(f) {
+                res.seconds.forEach(function(s) {
+                    var added = sandhi.add(f, s);
+                    // log('A', added, res.sutra)
+                    if (added.length == 0) log('TEST:: NO ADDED', 'f:', f, 's:', s, 'added:', added);
+                    var samasas = added.map(function(r) { return r.samasa});
+                    // if (!inc(samasas, compound)) log('TEST - FALSE:', 'f:', f, 's', s, 'added:',  added, 'samasa', compound, inc(added, compound), 'sutra-del:', res.sutra);
+                    inc(samasas, compound).should.equal(true);
+                });
+            });
         });
-        // log('TEST CUT', res);
         fres.should.equal(true);
         sres.should.equal(true);
     });
 
-    // split
-    // var descr = [idxstr, 'split', addtext, compound].join(' - ');
-    // it(descr, function() {
-    //     var splitted;
-    //     var testStr = [first, second].join(' ');
-    //     var hash = sandhi.split(compound);
-    //     if (hash[compound]) {
-    //         splitted = hash[compound]
-    //         isIN(splitted, testStr).should.equal(true);
-    //     } else {
-    //         var spacedFirst = compound.split(' ')[0];
-    //         splitted = hash[spacedFirst];
-    //         isIN(splitted, first).should.equal(true);
-    //         // splitted = hash[second];
-    //         // isIN(splitted, second).should.equal(true);
-    //     }
-    //     // splitted = (hash[compound]) ? hash[compound] : testStr;
-    //     // isIN(splitted, testStr).should.equal(true);
-    // });
 }
 
-utils.prototype.gita = function(descr, sa, v, idx, idy) {
-    it(descr, function() {
-        // isIN(splitted, second).should.equal(true);
-        // var vistr = JSON.stringify(v);
-        var vistr = v.join(' ');
-        // log(v.length, 'vi-str', vistr);
-        var hash = sandhi.split(sa);
-        // log(1, idx, idy, v);
-        // log('hash', hash);
-        var splitted = hash[sa];
-        // log('test-gita splitted size', splitted.length);
-        // log('hash', arr2string(res)); // '"भीरुः अयम्"'
-        isIN(splitted, vistr).should.equal(true);
-        // true.should.equal(true);
-
-        // SPLITTER FIXME: убрать, это тест
-        // splitter.get(sa);
-    });
-}
-
-function arr2string(v) {
-    // if (typeof(obj) == 'string') obj = [obj];
-    return v.map(function(str) {return JSON.stringify(str) });
-}
-
-function isIN(arr, item) {
-    return (arr.indexOf(item) > -1) ? true : false;
-}
+// function isIN(arr, item) {
+//     return (arr.indexOf(item) > -1) ? true : false;
+// }
 
 // true.should.equal(true);
-function log() { console.log.apply(console, arguments) }
+// function log() { console.log.apply(console, arguments) }

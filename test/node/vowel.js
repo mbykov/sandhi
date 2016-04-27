@@ -1,11 +1,12 @@
 var utils = require('../utils');
 
 var tests = [
-    {sutra: '6.1.101',
-     descr: 'simple vowel, followed by a similar vowel',
+    {sutra: 'dirgha',
+     descr: 'simple vowel, followed by a similar vowel - 6.1.101',
+     first: true, // first symbol should be removed, cutting starting from second sym
      tests: [
 
-         ['योगानुशासन', 'योगानुशासन', ''], // tmp
+         // ['योगानुशासन', 'योगानुशासन', ''], // tmp
          // ['योगानुशासन', '', 'योगानुशासन'], // tmp
 
          ['योगानुशासन', 'योग', 'अनुशासन'], // a + a = A
@@ -24,8 +25,8 @@ var tests = [
          ['चमूर्जिता', 'चमू', 'ऊर्जिता'],
 
          ['पितॄण', 'पितृ', 'ऋण'], // f + f = F
-         ['होतॄकार', 'होतृ', 'ॠकार'],
-         ['होतॄकार', 'होतृ', 'ऌकार'], // f + x = F
+         // ['होतॄकार', 'होतृ', 'ॠकार'], // WTF ? word can not start with F, or what?
+         // ['होतॄकार', 'होतृ', 'ऌकार'], // f + x = F
 
          ['देवार्हित', 'देव', 'अर्हित'],  // a + ar = Ar
          ['महार्जुन', 'महा', 'अर्जुन'],
@@ -38,7 +39,7 @@ var tests = [
          ['नमसीश्वरम्', 'नमसि', 'ईश्वरम्'],
 
          ['भानूदयः', 'भानु', 'उदयः'], // u + u
-         ['पितॄणम्', 'पितृ', 'ॠणम्'],
+         // ['पितॄणम्', 'पितृ', 'ॠणम्'],
          ['', '', ''],
          ['', '', ''],
          ['', '', ''],
@@ -46,13 +47,15 @@ var tests = [
      ]
     },
 
-    {sutra: '6.1.87',
-     descr: 'a or ā is followed by i, ī, u, ū, ṛ, ṝ or ḷ -  guna',
+    {sutra: 'guna',
+     descr: 'a or ā is followed by i, ī, u, ū, ṛ, ṝ or ḷ -  guna - 6.1.87',
+     first: true,
      tests: [
          ['नेति', 'न', 'इति'], // a + i = e
          ['परेश', 'पर', 'ईश'],
          ['महेन्दु', 'महा', 'इन्दु'],
          ['महेश्वर', 'महा', 'ईश्वर'],
+         ['उपेन्द्रः', 'उप', 'इन्द्रः'],
 
          ['केनोपनिषत्', 'केन', 'उपनिषत्'], // a + u = o
          ['परमोर्मि', 'परम', 'ऊर्मि'],
@@ -60,19 +63,21 @@ var tests = [
          ['रमोरु', 'रमा', 'ऊरु'],
 
          ['रामर्द्धि', 'राम', 'ऋद्धि'], // a + f = ar
-         ['परर्कार', 'पर', 'ॠकार'],
+         // ['परर्कार', 'पर', 'ॠकार'], // WTF ? word can not start with F, l
          ['महर्षि', 'महा', 'ऋषि'],
-         ['महर्कार', 'महा', 'ॠकार'],
+         // ['महर्कार', 'महा', 'ॠकार'],
+         ['ग्रीष्मर्तुः', 'ग्रीष्म', 'ऋतुः'],
 
-         ['तवल्कार', 'तव', 'ऌकार'], // a + x = al
-         ['महल्कार', 'महा', 'ऌकार'],
+         // FIXME: добавить
+         // ['तवल्कार', 'तव', 'ऌकार'], // a + x = al
+         // ['महल्कार', 'महा', 'ऌकार'],
          // ['', '', ''],
      ]
     },
 
-    {sutra: '6.1.88',
-     // {sutra: '',
-     descr: 'a or ā is followed by e, o, ai or au - vriddhi',
+    {sutra: 'vriddhi',
+     descr: 'a or ā is followed by e, o, ai or au - vriddhi - 6.1.88',
+     first: true,
      tests: [
          ['देवैकत्व', 'देव', 'एकत्व'], // a + e = E
          ['सैव', 'सा', 'एव'],
@@ -84,19 +89,21 @@ var tests = [
          ['नरौदर्य', 'नर', 'औदर्य'],
          ['सदौरग', 'सदा', 'औरग'],
 
+         ['कृष्णैकत्वम्', 'कृष्ण', 'एकत्वम्'],
          // ['', '', ''],
      ]
     },
 
-    {sutra: '6.1.77',
-     descr: 'simple vowel except Aa followed by a dissimilar simple vowel changes to its semi-vowel',
+    {sutra: 'dissimilar',
+     descr: 'simple vowel except Aa followed by a dissimilar simple -> to its semi-vowel - 6.1.77',
+     first: true,
      tests: [
          ['योग्यङ्ग', 'योगि', 'अङ्ग'], // i
          ['योग्यालम्बन', 'योगि', 'आलम्बन'],
          ['योग्युत्तम', 'योगि', 'उत्तम'],
          ['योग्यूर्जस्', 'योगि', 'ऊर्जस्'],
          ['योग्यृद्धि', 'योगि', 'ऋद्धि'],
-         ['योग्यॄकार', 'योगि', 'ॠकार'],
+         // ['योग्यॄकार', 'योगि', 'ॠकार'],
 
          ['योग्येकता', 'योगि', 'एकता'], // дифтонги
          ['योग्यैश्वर्य', 'योगि', 'ऐश्वर्य'],
@@ -108,7 +115,7 @@ var tests = [
          ['गुर्विच्छा', 'गुरु', 'इच्छा'],
          ['गुर्वीश', 'गुरु', 'ईश'],
          ['गुर्वृद्धि', 'गुरु', 'ऋद्धि'],
-         ['गुर्वॄकार', 'गुरु', 'ॠकार'],
+         // ['गुर्वॄकार', 'गुरु', 'ॠकार'],
 
          ['गुर्वेकता', 'गुरु', 'एकता'],
          ['गुर्वैश्वर्य', 'गुरु', 'ऐश्वर्य'],
@@ -127,6 +134,7 @@ var tests = [
          ['मात्रोजस्', 'मातृ', 'ओजस्'],
          ['मात्रौषध', 'मातृ', 'औषध'],
 
+         // FIXME: добавить
          // ['लङ्ग', 'ऌ', 'अङ्ग'], // x // здесь проблема - маркер в позиции 0
          // ['लालम्बन', 'ऌ', 'आलम्बन'],
          // ['लिच्छा', 'ऌ', 'इच्छा'],
@@ -143,18 +151,17 @@ var tests = [
      ]
     },
 
-    // not in examples yet
-    {sutra: '6.1.78',
-     descr: 'diphthong followed by any vowel (e,o vow-a), including itself but a, changes to its semi-vowel equivalent - external - optional',
+    // 77 - ['योग्युत्तम', 'योगि', 'उत्तम'], - dissimilar -> virama
+    {sutra: 'diphthong-to-semivowel',
+     descr: 'diphthong followed by any vowel (e,o vow-a), including itself but a, changes to its semi-vowel - 6.1.78',
      // e,o+vow-a => ay,av+vow; E,O+vow => Ay,Av+vow
+     first: false,
      only: 'ext',
      tests: [
          ['हरयिह', 'हरे', 'इह'], // coalesced
          // ['हर इह', 'हरे', 'इह'], // semi-vow dropped
          ['विष्णविह', 'विष्णो', 'इह'],
          // ['विष्ण इह', 'विष्णो', 'इह'],
-
-         // 77 - ['योग्युत्तम', 'योगि', 'उत्तम'], - dissimilar -> virama
 
          ['देव्यायर्पय', 'देव्यै', 'अर्पय'],
          // ['देव्या अर्पय', 'देव्यै', 'अर्पय'],
@@ -163,6 +170,10 @@ var tests = [
 
          ['असावूर्मि', 'असौ', 'ऊर्मि'],
          ['नावासन', 'नौ', 'आसन'],
+
+         ['तयासन्', 'ते', 'आसन्'],
+         ['तयिह', 'ते', 'इह'],
+
          // ['हर आन', 'हरे', 'आन'],
          // ['अल आगच्छ', 'अले', 'आगच्छ'],
          // ['साध एहि', 'साधो', 'एहि'],
@@ -176,48 +187,76 @@ var tests = [
      ]
     },
 
-    // processed in browser
-    // {sutra: '6.1.109',
-    //  // {sutra: '',
-    //  descr: '"e" and "o" at the end of a word, when followed by "a" gives avagraha',
-    //  only: 'ext',
-    //  tests: [
-    //      ['वनेऽटति', 'वने', 'अटति'],
-    //      ['शक्तयेऽर्चन्ति', 'शक्तये', 'अर्चन्ति'],
-    //      ['गुरोऽङ्ग्धि', 'गुरो', 'अङ्ग्धि'],
-    //      ['विष्णोऽक्ष्णुहि', 'विष्णो', 'अक्ष्णुहि'],
-    //      ['', '', ''],
-    //  ]
-    // },
-
-    // {sutra: '6.1.78',
-    {sutra: '',
-     descr: 'diphthong followed by any vowel, including itself, changes to its semi-vowel equivalent - internal',
-     only: 'int',
+    {sutra: 'ayadi-e-o-simple',
+     descr: 'diphthong followed by any vowel (e,o vow-a), including itself but a, changes to its semi-vowel equivalent - 6.1.78',
+     // e,o+vow-a => ay,av+vow; E,O+vow => Ay,Av+vow
+     first: false,
      tests: [
-         ['शक्तये', 'शक्ते', 'ए'],
-         ['अलये', 'अले', 'ए'],
-         ['धेनवे', 'धेनो', 'ए'],
-         ['ऊरवे', 'ऊरो', 'ए'],
-         ['ध्यायामि', 'ध्यै', 'आमि'],
-         ['सायन्ति', 'सै', 'अन्ति'],
-         ['नयनम्', 'ने', 'अनम्'],
-         ['नवनम्', 'नो', 'अनम्'],
+         ['हरयिह', 'हरे', 'इह'],
+         ['विष्णविह', 'विष्णो', 'इह'],
+         ['तयासन्', 'ते', 'आसन्'],
+         ['तयिह', 'ते', 'इह'],
+         ['प्रभवेहि', 'प्रभो', 'एहि'],
+
+         ['तस्मायदात्', 'तस्मै', 'अदात्'],
+         ['तस्मायुत्तम्', 'तस्मै', 'उत्तम्'],
+         ['', '', ''],
+
+         ['देव्यायर्पय', 'देव्यै', 'अर्पय'],
+         ['रवावस्तङ्गते', 'रवौ', 'अस्तङ्गते'],
+         ['असावूर्मि', 'असौ', 'ऊर्मि'],
+         ['नावासन', 'नौ', 'आसन'],
+         ['', '', ''],
+
+         ['मुनयेऽन्न', 'मुनये', 'अन्न'],
+         ['प्रभोऽधुना', 'प्रभो', 'अधुना'],
          ['', '', ''],
      ]
     },
 
+    // processed in browser, but here also
+    // {sutra: '6.1.109',
+    {sutra: 'e-o-avagraha',
+     descr: '"e" and "o" at the end of a word, when followed by "a" gives avagraha - 6.1.109; now part of visarga-avagraha',
+     // only: 'ext',
+     tests: [
+         ['वनेऽटति', 'वने', 'अटति'],
+         ['शक्तयेऽर्चन्ति', 'शक्तये', 'अर्चन्ति'],
+         ['गुरोऽङ्ग्धि', 'गुरो', 'अङ्ग्धि'],
+         ['विष्णोऽक्ष्णुहि', 'विष्णो', 'अक्ष्णुहि'],
+         ['', '', ''],
+     ]
+    },
+
+    // {sutra: '6.1.78',
+    // {sutra: '', // disabled
+    //  descr: 'diphthong followed by any vowel, including itself, changes to its semi-vowel equivalent - internal',
+    //  only: 'int',
+    //  tests: [
+    //      ['शक्तये', 'शक्ते', 'ए'],
+    //      ['अलये', 'अले', 'ए'],
+    //      ['धेनवे', 'धेनो', 'ए'],
+    //      ['ऊरवे', 'ऊरो', 'ए'],
+    //      ['ध्यायामि', 'ध्यै', 'आमि'],
+    //      ['सायन्ति', 'सै', 'अन्ति'],
+    //      ['नयनम्', 'ने', 'अनम्'],
+    //      ['नवनम्', 'नो', 'अनम्'],
+    //      ['', '', ''],
+    //  ]
+    // },
+
     {sutra: '',
      descr: '',
-     only: 'int',
+     only: 'ext',
      tests: [
          ['', '', ''], //
          ['', '', ''],
      ]
     },
+
     {sutra: '',
      descr: '',
-     only: 'int',
+     only: 'ext',
      tests: [
          ['', '', ''], //
          ['', '', ''],
@@ -229,11 +268,14 @@ describe('vowel_sandhi', function() {
     tests.forEach(function(t) {
         if (t.sutra == '') return;
         var descr = [t.sutra, t.descr].join(' - ');
+        var cut = false;
+        if (t.first) cut = t.first;
         describe(descr, function() {
             t.tests.forEach(function(test, idx) {
-                if (t.only) test.push(t.only);
-                utils.test(test, idx);
+                utils.test(test, idx, cut, 'vowel');
             });
         });
     });
 });
+
+function log() { console.log.apply(console, arguments) }
