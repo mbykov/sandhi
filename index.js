@@ -168,9 +168,11 @@ function getSutras(o) {
         }
         else if (inc(c.nasals, o.fin)) {
             if (o.fin == c.m) {
+                // sutras.push('cut-cons');
                 if (inc(c.yalava, o.beg) ) return []; // - ибо иначе образуется candra
                 else if (inc(c.labials, o.beg)) sutras.push('m-to-labial'); // при add - m+labial
                 else if (inc(c.dentals, o.beg)) sutras.push('m-to-dental');
+                // else sutras.push('cut-cons');
                 else return []; // иначе образовалось бы nasal
                 // throw new Error();
             } else if (o.fin == 'ञ' && inc(c.jJ, o.beg)) { // o.fin == 'ञ' + beg = soft palatal, D.1.1b
@@ -181,7 +183,8 @@ function getSutras(o) {
                 sutras.push('m-to-nasal');
             } else if (o.fin == c.n) {
                 // то есть запретить те буквы, которые дадут nasal, но не -n в m-to-nasal:
-                if (inc([c.h, 'द', 'ग', 'प', 'भ', 'क', 'ब', 'र', 'ध'], o.beg) || inc(c.yalava, o.beg) || inc(c.sibilants, o.beg)) sutras.push('cut-cons');
+                // кроме -n- -> calanDruvam - нужен пример, почему я добавил D сюда
+                if (inc([c.h, 'द', 'ग', 'प', 'भ', 'क', 'ब', 'र', 'ध_'], o.beg) || inc(c.yalava, o.beg) || inc(c.sibilants, o.beg)) sutras.push('cut-cons');
                 else sutras.push('m-to-nasal');
             } else {
                 // log('======================================================== ODD NASAL ', o.fin);
