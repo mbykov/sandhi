@@ -183,8 +183,12 @@ function getSutras(o) {
                 sutras.push('m-to-nasal');
             } else if (o.fin == c.n) {
                 // то есть запретить те буквы, которые дадут nasal, но не -n в m-to-nasal:
-                // кроме -n- -> calanDruvam - нужен пример, почему я добавил D сюда
+                // кроме -n- -> acalanDruvam - acalam + Druvam ; ArTAnDftyA = ArTAn + DftyA
                 if (inc([c.h, 'द', 'ग', 'प', 'भ', 'क', 'ब', 'र', 'ध_'], o.beg) || inc(c.yalava, o.beg) || inc(c.sibilants, o.beg)) sutras.push('cut-cons');
+                else if ('ध' == o.beg) {
+                    sutras.push('cut-cons');
+                    sutras.push('m-to-nasal');
+                }
                 else sutras.push('m-to-nasal');
             } else {
                 // log('======================================================== ODD NASAL ', o.fin);
@@ -263,7 +267,7 @@ function options(samasa, second) { // raw
     var fpart = samasa.replace(re, '');
     var mark = u.last(fpart);
     if (fpart == samasa) {
-        log('============== CAN NOT REMOVE TAIL', samasa, 2, second)
+        // log('============== CAN NOT REMOVE TAIL', samasa, 2, second);
         throw new Error();
     }
     var o = {samasa: samasa, second: second, first: fpart, mark: mark};
